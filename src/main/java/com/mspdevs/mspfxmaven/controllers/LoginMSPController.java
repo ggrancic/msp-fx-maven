@@ -56,7 +56,7 @@ public class LoginMSPController implements Initializable {
         try {
             ConexionMySQL c = new ConexionMySQL();
             c.conectar();
-            PreparedStatement st = (PreparedStatement) c.getCon().prepareStatement("SELECT nombre_usuario, clave FROM EMPLEADOS WHERE nombre_usuario=? AND clave=?");
+            PreparedStatement st = (PreparedStatement) c.getCon().prepareStatement("SELECT nombre_usuario, clave FROM mercadito.empleados WHERE nombre_usuario=? AND clave=?");
             st.setString(1, user);
             st.setString(2, pass);
             ResultSet rs = st.executeQuery();
