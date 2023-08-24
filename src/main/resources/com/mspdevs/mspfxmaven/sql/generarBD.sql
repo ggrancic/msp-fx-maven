@@ -22,7 +22,7 @@ ENGINE = InnoDB;
 -- Table `mercadito`.`empleados`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mercadito`.`empleados` (
-  `id_empleado` INT NOT NULL,
+  `id_empleado` INT NOT NULL AUTO_INCREMENT,
   `nombre_usuario` VARCHAR(45) NULL,
   `clave` VARCHAR(45) NULL,
   `esAdmin` CHAR(1) NULL,
