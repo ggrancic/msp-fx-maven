@@ -1,120 +1,309 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
-<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
-   <left>
-      <BorderPane prefHeight="600.0" prefWidth="454.0" BorderPane.alignment="CENTER">
+<GridPane stylesheets="@../styles/style.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <columnConstraints>
+      <ColumnConstraints halignment="CENTER" hgrow="NEVER" />
+      <ColumnConstraints hgrow="ALWAYS" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints vgrow="SOMETIMES" />
+   </rowConstraints>
+   <children>
+      <BorderPane GridPane.columnIndex="1">
+         <GridPane.margin>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </GridPane.margin>
+         <bottom>
+            <ButtonBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <buttons>
+                  <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="100.0" styleClass="btn-agregar" stylesheets="@../styles/style.css" text="Agregar" textFill="WHITE">
+                     <graphic>
+                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../imgs/plusicon-16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <font>
+                        <Font name="SansSerif Regular" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="100.0" styleClass="btn-editar" stylesheets="@../styles/style.css" text="Modificar" textFill="WHITE">
+                     <graphic>
+                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../imgs/editar-white-16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <font>
+                        <Font name="SansSerif Regular" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="100.0" styleClass="btn-borrar" stylesheets="@../styles/style.css" text="Eliminar" textFill="WHITE">
+                     <graphic>
+                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../imgs/borrar-16-white.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <font>
+                        <Font name="SansSerif Regular" size="14.0" />
+                     </font>
+                  </Button>
+                  <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="100.0" styleClass="btn-limpiar" stylesheets="@../styles/style.css" text="Limpiar" textFill="WHITE">
+                     <graphic>
+                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../imgs/borrador-white.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+               </buttons>
+               <BorderPane.margin>
+                  <Insets top="5.0" />
+               </BorderPane.margin>
+            </ButtonBar>
+         </bottom>
+         <styleClass>
+            <String fx:value="table-bg" />
+            <String fx:value="shadow" />
+         </styleClass>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
          <center>
-            <BorderPane prefHeight="521.0" prefWidth="488.0" BorderPane.alignment="CENTER">
-               <top>
-                  <BorderPane style="-fx-background-color: #b1b2b5;" BorderPane.alignment="CENTER">
-                     <top>
-                        <FlowPane alignment="CENTER" columnHalignment="CENTER" prefHeight="55.0" prefWidth="667.0" style="-fx-background-color: #909090;" BorderPane.alignment="CENTER">
-                           <children>
-                              <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Datos de Cliente">
-                                 <font>
-                                    <Font name="System Bold" size="29.0" />
-                                 </font>
-                              </Text>
-                           </children>
-                        </FlowPane>
-                     </top>
-                  </BorderPane>
-               </top>
-               <left>
-                  <Pane prefHeight="466.0" prefWidth="118.0" BorderPane.alignment="CENTER" />
-               </left>
-               <right>
-                  <Pane prefHeight="466.0" prefWidth="114.0" BorderPane.alignment="CENTER" />
-               </right>
-               <center>
-                  <GridPane BorderPane.alignment="CENTER">
-                    <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
+            <VBox spacing="15.0" BorderPane.alignment="CENTER">
+               <children>
+                  <GridPane vgap="10.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
                      <children>
-                        <TextField promptText="Nombre" />
-                        <TextField promptText="Apellido" GridPane.rowIndex="1" />
-                        <ComboBox prefHeight="25.0" prefWidth="225.0" promptText="Provincia" GridPane.rowIndex="2" />
-                        <TextField promptText="Localidad" GridPane.rowIndex="3" />
-                        <TextField promptText="Calle" GridPane.rowIndex="4" />
-                        <TextField promptText="DNI" GridPane.rowIndex="5" />
-                        <TextField promptText="Telefono" GridPane.rowIndex="6" />
-                        <TextField promptText="Email" GridPane.rowIndex="7" />
+                        <TextField maxWidth="-Infinity" prefHeight="25.0" prefWidth="250.0" promptText="🔍 Buscar" styleClass="search" stylesheets="@../styles/style.css" />
+                        <GridPane GridPane.rowIndex="1">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <TableView stylesheets="@../styles/style.css" GridPane.hgrow="ALWAYS" GridPane.vgrow="SOMETIMES">
+                                 <columns>
+                                    <TableColumn editable="false" prefWidth="30.0" text="ID" />
+                                    <TableColumn editable="false" prefWidth="105.0" text="Nombre" />
+                                    <TableColumn editable="false" prefWidth="93.0" text="Apellido" />
+                                    <TableColumn editable="false" prefWidth="72.0" text="Provincia" />
+                                    <TableColumn editable="false" prefWidth="75.0" text="Provincia" />
+                                    <TableColumn editable="false" prefWidth="75.0" text="Localidad" />
+                                    <TableColumn editable="false" prefWidth="83.0" text="DNI" />
+                                    <TableColumn editable="false" prefWidth="103.0" text="Email" />
+                                    <TableColumn editable="false" prefWidth="90.0" text="Telefono" />
+                                 </columns>
+                              </TableView>
+                           </children>
+                        </GridPane>
                      </children>
                   </GridPane>
-               </center>
-            </BorderPane>
-         </center>
-         <bottom>
-            <FlowPane alignment="CENTER" hgap="20.0" prefHeight="66.0" prefWidth="454.0" BorderPane.alignment="CENTER">
-               <children>
-                  <Button contentDisplay="CENTER" mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: #6333c1;" text="Agregar" textFill="WHITE" />
-                  <Button contentDisplay="CENTER" layoutX="294.0" layoutY="25.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: #6333c1;" text="Modificar" textFill="WHITE" />
-                  <Button contentDisplay="CENTER" layoutX="344.0" layoutY="25.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" style="-fx-background-color: #6333c1;" text="Eliminar" textFill="WHITE" />
-               </children>
-               <BorderPane.margin>
-                  <Insets />
-               </BorderPane.margin>
-            </FlowPane>
-         </bottom>
-      </BorderPane>
-   </left>
-   <center>
-      <BorderPane prefHeight="600.0" prefWidth="333.0" BorderPane.alignment="CENTER">
-         <top>
-            <BorderPane prefHeight="55.0" prefWidth="333.0" BorderPane.alignment="CENTER">
-               <top>
-                  <AnchorPane prefHeight="56.0" prefWidth="333.0" style="-fx-background-color: #909090;" BorderPane.alignment="CENTER">
+                  <GridPane alignment="CENTER" hgap="30.0" vgap="8.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" minWidth="10.0" />
+                        <ColumnConstraints hgrow="NEVER" maxWidth="479.0" minWidth="10.0" />
+                        <ColumnConstraints hgrow="NEVER" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints fillHeight="false" minHeight="10.0" />
+                        <RowConstraints fillHeight="false" minHeight="10.0" prefHeight="30.0" />
+                        <RowConstraints fillHeight="false" minHeight="10.0" prefHeight="30.0" />
+                        <RowConstraints fillHeight="false" minHeight="10.0" prefHeight="30.0" />
+                     </rowConstraints>
                      <children>
-                        <Text fill="WHITE" layoutX="18.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Filtrar:">
-                           <font>
-                              <Font name="System Bold" size="20.0" />
-                           </font>
-                        </Text>
-                        <TextField layoutX="104.0" layoutY="13.0" prefHeight="30.0" prefWidth="414.0" />
+                        <GridPane>
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" prefWidth="50.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <TextField GridPane.columnIndex="1" />
+                              <Label text="Nombre">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </GridPane>
+                        <GridPane layoutX="154.0" layoutY="10.0" GridPane.rowIndex="1">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <TextField GridPane.columnIndex="1" />
+                              <Label text="Apellido">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </GridPane>
+                        <GridPane layoutX="154.0" layoutY="48.0" GridPane.rowIndex="2">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="130.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <TextField GridPane.columnIndex="1" />
+                              <Label text="Calle">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </GridPane>
+                        <GridPane layoutX="158.0" layoutY="86.0" GridPane.rowIndex="3">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="160.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <TextField prefWidth="162.0" GridPane.columnIndex="1" />
+                              <Label text="Teléfono">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <GridPane.margin>
+                                    <Insets right="5.0" />
+                                 </GridPane.margin>
+                              </Label>
+                           </children>
+                           <GridPane.margin>
+                              <Insets />
+                           </GridPane.margin>
+                        </GridPane>
+                        <GridPane layoutX="156.0" layoutY="124.0" GridPane.columnIndex="1">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <TextField GridPane.columnIndex="1" />
+                              <Label text="Provincia">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <GridPane.margin>
+                                    <Insets right="5.0" />
+                                 </GridPane.margin>
+                              </Label>
+                           </children>
+                           <GridPane.margin>
+                              <Insets />
+                           </GridPane.margin>
+                        </GridPane>
+                        <GridPane layoutX="374.0" layoutY="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <TextField GridPane.columnIndex="1" />
+                              <Label text="Localidad">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <GridPane.margin>
+                                    <Insets right="5.0" />
+                                 </GridPane.margin>
+                              </Label>
+                           </children>
+                        </GridPane>
+                        <GridPane layoutX="372.0" layoutY="48.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="120.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <TextField GridPane.columnIndex="1" />
+                              <Label text="Email">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </GridPane>
                      </children>
-                  </AnchorPane>
-               </top>
-            </BorderPane>
-         </top>
-         <center>
-            <TableView prefHeight="544.0" prefWidth="473.0" BorderPane.alignment="CENTER">
-              <columns>
-                <TableColumn prefWidth="75.0" text="Nombre" />
-                <TableColumn prefWidth="75.0" text="Apellido" />
-                 <TableColumn prefWidth="75.0" text="Provincia" />
-                  <TableColumn prefWidth="75.0" text="DNI" />
-                  <TableColumn prefWidth="75.0" text="Telefono" />
-                  <TableColumn prefWidth="164.0" text="Email" />
-              </columns>
-            </TableView>
+                     <VBox.margin>
+                        <Insets bottom="20.0" top="20.0" />
+                     </VBox.margin>
+                  </GridPane>
+               </children>
+            </VBox>
          </center>
       </BorderPane>
-   </center>
-</BorderPane>
+      <VBox alignment="TOP_CENTER" styleClass="login-left-pane">
+         <children>
+            <ImageView fitHeight="128.0" fitWidth="128.0" pickOnBounds="true" preserveRatio="true" styleClass="shadow-abajo">
+               <image>
+                  <Image url="@../imgs/apreton-de-manos128.png" />
+               </image>
+            </ImageView>
+            <Label alignment="CENTER" contentDisplay="CENTER" styleClass="shadow-abajo-2" text="Gestión de Usuarios" textFill="WHITE">
+               <font>
+                  <Font name="SansSerif Bold" size="20.0" />
+               </font>
+            </Label>
+         </children>
+         <padding>
+            <Insets left="20.0" right="20.0" top="10.0" />
+         </padding>
+      </VBox>
+   </children>
+</GridPane>

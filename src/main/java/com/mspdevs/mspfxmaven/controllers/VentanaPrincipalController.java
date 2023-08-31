@@ -10,9 +10,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 
 
 public class VentanaPrincipalController implements Initializable {
+    
+    @FXML
+    private HBox hbox ;
     
     @FXML
     private BorderPane bpane;
@@ -46,7 +51,7 @@ public class VentanaPrincipalController implements Initializable {
     
     @FXML
     void abrirVentanaUsuarios(MouseEvent event) throws IOException {
-        BorderPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaEmpleados.fxml"));
+        GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaEmpleados.fxml"));
         bpane.setCenter(centro);
     }
     
