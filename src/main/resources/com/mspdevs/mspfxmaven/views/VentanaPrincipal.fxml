@@ -157,6 +157,6 @@
       </GridPane>
    </bottom>
    <center>
-      <Pane prefHeight="200.0" prefWidth="200.0" styleClass="pcpal-bg" stylesheets="@../styles/style.css" BorderPane.alignment="CENTER" />
+      <Pane styleClass="pcpal-bg" stylesheets="@../styles/style.css" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>

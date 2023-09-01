@@ -10,9 +10,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 
 
 public class VentanaPrincipalController implements Initializable {
+    
+    @FXML
+    private HBox hbox ;
     
     @FXML
     private BorderPane bpane;
@@ -28,25 +33,25 @@ public class VentanaPrincipalController implements Initializable {
 
     @FXML
     void abrirVentanaCliente(MouseEvent event) throws IOException {
-        BorderPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaCliente.fxml"));    
+        GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaCliente.fxml"));    
         bpane.setCenter(centro);
     }
     
     @FXML
     void abrirVentanaInventario(MouseEvent event) throws IOException {
-        BorderPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaProductos.fxml"));
+        GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaProductos.fxml"));
         bpane.setCenter(centro);
     }
     
     @FXML
     void abrirVentanaProveedores(MouseEvent event) throws IOException {
-        BorderPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaProveedores.fxml"));
+        GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaProveedores.fxml"));
         bpane.setCenter(centro);
     }
     
     @FXML
     void abrirVentanaUsuarios(MouseEvent event) throws IOException {
-        BorderPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaEmpleados.fxml"));
+        GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaEmpleados.fxml"));
         bpane.setCenter(centro);
     }
     
