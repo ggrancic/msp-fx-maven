@@ -57,6 +57,7 @@ public class RubroDAOImpl extends ConexionMySQL implements RubroDAO {
             this.conectar();
             PreparedStatement st = this.con.prepareStatement("DELETE FROM rubros WHERE id_rubro = ?");
             st.setInt(1, rubro.getIdRubro());
+            st.executeUpdate();
         } catch (Exception e) {
             throw e;
         } finally {
