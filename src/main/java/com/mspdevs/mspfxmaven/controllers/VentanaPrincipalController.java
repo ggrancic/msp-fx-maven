@@ -32,6 +32,9 @@ public class VentanaPrincipalController implements Initializable {
     private Button btnProveedores;
 
     @FXML
+    private Button btnRubros;
+
+    @FXML
     void abrirVentanaCliente(MouseEvent event) throws IOException {
         GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaCliente.fxml"));    
         bpane.setCenter(centro);
@@ -52,6 +55,12 @@ public class VentanaPrincipalController implements Initializable {
     @FXML
     void abrirVentanaUsuarios(MouseEvent event) throws IOException {
         GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaEmpleados.fxml"));
+        bpane.setCenter(centro);
+    }
+
+    @FXML
+    void abrirVentanaRubros(MouseEvent event) throws IOException {
+        GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaRubros.fxml"));
         bpane.setCenter(centro);
     }
     
