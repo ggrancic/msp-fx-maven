@@ -1,7 +1,9 @@
 package com.mspdevs.mspfxmaven.model;
 
+import com.mspdevs.mspfxmaven.controllers.VentanaRubrosController;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.ObservableList;
 
 public class Rubro1 { // Clase Rubro1 que representa un modelo para datos de rubros en JavaFX
     // Propiedades de cadena para el ID y el nombre del rubro
@@ -24,7 +26,7 @@ public class Rubro1 { // Clase Rubro1 que representa un modelo para datos de rub
     public Rubro1()
     { // Inicializa las propiedades de cadena con un enlace bidireccional al objeto Rubro1
         id = new SimpleStringProperty(this, "id");
-        nombre  = new SimpleStringProperty(this, "name");
+        nombre  = new SimpleStringProperty(this, "nombre");
     }
 
     // Método para obtener la propiedad del ID
@@ -56,5 +58,7 @@ public class Rubro1 { // Clase Rubro1 que representa un modelo para datos de rub
     public void setName(String newName) {
         nombre.set(newName);
     }
+
+
 
 }
