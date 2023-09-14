@@ -28,7 +28,7 @@ import javafx.stage.Stage;
  *
  */
 public class LoginMSPController implements Initializable {
-    
+
     // Acá van los atributos de la ventana (botones, campos, etc).
     // Esto lo genera SceneBuilder o bien se puede
     // generar programáticamente.
@@ -41,16 +41,16 @@ public class LoginMSPController implements Initializable {
     private Button btnLogin;
 
 // --------- METODOS ---------
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+
         // Acá se inicializa todo lo referido a los elementos del fxml.
-        
+
     }
-       
+
     // Acá voy a poner todo lo referido a las consultas sql.
-    
+
     public boolean buscarEmpleado(String user, String pass) {
         boolean existe = false;
         try {
@@ -60,7 +60,7 @@ public class LoginMSPController implements Initializable {
             st.setString(1, user);
             st.setString(2, pass);
             ResultSet rs = st.executeQuery();
-            
+
             if(rs.next()) {
                 existe = true;
                 st.close();
@@ -68,19 +68,19 @@ public class LoginMSPController implements Initializable {
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
-        
+
         return existe;
-        
+
     }
-    
+
     @FXML
     void verificarLogin(MouseEvent event) {
-        
+
         // Acá manejo si lo ingresado existe en la db o no.
-        
+
         String usuarioIngresado = campoUser.getText();
         String claveIngresada = campoClave.getText();
-        
+
         if (!(buscarEmpleado(usuarioIngresado, claveIngresada))) {
             Alert alertaDatosErroneos = new Alert(AlertType.ERROR);
             alertaDatosErroneos.setTitle("Error");
@@ -95,16 +95,15 @@ public class LoginMSPController implements Initializable {
             }
         }
     }
-    
+
     public void irAPantallaPcpal(String url, Event evt) throws Exception {
         ((Node)(evt.getSource())).getScene().getWindow().hide();
-        
+
         Parent root = FXMLLoader.load(getClass().getResource(url));
         Scene scene = new Scene(root);
         Stage newStage = new Stage();
         newStage.setScene(scene);
-        //newStage.setMaximized(true);
-        newStage.setFullScreen(true);
+        newStage.setMaximized(true);
         newStage.show();
     }
     

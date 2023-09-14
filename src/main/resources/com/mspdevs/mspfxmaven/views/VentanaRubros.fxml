@@ -45,7 +45,7 @@
                         <Font name="SansSerif Regular" size="14.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnModificar" mnemonicParsing="false" onMouseClicked="#modificarRubro" prefHeight="35.0" prefWidth="120.0" styleClass="btn-editar" stylesheets="@../styles/style.css" text="Modificar" textFill="WHITE">
+                  <Button fx:id="btnModificar" mnemonicParsing="false" onAction="#accionBotonModificar" prefHeight="35.0" prefWidth="120.0" styleClass="btn-editar" stylesheets="@../styles/style.css" text="Modificar" textFill="WHITE">
                      <graphic>
                         <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -57,7 +57,7 @@
                         <Font name="SansSerif Regular" size="14.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnEliminar" mnemonicParsing="false" onMouseClicked="#eliminarRubro" prefHeight="35.0" prefWidth="100.0" styleClass="btn-borrar" stylesheets="@../styles/style.css" text="Eliminar" textFill="WHITE">
+                  <Button fx:id="btnEliminar" mnemonicParsing="false" onAction="#accionBotonEliminar" prefHeight="35.0" prefWidth="100.0" styleClass="btn-borrar" stylesheets="@../styles/style.css" text="Eliminar" textFill="WHITE">
                      <graphic>
                         <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -69,7 +69,7 @@
                         <Font name="SansSerif Regular" size="14.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnLimpiar" mnemonicParsing="false" onMouseClicked="#limpiarRubro" prefHeight="35.0" prefWidth="100.0" styleClass="btn-limpiar" stylesheets="@../styles/style.css" text="Limpiar" textFill="WHITE">
+                  <Button fx:id="btnLimpiar" mnemonicParsing="false" onAction="#accionBotonLimpiar" prefHeight="35.0" prefWidth="100.0" styleClass="btn-limpiar" stylesheets="@../styles/style.css" text="Limpiar" textFill="WHITE">
                      <graphic>
                         <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -106,7 +106,7 @@
                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <TextField fx:id="filtrarTxt" maxWidth="-Infinity" onKeyReleased="#filtrarTablaPorNombre" prefHeight="25.0" prefWidth="250.0" promptText="🔍 Buscar" styleClass="search" stylesheets="@../styles/style.css" />
+                        <TextField fx:id="campoBuscar" maxWidth="-Infinity" onKeyReleased="#filtrarTablaPorNombre" prefHeight="25.0" prefWidth="250.0" promptText="🔍 Buscar" styleClass="search" stylesheets="@../styles/style.css" />
                         <GridPane GridPane.rowIndex="1">
                            <columnConstraints>
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
@@ -115,10 +115,10 @@
                               <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TableView fx:id="Tabla" stylesheets="@../styles/style.css" GridPane.hgrow="ALWAYS" GridPane.vgrow="SOMETIMES">
+                              <TableView fx:id="tablaRubros" stylesheets="@../styles/style.css" GridPane.hgrow="ALWAYS" GridPane.vgrow="SOMETIMES">
                                  <columns>
-                                    <TableColumn fx:id="IDColumna" editable="false" prefWidth="30.0" text="ID" />
-                                    <TableColumn fx:id="NOMBREColumna" editable="false" prefWidth="105.0" text="Nombre" />
+                                    <TableColumn fx:id="colId" editable="false" prefWidth="30.0" text="ID" />
+                                    <TableColumn fx:id="colNom" editable="false" prefWidth="105.0" text="Nombre" />
                                  </columns>
                               </TableView>
                            </children>
@@ -143,7 +143,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TextField fx:id="nombreTxt" GridPane.columnIndex="1" />
+                              <TextField fx:id="campoNombre" GridPane.columnIndex="1" />
                               <Label text="Nombre">
                                  <font>
                                     <Font size="14.0" />

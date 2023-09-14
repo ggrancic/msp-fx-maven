@@ -1,5 +1,7 @@
 package com.mspdevs.mspfxmaven.controllers;
 
+import com.mspdevs.mspfxmaven.model.Cliente;
+import com.mspdevs.mspfxmaven.model.DAO.ClienteDAOImpl;
 import com.mspdevs.mspfxmaven.model.DAO.ProveedorDAOImpl;
 import com.mspdevs.mspfxmaven.model.DAO.RubroDAOImpl;
 import com.mspdevs.mspfxmaven.model.Persona;
@@ -21,8 +23,9 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class VentanaProveedoresController implements Initializable  {
+public class VentanaClientesController implements Initializable {
     Alerta msj = new Alerta();
+
     @FXML
     private Button btnAgregar;
 
@@ -36,16 +39,13 @@ public class VentanaProveedoresController implements Initializable  {
     private Button btnModificar;
 
     @FXML
-    private TextField buscarCampo;
-
-    @FXML
     private TextField campoApellido;
 
     @FXML
-    private TextField campoCalle;
+    private TextField campoBuscar;
 
     @FXML
-    private TextField campoCuit;
+    private TextField campoCalle;
 
     @FXML
     private TextField campoEmail;
@@ -69,19 +69,13 @@ public class VentanaProveedoresController implements Initializable  {
     private TableColumn<Persona, String> colCalle;
 
     @FXML
-    private TableColumn<Proveedor, String> colCuit;
-
-    @FXML
-    private TableColumn<Persona, String> colDni;
-
-    @FXML
     private TableColumn<Persona, String> colEmail;
 
     @FXML
-    private TableColumn<Proveedor, Integer> colId;
+    private TableColumn<Cliente, Integer> colId;
 
     @FXML
-    private TableColumn<Persona, String> colLoca;
+    private TableColumn<Persona, String> colLoc;
 
     @FXML
     private TableColumn<Persona, String> colNom;
@@ -93,7 +87,7 @@ public class VentanaProveedoresController implements Initializable  {
     private TableColumn<Persona, String> colTele;
 
     @FXML
-    private TableView<Proveedor> tablaProveedores;
+    private TableView<Cliente> tablaClientes;
 
     @FXML
     void accionBotonAgregar(ActionEvent event) {
@@ -103,7 +97,7 @@ public class VentanaProveedoresController implements Initializable  {
         String provinciaIngresada = this.campoProvincia.getText();
         String localidadIngresada = this.campoLocalidad.getText();
         String calleIngresada = this.campoCalle.getText();
-        String cuitIngresado = this.campoCuit.getText();
+        //String cuitIngresado = this.campoCuit.getText();
         //String dniIngresado = cuitIngresado.substring(2, 10);
         String emailIngresado = this.campoEmail.getText();
         String telefonoIngresado = this.campoTelefono.getText();
@@ -115,48 +109,50 @@ public class VentanaProveedoresController implements Initializable  {
             msj.mostrarError("Error", "", "Falta ingresar datos.");
         } else {
             // Realiza la operación de agregar un proveedor si todos los campos están completos
-            String dniIngresado = cuitIngresado.substring(2, 10);
-            Proveedor p = new Proveedor();
-            ProveedorDAOImpl dao = new ProveedorDAOImpl();
-            p.setNombre(nombreIngresado);
-            p.setApellido(apellidoIngresado);
-            p.setProvincia(provinciaIngresada);
-            p.setLocalidad(localidadIngresada);
-            p.setCalle(calleIngresada);
-            p.setCuit(cuitIngresado);
-            p.setDni(dniIngresado);
-            p.setMail(emailIngresado);
-            p.setTelefono(telefonoIngresado);
+            //String dniIngresado = cuitIngresado.substring(2, 10);
+            Cliente c = new Cliente();
+            ClienteDAOImpl dao = new ClienteDAOImpl();
+            c.setNombre(nombreIngresado);
+            c.setApellido(apellidoIngresado);
+            c.setProvincia(provinciaIngresada);
+            c.setLocalidad(localidadIngresada);
+            c.setCalle(calleIngresada);
+            //p.setCuit(cuitIngresado);
+            //p.setDni(dniIngresado);
+            c.setMail(emailIngresado);
+            c.setTelefono(telefonoIngresado);
             try {
-                dao.insertar(p);
+                dao.insertar(c);
                 completarTabla();
                 vaciarCampos();
-                msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el proveedor correctamente.");
+                msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el cliente correctamente.");
             } catch (Exception e) {
                 e.printStackTrace(); // Imprime el stack trace de la excepción para depuración
-                msj.mostrarError("Error", "", "Ocurrió un error al agregar el proveedor.");
+                msj.mostrarError("Error", "", "Ocurrió un error al agregar el cliente.");
             }
         }
+
     }
 
     @FXML
     void accionBotonEliminar(ActionEvent event) {
-        // Obtiene el proveedor seleccionado en la tabla
-        Proveedor p = this.tablaProveedores.getSelectionModel().getSelectedItem();
-        if (p == null) {
+        // Obtiene el cliente seleccionado en la tabla
+        Cliente c = this.tablaClientes.getSelectionModel().getSelectedItem();
+        if (c == null) {
             // Muestra un mensaje de error si no se selecciona ningún elemento en la tabla
             msj.mostrarError("Error", "", "Debe seleccionar un elemento de la lista");
         } else {
             try {
-                ProveedorDAOImpl dao = new ProveedorDAOImpl();
-                dao.eliminar(p);
+                ClienteDAOImpl dao = new ClienteDAOImpl();
+                dao.eliminar(c);
                 completarTabla();
                 vaciarCampos();
-                msj.mostrarAlertaInforme("Operacion exitosa", "", "El proveedor se ha eliminado");
+                msj.mostrarAlertaInforme("Operacion exitosa", "", "El cliente se ha eliminado");
             } catch (Exception e) {
                 msj.mostrarError("Error", "", "No se pudo eliminar el elemento de la BD");
             }
         }
+
     }
 
     @FXML
@@ -164,17 +160,17 @@ public class VentanaProveedoresController implements Initializable  {
         // Limpia los campos de texto
         vaciarCampos();
         // Deselecciona la fila en la tabla
-        tablaProveedores.getSelectionModel().clearSelection(); //
+        tablaClientes.getSelectionModel().clearSelection(); //
     }
 
     @FXML
     void accionBotonModificar(ActionEvent event) {
         // Obtiene el proveedor seleccionado en la tabla
-        Proveedor p = this.tablaProveedores.getSelectionModel().getSelectedItem();
+        Cliente c = this.tablaClientes.getSelectionModel().getSelectedItem();
 
-        if (p == null) {
+        if (c == null) {
             // Muestra un mensaje de error si no se selecciona ningún elemento en la tabla
-            msj.mostrarError("Error", "", "Debe seleccionar un rubro de la lista para modificar.");
+            msj.mostrarError("Error", "", "Debe seleccionar un cliente de la lista para modificar.");
             return;
         }
         String nombreIngresado = this.campoNombre.getText().trim();
@@ -182,8 +178,8 @@ public class VentanaProveedoresController implements Initializable  {
         String provinciaIngresada = this.campoProvincia.getText();
         String localidadIngresada = this.campoLocalidad.getText();
         String calleIngresada = this.campoCalle.getText();
-        String cuitIngresado = this.campoCuit.getText();
-        String dniIngresado = cuitIngresado.substring(2, 10);
+        //String cuitIngresado = this.campoCuit.getText();
+        //String dniIngresado = cuitIngresado.substring(2, 10);
         String emailIngresado = this.campoEmail.getText();
         String telefonoIngresado = this.campoTelefono.getText();
 
@@ -192,30 +188,30 @@ public class VentanaProveedoresController implements Initializable  {
             return;
         }
         // Actualiza el nombre del rubro seleccionado con el contenido del campoNombre
-        p.setNombre(nombreIngresado);
-        p.setApellido(apellidoIngresado);
-        p.setProvincia(provinciaIngresada);
-        p.setLocalidad(localidadIngresada);
-        p.setCalle(calleIngresada);
-        p.setCuit(cuitIngresado);
-        p.setDni(dniIngresado);
-        p.setMail(emailIngresado);
-        p.setTelefono(telefonoIngresado);
+        c.setNombre(nombreIngresado);
+        c.setApellido(apellidoIngresado);
+        c.setProvincia(provinciaIngresada);
+        c.setLocalidad(localidadIngresada);
+        c.setCalle(calleIngresada);
+        //p.setCuit(cuitIngresado);
+        //p.setDni(dniIngresado);
+        c.setMail(emailIngresado);
+        c.setTelefono(telefonoIngresado);
         try {
-            ProveedorDAOImpl dao = new ProveedorDAOImpl();
-            dao.modificar(p);
+            ClienteDAOImpl dao = new ClienteDAOImpl();
+            dao.modificar(c);
             completarTabla();
             vaciarCampos();
-            msj.mostrarAlertaInforme("Operación exitosa", "", "El proveedor se ha modificado");
+            msj.mostrarAlertaInforme("Operación exitosa", "", "El cliente se ha modificado");
         } catch (Exception e) {
             msj.mostrarError("Error", "", "No se pudo modificar el elemento en la BD");
         }
     }
 
     @FXML
-    void filtrarProveedores(KeyEvent event) {
+    void filtrarClientes(KeyEvent event) {
         // Obtener el texto ingresado en el campo de búsqueda
-        String filtro = buscarCampo.getText().toLowerCase();
+        String filtro = campoBuscar.getText().toLowerCase();
 
         // Verificar si el campo de búsqueda está vacío
         if (filtro.isEmpty()) {
@@ -223,45 +219,43 @@ public class VentanaProveedoresController implements Initializable  {
             completarTabla();
         } else {
             // Crear una lista filtrada por registros que comiencen con la letra ingresada
-            ObservableList<Proveedor> proveedoresFiltrados = tablaProveedores.getItems().filtered(proveedor ->
-                    proveedor.getNombre().toLowerCase().startsWith(filtro)
+            ObservableList<Cliente> clientesFiltrados = tablaClientes.getItems().filtered(cliente ->
+                    cliente.getNombre().toLowerCase().startsWith(filtro)
             );
             // Establecer la lista filtrada como la fuente de datos de la tabla
-            tablaProveedores.setItems(proveedoresFiltrados);
+            tablaClientes.setItems(clientesFiltrados);
         }
     }
 
 
     public void completarTabla() {
         // Crear una instancia del DAO de Proveedor
-        ProveedorDAOImpl proveedor = new ProveedorDAOImpl();
-        ObservableList<Proveedor> proveedores = null;
+        ClienteDAOImpl cliente = new ClienteDAOImpl();
+        ObservableList<Cliente> clientes = null;
 
         try {
             // se intenta obtener la lista de proveedores desde la base de datos
-            proveedores = proveedor.listarTodos();
+            clientes = cliente.listarTodos();
         } catch (Exception e) {
             // Maneja cualquier excepción que ocurra durante la obtención de datos
             msj.mostrarError("Error", "", "Se ha producido un error recuperando los datos de la BD");
         }
 
         // Configura las celdas de la tabla para mostrar los datos de Proveedor y Persona
-        // Utilizando PropertyValueFactory para enlazar las propiedades de la clase Proveedor con las columnas de la tabla
-        this.colId.setCellValueFactory(new PropertyValueFactory<>("idProveedor"));
-        this.colCuit.setCellValueFactory(new PropertyValueFactory<>("cuit"));
+        // Utilizando PropertyValueFactory para enlazar las propiedades de la clase Cliente con las columnas de la tabla
+        this.colId.setCellValueFactory(new PropertyValueFactory<>("idCliente"));
         this.colNom.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         this.colApel.setCellValueFactory(new PropertyValueFactory<>("apellido"));
         this.colProv.setCellValueFactory(new PropertyValueFactory<>("provincia"));
-        this.colLoca.setCellValueFactory(new PropertyValueFactory<>("localidad"));
+        this.colLoc.setCellValueFactory(new PropertyValueFactory<>("localidad"));
         this.colCalle.setCellValueFactory(new PropertyValueFactory<>("calle"));
-        this.colDni.setCellValueFactory(new PropertyValueFactory<>("dni"));
         this.colEmail.setCellValueFactory(new PropertyValueFactory<>("mail"));
         this.colTele.setCellValueFactory(new PropertyValueFactory<>("telefono"));
         // Establece los datos de la tabla con la lista de proveedores
-        this.tablaProveedores.setItems(proveedores);
+        this.tablaClientes.setItems(clientes);
 
         // Configura un listener para la selección de fila en la tabla
-        tablaProveedores.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        tablaClientes.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 // Llena los campos de entrada con los datos del proveedor seleccionado
                 campoNombre.setText(newValue.getNombre());
@@ -269,13 +263,18 @@ public class VentanaProveedoresController implements Initializable  {
                 campoProvincia.setText(newValue.getProvincia());
                 campoLocalidad.setText(newValue.getLocalidad());
                 campoCalle.setText(newValue.getCalle());
-                campoCuit.setText(newValue.getCuit());
+                //campoCuit.setText(newValue.getCuit());
                 campoEmail.setText(newValue.getMail());
                 campoTelefono.setText(newValue.getTelefono());
 
             }
         });
     }
+
+
+
+
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -299,9 +298,7 @@ public class VentanaProveedoresController implements Initializable  {
         campoCalle.setText("");
         campoEmail.setText("");
         campoTelefono.setText("");
-        campoCuit.setText("");
-        buscarCampo.setText("");
+        campoBuscar.setText("");
         campoNombre.requestFocus();
     }
-
 }

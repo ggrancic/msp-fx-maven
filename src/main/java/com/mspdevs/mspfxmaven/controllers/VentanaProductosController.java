@@ -1,6 +1,7 @@
 package com.mspdevs.mspfxmaven.controllers;
 
 import com.mspdevs.mspfxmaven.model.ConexionMySQL;
+import com.mspdevs.mspfxmaven.model.Producto;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,6 +11,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,161 +23,100 @@ import java.util.logging.Logger;
 
 public class VentanaProductosController {
     @FXML
-    private TableColumn<?, ?> CantDisponibleColumna;
+    private Button btnAgregar;
 
     @FXML
-    private TableColumn<?, ?> CantMinimaColumna;
+    private Button btnEliminar;
 
     @FXML
-    private TableColumn<?, ?> IDColumna;
+    private Button btnLimpiar;
 
     @FXML
-    private TableColumn<?, ?> NombreColumna;
+    private Button btnModificar;
 
     @FXML
-    private TableColumn<?, ?> PrecioListaColumna;
+    private TextField campoBuscar;
 
     @FXML
-    private TableColumn<?, ?> PrecioVentaColumna;
+    private TextField campoCantDisp;
 
     @FXML
-    private TableColumn<?, ?> ProveedorColumna;
+    private TextField campoCantMin;
 
     @FXML
-    private TableColumn<?, ?> RubroColumna;
+    private TextField campoLista;
 
     @FXML
-    private TableView<?> Tabla;
+    private TextField campoNombre;
 
     @FXML
-    private Button agregarBtn;
+    private TextField campoVenta;
 
     @FXML
-    private TextField cantDisponibleTxt;
+    private TableColumn<?, ?> colCantDisponible;
 
     @FXML
-    private TextField cantMinimaTxt;
+    private TableColumn<?, ?> colCantMinima;
 
     @FXML
-    private Button eliminarBtn;
+    private TableColumn<?, ?> colId;
 
     @FXML
-    private TextField filtrarTxt;
+    private TableColumn<?, ?> colNom;
 
     @FXML
-    private Button limpiarBtn;
+    private TableColumn<?, ?> colPrecioLista;
 
     @FXML
-    private Button modificarBtn;
+    private TableColumn<?, ?> colPrecioVenta;
 
     @FXML
-    private TextField nombreTxt;
+    private TableColumn<?, ?> colProveedor;
 
     @FXML
-    private TextField precioListaTxt;
-
-    @FXML
-    private TextField precioVentaTxt;
+    private TableColumn<?, ?> colRubro;
 
     @FXML
     private ComboBox<?> proveedorBox;
 
     @FXML
-    private ComboBox<String> rubroBox;
+    private ComboBox<?> rubroBox;
 
     @FXML
-    void agregarProducto(ActionEvent event) {
-        // Crea una instancia de la clase ConexionMySQL para gestionar la conexión a la base de datos
-        ConexionMySQL conexionMySQL = new ConexionMySQL();
-
-        // Establece la conexión a la base de datos
-        conexionMySQL.conectar();
-        Connection conexion = conexionMySQL.getCon();
-
-        String nombreIngresado = nombreTxt.getText();
-        String precioVentaIngresado = precioVentaTxt.getText();
-        String precioListaIngresado = precioListaTxt.getText();
-        String cantidadDisponibleIngresada = cantDisponibleTxt.getText();
-        String cantidadMinimaIngresada = cantMinimaTxt.getText();
-
-
-        /*if (!esNombreValido(nombreIngresado)) {
-            mostrarAlerta("Advertencia", "Campo Vacío", "El campo de nombre no puede estar vacío.");
-            Tabla.getSelectionModel().clearSelection();
-            return; // Sale del método si el campo está vacío
-        }
-
-        // Toma el valor ingresado en "nombreIngresado", convierte la primera letra en mayúscula
-        // y el resto en minúscula para formatear el nombre de manera consistente
-        String nombre = nombreIngresado.substring(0, 1).toUpperCase() + nombreIngresado.substring(1).toLowerCase();
-
-        try {
-            // Consulta SQL para verificar si el nombre ya existe
-            String consultaExistencia = "SELECT COUNT(*) FROM rubros WHERE nombre = ?";
-            PreparedStatement statementExistencia = conexion.prepareStatement(consultaExistencia);
-            statementExistencia.setString(1, nombre);
-
-            ResultSet rsExistencia = statementExistencia.executeQuery();
-            rsExistencia.next();
-            int cantidadRegistros = rsExistencia.getInt(1);
-
-            if (cantidadRegistros > 0) {
-                // Si ya existe un registro con el mismo nombre, muestra una alerta de advertencia
-                mostrarAlerta("Advertencia", "Nombre duplicado", "El nombre ya existe en la base de datos.");
-                return;
-            }
-            // Prepara la consulta
-            String consulta = "insert into rubros(nombre)values(?)";
-            PreparedStatement statement = conexion.prepareStatement(consulta);
-            statement.setString(1, nombre); // Ejemplo de parámetro
-
-            // Ejecuta la consulta
-            statement.executeUpdate();
-
-            // Cierra los recursos
-            statement.close();
-            conexion.close();
-
-            /*pst = con.prepareStatement("insert into rubros(nombre)values(?)");
-            pst.setString(1, nombre);
-            pst.executeUpdate();*/
-
-
-        /*
-            // Muestra una alerta después de agregar el registro
-            mostrarAlerta("Advertencia", "Rubro agregado", "El rubro se añadio con exito.");
-
-            tabla();
-
-            nombreTxt.setText("");
-            nombreTxt.requestFocus();
-        } catch (SQLException ex) {
-            Logger.getLogger(VentanaRubrosController.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
-    }
+    private TableView<Producto> tablaProducto;
 
     @FXML
-    void eliminarProducto(ActionEvent event) {
+    void accionBotonAgregar(ActionEvent event) {
 
     }
 
     @FXML
-    void limpiarProducto(ActionEvent event) {
+    void accionBotonEliminar(ActionEvent event) {
 
     }
 
     @FXML
-    void modificarProducto(ActionEvent event) {
+    void accionBotonLimpiar(ActionEvent event) {
 
     }
 
-    // Este método se ejecutará cuando se inicialice la ventana de "Productos"
+    @FXML
+    void accionBotonModificar(ActionEvent event) {
+
+    }
+
+    @FXML
+    void buscarProductoFiltro(KeyEvent event) {
+
+    }
+
+
     @FXML
     void initialize() {
-        // Llama al método para cargar los rubros en el ComboBox
-        cargarRubrosDesdeBD();
+
     }
 
+    /*
     // Método para cargar los rubros desde la base de datos al ComboBox
     private void cargarRubrosDesdeBD() {
         // Crear una lista observable para almacenar los nombres de los rubros
@@ -184,7 +125,7 @@ public class VentanaProductosController {
         try {
             // Establecer la conexión con la base de datos
             ConexionMySQL conexionMySQL = new ConexionMySQL();
-            conexionMySQL.conectar();
+            //conexionMySQL.conectar();
             Connection conexion = conexionMySQL.getCon();
 
             // Preparar una consulta SQL para obtener los nombres de los rubros
@@ -210,5 +151,5 @@ public class VentanaProductosController {
 
         // Llenar el ComboBox rubroBox con los nombres de los rubros
         rubroBox.setItems(rubros);
-    }
+    }*/
 }

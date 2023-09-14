@@ -2,13 +2,14 @@ package com.mspdevs.mspfxmaven.model;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class ConexionMySQL {
-    private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
+    private static final String DRIVER = "com.mysql.jdbc.Driver";
     private static final String URL = "jdbc:mysql://localhost:3306/mercadito";
     private static final String USER = "usuarioMercadito";
     private static final String CLAVE = "mercadito";
-    private Connection con = null;
+    protected Connection con = null;
 
     public Connection getCon() {
         return con;
@@ -18,31 +19,22 @@ public class ConexionMySQL {
         this.con = con;
     }
 
-    public void conectar() {
+    public void conectar() throws Exception {
         try {
             Connection c = DriverManager.getConnection(URL, USER, CLAVE);
             setCon(c);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            throw e;
         }
     }
 
-    /*public boolean conectar(){
-        boolean ok = false;
-        setCon(null);
-        try {
-            Class.forName(DRIVER);//Cargar el Driver de MySQL para establecer la conexion
-            Connection conexion = (Connection) DriverManager.getConnection(URL, USER, CLAVE); //Conectar por medio de DriverManager
-            if(conexion!=null){
-                setCon(conexion);
-                ok = true;
+    public void cerrarConexion() throws SQLException {
+        if (con != null) {
+            if(!con.isClosed()) {
+                con.close();
             }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }finally{
-            return ok;
         }
-    }*/
+    }
 
 
 
