@@ -35,4 +35,12 @@ public class ConexionMySQL {
             }
         }
     }
+    
+    public void iniciarTransaccion() throws SQLException {
+        con.setAutoCommit(false);
+    }
+    
+    public void finalizarTransaccion() throws SQLException {
+        con.commit();
+    }
 }

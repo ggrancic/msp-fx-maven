@@ -95,7 +95,7 @@
             </ToolBar>
             <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="109.0" prefWidth="200.0" HBox.hgrow="NEVER">
               <items>
-                  <Button contentDisplay="TOP" mnemonicParsing="false" text="Salir">
+                  <Button contentDisplay="TOP" mnemonicParsing="false" text="Cerrar Sesión">
                      <graphic>
                         <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                            <image>

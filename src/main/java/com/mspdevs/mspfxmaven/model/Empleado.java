@@ -4,7 +4,7 @@ public class Empleado extends Persona {
     int id_empleado;
     String nombre_usuario;
     String clave;
-    int esAdmin;
+    String esAdmin;
     int idPersona;
 
     public int getId_empleado() {
@@ -31,11 +31,11 @@ public class Empleado extends Persona {
         this.clave = clave;
     }
 
-    public int getEsAdmin(int esAdmin) {
+    public String getEsAdmin() {
         return this.esAdmin;
     }
 
-    public void setEsAdmin(int esAdmin) {
+    public void setEsAdmin(String esAdmin) {
         this.esAdmin = esAdmin;
     }
 

@@ -32,7 +32,7 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
                 e.setTelefono(rs.getString("telefono"));
                 e.setNombre_usuario(rs.getString("nombre_usuario"));
                 e.setClave(rs.getString("clave"));
-                e.getEsAdmin(rs.getInt("esAdmin"));
+                e.setEsAdmin(rs.getString("esAdmin"));
                 lista.add(e);
             }
             rs.close();
@@ -49,6 +49,21 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
     public void insertar(Empleado empleado) throws Exception {
         try {
             this.conectar();
+            String myQuery = "INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, mail, telefono) VALUES (?,?,?,?,?,?,?,?)" +
+                    "INSERT INTO empleados (nombre_usuario, clave, esAdmin, idpersona) VALUES (?,?,?,LAST_INSERT_ID())";
+            PreparedStatement st = this.con.prepareStatement(myQuery);
+            st.setString(1, empleado.getNombre());
+            st.setString(2, empleado.getApellido());
+            st.setString(3, empleado.getProvincia());
+            st.setString(4, empleado.getLocalidad());
+            st.setString(5, empleado.getCalle());
+            st.setString(6, empleado.getCalle());
+            st.setString(6, empleado.getDni());
+            st.setString(7, empleado.getMail());
+            st.setString(8, empleado.getTelefono());
+            st.setString(9, empleado.getNombre_usuario());
+            st.setString(10, empleado.getClave());
+            st.setString(11, empleado.getEsAdmin());
 
         } catch (Exception e) {
             throw e;

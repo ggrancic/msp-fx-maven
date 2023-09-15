@@ -45,8 +45,7 @@ public class RubroDAOImpl extends ConexionMySQL implements RubroDAO {
             st.executeUpdate();
         } catch (Exception e) {
             throw e;
-        }
-        finally {
+        } finally {
             this.cerrarConexion();
         }
     }
