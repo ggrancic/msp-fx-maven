@@ -2,7 +2,6 @@ package com.mspdevs.mspfxmaven.model.DAO;
 
 import com.mspdevs.mspfxmaven.model.ConexionMySQL;
 import com.mspdevs.mspfxmaven.model.Empleado;
-import com.mspdevs.mspfxmaven.model.Rubro;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -16,7 +15,12 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
         ObservableList<Empleado> lista = null;
         try {
             this.conectar();
-            PreparedStatement st = this.con.prepareStatement("SELECT * FROM empleados");
+            String myQuery = "SELECT em.id_empleado, per.nombre, per.apellido, "
+                    + "per.provincia, per.localidad, per.calle, per.dni, "
+                    + "per.mail, per.telefono, em.clave "
+                    + "FROM empleados em JOIN personas per "
+                    + "ON em.idpersona = per.id_persona";
+            PreparedStatement st = this.con.prepareStatement(myQuery);
             lista = FXCollections.observableArrayList();
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
@@ -49,15 +53,17 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
     public void insertar(Empleado empleado) throws Exception {
         try {
             this.conectar();
-            String myQuery = "INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, mail, telefono) VALUES (?,?,?,?,?,?,?,?)" +
-                    "INSERT INTO empleados (nombre_usuario, clave, esAdmin, idpersona) VALUES (?,?,?,LAST_INSERT_ID())";
+            String myQuery = "INSERT INTO personas (nombre, apellido, provincia,"
+                    + " localidad, calle, dni, mail, telefono) "
+                    + "VALUES (?,?,?,?,?,?,?,?)"
+                    + "INSERT INTO empleados (nombre_usuario, clave, esAdmin, "
+                    + "idpersona) VALUES (?,?,?,LAST_INSERT_ID())";
             PreparedStatement st = this.con.prepareStatement(myQuery);
             st.setString(1, empleado.getNombre());
             st.setString(2, empleado.getApellido());
             st.setString(3, empleado.getProvincia());
             st.setString(4, empleado.getLocalidad());
             st.setString(5, empleado.getCalle());
-            st.setString(6, empleado.getCalle());
             st.setString(6, empleado.getDni());
             st.setString(7, empleado.getMail());
             st.setString(8, empleado.getTelefono());

@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane stylesheets="@../styles/style.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane stylesheets="@../styles/style.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.VentanaEmpleadosController">
    <columnConstraints>
       <ColumnConstraints halignment="CENTER" hgrow="NEVER" />
       <ColumnConstraints hgrow="ALWAYS" />
@@ -115,18 +115,18 @@
                               <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TableView stylesheets="@../styles/style.css" GridPane.hgrow="ALWAYS" GridPane.vgrow="SOMETIMES">
+                              <TableView fx:id="tblEmpleados" stylesheets="@../styles/style.css" GridPane.hgrow="ALWAYS" GridPane.vgrow="SOMETIMES">
                                  <columns>
-                                    <TableColumn editable="false" prefWidth="30.0" text="ID" />
-                                    <TableColumn editable="false" prefWidth="105.0" text="Nombre" />
-                                    <TableColumn editable="false" prefWidth="93.0" text="Apellido" />
-                                    <TableColumn editable="false" prefWidth="72.0" text="Provincia" />
-                                    <TableColumn editable="false" prefWidth="75.0" text="Provincia" />
-                                    <TableColumn editable="false" prefWidth="75.0" text="Localidad" />
-                                    <TableColumn editable="false" prefWidth="83.0" text="DNI" />
-                                    <TableColumn editable="false" prefWidth="103.0" text="Email" />
-                                    <TableColumn editable="false" prefWidth="90.0" text="Telefono" />
-                                    <TableColumn editable="false" prefWidth="90.0" text="Clave" />
+                                    <TableColumn fx:id="colId" editable="false" prefWidth="30.0" text="ID" />
+                                    <TableColumn fx:id="colNom" editable="false" prefWidth="105.0" text="Nombre" />
+                                    <TableColumn fx:id="colApe" editable="false" prefWidth="93.0" text="Apellido" />
+                                    <TableColumn fx:id="colProv" editable="false" prefWidth="72.0" text="Provincia" />
+                                    <TableColumn fx:id="colLoc" editable="false" prefWidth="75.0" text="Localidad" />
+                                    <TableColumn fx:id="colCal" editable="false" prefWidth="75.0" text="Calle" />
+                                    <TableColumn fx:id="colDNI" editable="false" prefWidth="83.0" text="DNI" />
+                                    <TableColumn fx:id="colEmail" editable="false" prefWidth="103.0" text="Email" />
+                                    <TableColumn fx:id="colTel" editable="false" prefWidth="90.0" text="Telefono" />
+                                    <TableColumn fx:id="colCl" editable="false" prefWidth="90.0" text="Clave" />
                                  </columns>
                               </TableView>
                            </children>
@@ -155,7 +155,7 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <TextField GridPane.columnIndex="1" />
+                              <TextField fx:id="campoNombre" GridPane.columnIndex="1" />
                               <Label text="Nombre">
                                  <font>
                                     <Font size="14.0" />
@@ -172,7 +172,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TextField GridPane.columnIndex="1" />
+                              <TextField fx:id="campoApellido" GridPane.columnIndex="1" />
                               <Label text="Apellido">
                                  <font>
                                     <Font size="14.0" />
@@ -189,7 +189,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TextField GridPane.columnIndex="1" />
+                              <TextField fx:id="campoCalle" GridPane.columnIndex="1" />
                               <Label text="Calle">
                                  <font>
                                     <Font size="14.0" />
@@ -206,7 +206,7 @@
                               <RowConstraints vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TextField prefWidth="162.0" GridPane.columnIndex="1" />
+                              <TextField fx:id="campoTelefono" prefWidth="162.0" GridPane.columnIndex="1" />
                               <Label text="Teléfono">
                                  <font>
                                     <Font size="14.0" />
@@ -229,7 +229,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TextField GridPane.columnIndex="1" />
+                              <TextField fx:id="campoProvincia" GridPane.columnIndex="1" />
                               <Label text="Provincia">
                                  <font>
                                     <Font size="14.0" />
@@ -252,7 +252,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TextField GridPane.columnIndex="1" />
+                              <TextField fx:id="campoLocalidad" GridPane.columnIndex="1" />
                               <Label text="Localidad">
                                  <font>
                                     <Font size="14.0" />
@@ -272,7 +272,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TextField GridPane.columnIndex="1" />
+                              <TextField fx:id="campoEmail" GridPane.columnIndex="1" />
                               <Label text="Email">
                                  <font>
                                     <Font size="14.0" />
@@ -289,7 +289,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TextField GridPane.columnIndex="1" />
+                              <TextField fx:id="campoClave" GridPane.columnIndex="1" />
                               <Label text="Clave">
                                  <font>
                                     <Font size="14.0" />
