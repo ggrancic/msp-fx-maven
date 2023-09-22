@@ -68,11 +68,13 @@ public class RubroDAOImpl extends ConexionMySQL implements RubroDAO {
     public void modificar(Rubro rubro) throws Exception {
         try {
             this.conectar();
-            PreparedStatement st = this.con.prepareStatement("UPDATE rubro SET nombre WHERE id = ?");
-            st.setInt(1, rubro.getIdRubro());
+            PreparedStatement st = this.con.prepareStatement("UPDATE rubros SET nombre = ? WHERE id_rubro = ?");
+            st.setString(1, rubro.getNombre());
+            st.setInt(2, rubro.getIdRubro());
             st.executeUpdate();
         } catch (Exception e) {
-            throw e;
+            //throw e;
+            e.printStackTrace();
         } finally {
             this.cerrarConexion();
         }

@@ -5,7 +5,7 @@ public class Empleado extends Persona {
     String nombre_usuario;
     String clave;
     String esAdmin;
-    int idPersona;
+    int idPersonaFK;
 
     public int getId_empleado() {
         return id_empleado;
@@ -39,13 +39,11 @@ public class Empleado extends Persona {
         this.esAdmin = esAdmin;
     }
 
-    @Override
-    public int getIdPersona() {
-        return idPersona;
+    public int getIdPersonaFK() {
+        return idPersonaFK;
     }
 
-    @Override
-    public void setIdPersona(int idPersona) {
-        this.idPersona = idPersona;
+    public void setIdPersonaFK(int idPersonaFK) {
+        this.idPersonaFK = idPersonaFK;
     }
 }

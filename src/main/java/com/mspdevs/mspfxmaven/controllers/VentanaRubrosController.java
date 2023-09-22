@@ -9,26 +9,16 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
-
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.scene.input.KeyEvent;
 
 public class VentanaRubrosController implements Initializable {
 
     Alerta msj = new Alerta();
-
-    @FXML
-    private Button btnAgregar;
-
-    @FXML
-    private Button btnEliminar;
-
-    @FXML
-    private Button btnLimpiar;
-
-    @FXML
-    private Button btnModificar;
+    
+    // Declarar una lista de respaldo para todos los empleados originales
+    private ObservableList<Rubro> todosLosRubros;
 
     @FXML
     private TextField campoBuscar;
@@ -48,7 +38,6 @@ public class VentanaRubrosController implements Initializable {
     @FXML
     void agregarRubro(ActionEvent event) {
         String nombreIngresado = this.campoNombre.getText();
-        Stage myCurrentStage = (Stage) tablaRubros.getScene().getWindow();
         if (nombreIngresado.isEmpty()) {
             msj.mostrarError("Error", "", "Debe ingresar el nombre del rubro");
         } else {
@@ -58,7 +47,7 @@ public class VentanaRubrosController implements Initializable {
             try {
                 dao.insertar(r);
                 completarTabla();
-                campoNombre.clear();
+                vaciarCampos();
                 msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el rubro correctamente.");
             } catch (Exception e) {
                 msj.mostrarError("Error", "", "No se pudo agrega el rubro en la BD");
@@ -82,6 +71,63 @@ public class VentanaRubrosController implements Initializable {
             }
         }
     }
+    
+     @FXML
+    void accionBtnModificar(ActionEvent event) {
+        
+        // Obtiene el rubro seleccionado en la tabla
+        Rubro r = this.tablaRubros.getSelectionModel().getSelectedItem();
+        
+        if (r == null) {
+            // Muestra un mensaje de error si no se selecciona ningún elemento en la tabla
+            msj.mostrarError("Error", "", "Debe seleccionar un rubro de la lista para modificar.");
+            return;
+        }
+        
+        String nombreIngresado = this.campoNombre.getText();
+        
+        if (nombreIngresado.isEmpty()) {
+            msj.mostrarError("Error", "", "Debe ingresar el nombre del rubro.");
+            return;
+        }
+        
+        r.setNombre(nombreIngresado);
+        
+        
+        try {
+            RubroDAOImpl dao = new RubroDAOImpl();
+            dao.modificar(r);
+            completarTabla();
+            vaciarCampos();
+            msj.mostrarAlertaInforme("Operación exitosa", "", "El rubro se ha modificado");
+        } catch (Exception e) {
+            msj.mostrarError("Error", "", "No se pudo modificar el elemento en la BD");
+        }
+    }
+    
+    @FXML
+    void accionBtnLimpiar(ActionEvent event) {
+        vaciarCampos();
+        tablaRubros.getSelectionModel().clearSelection();
+    }
+    
+    @FXML
+    void filtrarRubros(KeyEvent event) {
+        // Obtener el texto ingresado en el campo de búsqueda
+        String filtro = campoBuscar.getText().toLowerCase();
+
+        if (filtro.isEmpty()) {
+            // Si el campo de búsqueda está vacío, mostrar todos los empleados originales
+            tablaRubros.setItems(todosLosRubros);
+        } else {
+            // Filtrar la lista de todos los empleados originales y mostrar los resultados
+            ObservableList<Rubro> rubrosFiltrados = todosLosRubros.filtered(empleado
+                    -> empleado.getNombre().toLowerCase().startsWith(filtro)
+            );
+            tablaRubros.setItems(rubrosFiltrados);
+        }
+
+    }
 
     public void completarTabla() {
 
@@ -97,6 +143,17 @@ public class VentanaRubrosController implements Initializable {
         this.colId.setCellValueFactory(new PropertyValueFactory<>("idRubro"));
         this.colNom.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         this.tablaRubros.setItems(rubros);
+        
+        tablaRubros.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                // Llena los campos de entrada con los datos del proveedor seleccionado
+                campoNombre.setText(newValue.getNombre());
+            }
+        });
+    }
+    
+    public void vaciarCampos() {
+        campoNombre.setText("");
     }
 
 
@@ -111,5 +168,6 @@ public class VentanaRubrosController implements Initializable {
 
         completarTabla();
 
+        todosLosRubros = tablaRubros.getItems();
     }
 }

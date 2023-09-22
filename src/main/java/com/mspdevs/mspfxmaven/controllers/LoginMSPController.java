@@ -103,7 +103,7 @@ public class LoginMSPController implements Initializable {
         Scene scene = new Scene(root);
         Stage newStage = new Stage();
         newStage.setScene(scene);
-        newStage.setFullScreen(true);
+        newStage.setMaximized(true);
         newStage.show();
     }
 
