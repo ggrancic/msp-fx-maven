@@ -132,6 +132,7 @@ public class VentanaEmpleadosController implements Initializable {
                 dao.insertar(em);
                 msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el empleado correctamente.");
                 completarTabla();
+                vaciarCampos();
             } catch (Exception e) {
                 msj.mostrarError("Error", "", "No se pudo agrega el empleado en la BD");
             }
@@ -148,6 +149,7 @@ public class VentanaEmpleadosController implements Initializable {
                 EmpleadoDAOImpl dao = new EmpleadoDAOImpl();
                 dao.eliminar(em);
                 completarTabla();
+                vaciarCampos();
                 msj.mostrarAlertaInforme("Operacion exitosa", "", "El empleado se ha eliminado");
             } catch (Exception e) {
                 msj.mostrarError("Error", "", "No se pudo eliminar el elemento de la BD");
