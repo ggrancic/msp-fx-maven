@@ -89,3 +89,8 @@ target/
 .idea
 
 nbactions.xml
+
+.classpath
+.project
+.settings/
+bin/
