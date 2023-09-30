@@ -51,29 +51,45 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
     public void insertar(Empleado empleado) throws Exception {
         try {
             this.conectar();
-            String queryPersonas = "INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, mail, telefono)"
-                    + " VALUES (?,?,?,?,?,?,?,?)";
-            PreparedStatement stPersonas = this.con.prepareStatement(queryPersonas);
-            stPersonas.setString(1, empleado.getNombre());
-            stPersonas.setString(2, empleado.getApellido());
-            stPersonas.setString(3, empleado.getProvincia());
-            stPersonas.setString(4, empleado.getLocalidad());
-            stPersonas.setString(5, empleado.getCalle());
-            stPersonas.setString(6, empleado.getDni());
-            stPersonas.setString(7, empleado.getMail());
-            stPersonas.setString(8, empleado.getTelefono());
-            stPersonas.executeUpdate();
-            stPersonas.close();
-
-            PreparedStatement stGetId = this.con.prepareStatement("SELECT LAST_INSERT_ID()");
-            ResultSet rs = stGetId.executeQuery();
+            String consultaSiExiste = "SELECT id_persona FROM personas WHERE dni = ?";
+            PreparedStatement miSt = this.con.prepareStatement(consultaSiExiste);
+            miSt.setString(1, empleado.getDni());
+            ResultSet result = miSt.executeQuery();
+            
+            // Inicializo el id de la persona...
             int idPersonaFK = 0;
-            if (rs.next()) {
-                idPersonaFK = rs.getInt(1);
+            
+            if (result.next()) {
+            	idPersonaFK = result.getInt("id_persona");
+            	miSt.close();
+            } else {
+            	
+            	// Este es el caso de que no existe la persona en la db. Por lo tanto, tengo que tomar los datos
+            	// que vienen del formulario y dar de alta a la persona en la db.
+            	
+            	String queryPersonas = "INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, mail, telefono)"
+                        + " VALUES (?,?,?,?,?,?,?,?)";
+                PreparedStatement stPersonas = this.con.prepareStatement(queryPersonas);
+                stPersonas.setString(1, empleado.getNombre());
+                stPersonas.setString(2, empleado.getApellido());
+                stPersonas.setString(3, empleado.getProvincia());
+                stPersonas.setString(4, empleado.getLocalidad());
+                stPersonas.setString(5, empleado.getCalle());
+                stPersonas.setString(6, empleado.getDni());
+                stPersonas.setString(7, empleado.getMail());
+                stPersonas.setString(8, empleado.getTelefono());
+                stPersonas.executeUpdate();
+                stPersonas.close();
+                
+                PreparedStatement stGetId = this.con.prepareStatement("SELECT LAST_INSERT_ID()");
+                ResultSet rs = stGetId.executeQuery();
+                if (rs.next()) {
+                    idPersonaFK = rs.getInt(1);
+                }
+                rs.close();
+                stGetId.close();
             }
-            rs.close();
-            stGetId.close();
-
+            
             String queryEmpleados = "INSERT INTO empleados (nombre_usuario, clave, esAdmin, idpersona) VALUES (?,?,?,?)";
             PreparedStatement stEmpleados = this.con.prepareStatement(queryEmpleados);
             stEmpleados.setString(1, empleado.getNombre_usuario());
@@ -83,7 +99,8 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
             stEmpleados.executeUpdate();
             stEmpleados.close();
         } catch (Exception e) {
-            throw e;
+            //throw e;
+            e.printStackTrace();
         } finally {
             this.cerrarConexion();
         }
