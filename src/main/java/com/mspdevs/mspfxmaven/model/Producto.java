@@ -9,6 +9,18 @@ public class Producto {
     private int cantidadMinima;
 
 
+    //Agregado recien
+    public Producto(Producto producto, Rubro rubro, Proveedor proveedor) {
+    }
+
+    //Agregado recien
+    public Producto() {
+
+    }
+
+
+
+
     public int getIdProducto() {
         return idProducto;
     }
@@ -47,6 +59,14 @@ public class Producto {
 
     public void setPrecioVenta(double precioVenta) {
         this.precioVenta = precioVenta;
+    }
+
+    public double getPrecioLista() {
+        return precioLista;
+    }
+
+    public void setPrecioLista(double precioLista) {
+        this.precioLista = precioLista;
     }
 
 }

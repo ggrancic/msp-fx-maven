@@ -28,7 +28,6 @@ import javafx.stage.Stage;
  *
  */
 public class LoginMSPController implements Initializable {
-
     // Acá van los atributos de la ventana (botones, campos, etc).
     // Esto lo genera SceneBuilder o bien se puede
     // generar programáticamente.
@@ -106,7 +105,5 @@ public class LoginMSPController implements Initializable {
         newStage.setMaximized(true);
         newStage.show();
     }
-    
-    
-    
+
 }

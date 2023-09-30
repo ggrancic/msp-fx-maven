@@ -39,13 +39,25 @@ public class RubroDAOImpl extends ConexionMySQL implements RubroDAO {
     public void insertar(Rubro rubro) throws Exception {
         try {
             this.conectar();
-            PreparedStatement st = this.con.prepareStatement("INSERT INTO rubros (nombre) VALUES (?)");
-            st.setString(1, rubro.getNombre());
-            st.executeUpdate();
+            String consultaSiExiste = "SELECT nombre FROM rubros WHERE nombre = ?";
+            PreparedStatement miSt = this.con.prepareStatement(consultaSiExiste);
+            miSt.setString(1, rubro.getNombre());
+            ResultSet result = miSt.executeQuery();
+
+            // Inicializo el id...
+            int idRubroFK = 0;
+
+            if (result.next()) {
+                idRubroFK = result.getInt("id_rubro");
+                miSt.close();
+            } else {
+                PreparedStatement st = this.con.prepareStatement("INSERT INTO rubros (nombre) VALUES (?)");
+                st.setString(1, rubro.getNombre());
+                st.executeUpdate();
+            }
         } catch (Exception e) {
             throw e;
-        }
-        finally {
+        } finally {
             this.cerrarConexion();
         }
     }
@@ -69,11 +81,12 @@ public class RubroDAOImpl extends ConexionMySQL implements RubroDAO {
         try {
             this.conectar();
             PreparedStatement st = this.con.prepareStatement("UPDATE rubros SET nombre = ? WHERE id_rubro = ?");
-            st.setString(1, rubro.getNombre()); // Establece el nuevo nombre
-            st.setInt(2, rubro.getIdRubro()); // Utiliza el ID para identificar el registro a modificar
+            st.setString(1, rubro.getNombre());
+            st.setInt(2, rubro.getIdRubro());
             st.executeUpdate();
         } catch (Exception e) {
-            throw e;
+            //throw e;
+            e.printStackTrace();
         } finally {
             this.cerrarConexion();
         }

@@ -69,44 +69,56 @@ public class ProveedorDAOImpl extends ConexionMySQL implements ProveedorDAO {
     public void insertar(Proveedor proveedor) throws Exception {
         try {
             this.conectar();
+            String consultaSiExiste = "SELECT id_persona FROM personas WHERE dni = ?";
+            PreparedStatement miSt = this.con.prepareStatement(consultaSiExiste);
+            miSt.setString(1, proveedor.getDni());
+            ResultSet result = miSt.executeQuery();
 
-            // Primero, insertamos los datos en la tabla "Personas"
-            PreparedStatement stPersonas = this.con.prepareStatement("INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, mail, telefono) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            stPersonas.setString(1, proveedor.getNombre());
-            stPersonas.setString(2, proveedor.getApellido());
-            stPersonas.setString(3, proveedor.getProvincia());
-            stPersonas.setString(4, proveedor.getLocalidad());
-            stPersonas.setString(5, proveedor.getCalle());
-            stPersonas.setString(6, proveedor.getDni());
-            stPersonas.setString(7, proveedor.getMail());
-            stPersonas.setString(8, proveedor.getTelefono());
-            stPersonas.executeUpdate();
-            stPersonas.close();
+            // Inicializo el id de la persona...
+            int idPersonaFK = 0;
 
-            // Luego, obtenemos el ID generado para la tabla "Personas"
-            PreparedStatement stGetId = this.con.prepareStatement("SELECT LAST_INSERT_ID()");
-            ResultSet rs = stGetId.executeQuery();
-            int idPersona = 0;
-            if (rs.next()) {
-                idPersona = rs.getInt(1);
+            if (result.next()) {
+                idPersonaFK = result.getInt("id_persona");
+                miSt.close();
+            } else {
+                // Este es el caso de que no existe la persona en la db. Por lo tanto, tengo que tomar los datos
+                // que vienen del formulario y dar de alta a la persona en la db.
+                // Primero, insertamos los datos en la tabla "Personas"
+                String queryPersonas = "INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, mail, telefono) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                PreparedStatement stPersonas = this.con.prepareStatement(queryPersonas);
+                stPersonas.setString(1, proveedor.getNombre());
+                stPersonas.setString(2, proveedor.getApellido());
+                stPersonas.setString(3, proveedor.getProvincia());
+                stPersonas.setString(4, proveedor.getLocalidad());
+                stPersonas.setString(5, proveedor.getCalle());
+                stPersonas.setString(6, proveedor.getDni());
+                stPersonas.setString(7, proveedor.getMail());
+                stPersonas.setString(8, proveedor.getTelefono());
+                stPersonas.executeUpdate();
+                stPersonas.close();
+
+                PreparedStatement stGetId = this.con.prepareStatement("SELECT LAST_INSERT_ID()");
+                ResultSet rs = stGetId.executeQuery();
+                if (rs.next()) {
+                    idPersonaFK = rs.getInt(1);
+                }
+                rs.close();
+                stGetId.close();
             }
-            rs.close();
-            stGetId.close();
 
             // Por ultimo, insertamos los datos en la tabla "Proveedores" usando el ID de la persona (clave foranea)
-            PreparedStatement stProveedores = this.con.prepareStatement("INSERT INTO proveedores (id_persona, id_proveedor, cuit) VALUES (?, ?, ?)");
-            stProveedores.setInt(1, idPersona);
+            String queryProveedores = "INSERT INTO proveedores (id_persona, id_proveedor, cuit) VALUES (?, ?, ?)";
+            PreparedStatement stProveedores = this.con.prepareStatement(queryProveedores);
+            stProveedores.setInt(1, idPersonaFK);
             stProveedores.setInt(2, proveedor.getIdProveedor());
             stProveedores.setString(3, proveedor.getCuit());
             stProveedores.executeUpdate();
             stProveedores.close();
-
         } catch (Exception e) {
             throw e;
         } finally {
             this.cerrarConexion();
         }
-
     }
 
     @Override

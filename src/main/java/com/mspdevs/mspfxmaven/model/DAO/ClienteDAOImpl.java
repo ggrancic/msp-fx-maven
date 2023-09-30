@@ -18,7 +18,7 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
         try {
             this.conectar();
             // Se crea una consulta SQL que combina las tablas "clientes" y "personas" mediante un INNER JOIN
-            PreparedStatement st = this.con.prepareStatement("SELECT cl.id_cliente, p.* FROM clientes cl JOIN personas p ON cl.idpersona = p.id_persona");
+            PreparedStatement st = this.con.prepareStatement("SELECT cl.*, p.* FROM clientes cl JOIN personas p ON cl.idpersona = p.id_persona");
             // Se inicializa la lista donde se almacenarán los resultados
             lista = FXCollections.observableArrayList();
             ResultSet rs = st.executeQuery(); // Ejecuta la consulta SQL
@@ -26,14 +26,14 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
                 // se crea una instancia de cliente para cada fila de resultados
                 Cliente cliente = new Cliente();
                 cliente.setIdCliente(rs.getInt("id_cliente"));
-                //proveedor.setCuit(rs.getString("cuit"));
+                cliente.setCuil(rs.getString("cuil"));
                 cliente.setIdPersona(rs.getInt("id_persona"));
                 cliente.setNombre(rs.getString("nombre"));
                 cliente.setApellido(rs.getString("apellido"));
                 cliente.setProvincia(rs.getString("provincia"));
                 cliente.setLocalidad(rs.getString("localidad"));
                 cliente.setCalle(rs.getString("calle"));
-                //proveedor.setDni(rs.getString("dni"));
+                cliente.setDni(rs.getString("dni"));
                 cliente.setMail(rs.getString("mail"));
                 cliente.setTelefono(rs.getString("telefono"));
 
@@ -68,44 +68,55 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
     public void insertar(Cliente cliente) throws Exception {
         try {
             this.conectar();
+            String consultaSiExiste = "SELECT id_persona FROM personas WHERE dni = ?";
+            PreparedStatement miSt = this.con.prepareStatement(consultaSiExiste);
+            miSt.setString(1, cliente.getDni());
+            ResultSet result = miSt.executeQuery();
 
-            // Primero, insertamos los datos en la tabla "Personas"
-            PreparedStatement stPersonas = this.con.prepareStatement("INSERT INTO personas (nombre, apellido, provincia, localidad, calle, mail, telefono) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            stPersonas.setString(1, cliente.getNombre());
-            stPersonas.setString(2, cliente.getApellido());
-            stPersonas.setString(3, cliente.getProvincia());
-            stPersonas.setString(4, cliente.getLocalidad());
-            stPersonas.setString(5, cliente.getCalle());
-            //stPersonas.setString(6, proveedor.getDni());
-            stPersonas.setString(6, cliente.getMail());
-            stPersonas.setString(7, cliente.getTelefono());
-            stPersonas.executeUpdate();
-            stPersonas.close();
+            // Inicializo el id de la persona...
+            int idPersonaFK = 0;
 
-            // Luego, obtenemos el ID generado para la tabla "Personas"
-            PreparedStatement stGetId = this.con.prepareStatement("SELECT LAST_INSERT_ID()");
-            ResultSet rs = stGetId.executeQuery();
-            int idPersona = 0;
-            if (rs.next()) {
-                idPersona = rs.getInt(1);
+            if (result.next()) {
+                idPersonaFK = result.getInt("id_persona");
+                miSt.close();
+            } else {
+                // Este es el caso de que no existe la persona en la db. Por lo tanto, tengo que tomar los datos
+                // que vienen del formulario y dar de alta a la persona en la db.
+                // Primero, insertamos los datos en la tabla "Personas"
+                String queryPersonas = "INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, mail, telefono) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                PreparedStatement stPersonas = this.con.prepareStatement(queryPersonas);
+                stPersonas.setString(1, cliente.getNombre());
+                stPersonas.setString(2, cliente.getApellido());
+                stPersonas.setString(3, cliente.getProvincia());
+                stPersonas.setString(4, cliente.getLocalidad());
+                stPersonas.setString(5, cliente.getCalle());
+                stPersonas.setString(6, cliente.getDni());
+                stPersonas.setString(7, cliente.getMail());
+                stPersonas.setString(8, cliente.getTelefono());
+                stPersonas.executeUpdate();
+                stPersonas.close();
+
+                PreparedStatement stGetId = this.con.prepareStatement("SELECT LAST_INSERT_ID()");
+                ResultSet rs = stGetId.executeQuery();
+                if (rs.next()) {
+                    idPersonaFK = rs.getInt(1);
+                }
+                rs.close();
+                stGetId.close();
             }
-            rs.close();
-            stGetId.close();
-
             // Por ultimo, insertamos los datos en la tabla "Clientes" usando el ID de la persona (clave foranea)
-            PreparedStatement stClientes = this.con.prepareStatement("INSERT INTO clientes (idpersona, id_cliente) VALUES (?, ?)");
-            stClientes.setInt(1, idPersona);
+            String queryClientes = "INSERT INTO clientes (idpersona, id_cliente, cuil) VALUES (?, ?, ?)";
+            PreparedStatement stClientes = this.con.prepareStatement(queryClientes);
+            stClientes.setInt(1, idPersonaFK);
             stClientes.setInt(2, cliente.getIdCliente());
-            //stProveedores.setString(3, proveedor.getCuit());
+            stClientes.setString(3, cliente.getCuil());
             stClientes.executeUpdate();
             stClientes.close();
-
         } catch (Exception e) {
             throw e;
         } finally {
             this.cerrarConexion();
         }
-
     }
 
     @Override
@@ -172,7 +183,7 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
             // Modificamos primero el registro correspondiente en la tabla "personas"
             PreparedStatement stModificarPersona = con.prepareStatement(
                     "UPDATE personas " +
-                            "SET nombre = ?, apellido = ?, provincia = ?, localidad = ?, calle = ?, mail = ?, telefono = ? " +
+                            "SET nombre = ?, apellido = ?, provincia = ?, localidad = ?, calle = ?, dni = ?, mail = ?, telefono = ? " +
                             "WHERE id_persona = ?"
             );
             stModificarPersona.setString(1, cliente.getNombre());
@@ -180,12 +191,23 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
             stModificarPersona.setString(3, cliente.getProvincia());
             stModificarPersona.setString(4, cliente.getLocalidad());
             stModificarPersona.setString(5, cliente.getCalle());
-            //stModificarPersona.setString(6, cliente.getDni());
-            stModificarPersona.setString(6, cliente.getMail());
-            stModificarPersona.setString(7, cliente.getTelefono());
-            stModificarPersona.setInt(8, idPersona);
+            stModificarPersona.setString(6, cliente.getDni());
+            stModificarPersona.setString(7, cliente.getMail());
+            stModificarPersona.setString(8, cliente.getTelefono());
+            stModificarPersona.setInt(9, idPersona);
             stModificarPersona.executeUpdate();
             stModificarPersona.close();
+
+            // Luego, modificamos el registro correspondiente en la tabla "proveedores"
+            PreparedStatement stModificarCliente = con.prepareStatement(
+                    "UPDATE clientes " +
+                            "SET cuil = ? " +
+                            "WHERE id_persona = ?"
+            );
+            stModificarCliente.setString(1, cliente.getCuil());
+            stModificarCliente.setInt(2, idPersona);
+            stModificarCliente.executeUpdate();
+            stModificarCliente.close();
 
             // Confirmamos la transacción (hacemos los cambios permanentes)
             con.commit();

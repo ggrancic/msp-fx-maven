@@ -26,6 +26,8 @@ import java.util.ResourceBundle;
 public class VentanaClientesController implements Initializable {
     Alerta msj = new Alerta();
 
+    private ObservableList<Cliente> todosLosClientes;
+
     @FXML
     private Button btnAgregar;
 
@@ -51,6 +53,9 @@ public class VentanaClientesController implements Initializable {
     private TextField campoEmail;
 
     @FXML
+    private TextField campoCuil;
+
+    @FXML
     private TextField campoLocalidad;
 
     @FXML
@@ -67,6 +72,9 @@ public class VentanaClientesController implements Initializable {
 
     @FXML
     private TableColumn<Persona, String> colCalle;
+
+    @FXML
+    private TableColumn<Cliente, String> colCuil;
 
     @FXML
     private TableColumn<Persona, String> colEmail;
@@ -97,10 +105,9 @@ public class VentanaClientesController implements Initializable {
         String provinciaIngresada = this.campoProvincia.getText();
         String localidadIngresada = this.campoLocalidad.getText();
         String calleIngresada = this.campoCalle.getText();
-        //String cuitIngresado = this.campoCuit.getText();
-        //String dniIngresado = cuitIngresado.substring(2, 10);
         String emailIngresado = this.campoEmail.getText();
         String telefonoIngresado = this.campoTelefono.getText();
+        String cuilIngresado = this.campoCuil.getText();
 
 
         // Verificar si algún campo de texto está vacío
@@ -109,7 +116,7 @@ public class VentanaClientesController implements Initializable {
             msj.mostrarError("Error", "", "Falta ingresar datos.");
         } else {
             // Realiza la operación de agregar un proveedor si todos los campos están completos
-            //String dniIngresado = cuitIngresado.substring(2, 10);
+            String dniIngresado = cuilIngresado.substring(2, 10);
             Cliente c = new Cliente();
             ClienteDAOImpl dao = new ClienteDAOImpl();
             c.setNombre(nombreIngresado);
@@ -117,10 +124,10 @@ public class VentanaClientesController implements Initializable {
             c.setProvincia(provinciaIngresada);
             c.setLocalidad(localidadIngresada);
             c.setCalle(calleIngresada);
-            //p.setCuit(cuitIngresado);
-            //p.setDni(dniIngresado);
             c.setMail(emailIngresado);
             c.setTelefono(telefonoIngresado);
+            c.setCuil(cuilIngresado);
+            c.setDni(dniIngresado);
             try {
                 dao.insertar(c);
                 completarTabla();
@@ -178,8 +185,6 @@ public class VentanaClientesController implements Initializable {
         String provinciaIngresada = this.campoProvincia.getText();
         String localidadIngresada = this.campoLocalidad.getText();
         String calleIngresada = this.campoCalle.getText();
-        //String cuitIngresado = this.campoCuit.getText();
-        //String dniIngresado = cuitIngresado.substring(2, 10);
         String emailIngresado = this.campoEmail.getText();
         String telefonoIngresado = this.campoTelefono.getText();
 
@@ -193,8 +198,6 @@ public class VentanaClientesController implements Initializable {
         c.setProvincia(provinciaIngresada);
         c.setLocalidad(localidadIngresada);
         c.setCalle(calleIngresada);
-        //p.setCuit(cuitIngresado);
-        //p.setDni(dniIngresado);
         c.setMail(emailIngresado);
         c.setTelefono(telefonoIngresado);
         try {
@@ -213,17 +216,15 @@ public class VentanaClientesController implements Initializable {
         // Obtener el texto ingresado en el campo de búsqueda
         String filtro = campoBuscar.getText().toLowerCase();
 
-        // Verificar si el campo de búsqueda está vacío
         if (filtro.isEmpty()) {
-            // Si está vacío, mostrar todos los registros en la tabla
-            completarTabla();
+            // Si el campo de búsqueda está vacío, mostrar todos los empleados originales
+            tablaClientes.setItems(todosLosClientes);
         } else {
-            // Crear una lista filtrada por registros que comiencen con la letra ingresada
-            ObservableList<Cliente> clientesFiltrados = tablaClientes.getItems().filtered(cliente ->
-                    cliente.getNombre().toLowerCase().startsWith(filtro)
+            // Filtrar la lista de todos los empleados originales y mostrar los resultados
+            ObservableList<Cliente> rubrosFiltrados = todosLosClientes.filtered(cliente
+                    -> cliente.getNombre().toLowerCase().startsWith(filtro)
             );
-            // Establecer la lista filtrada como la fuente de datos de la tabla
-            tablaClientes.setItems(clientesFiltrados);
+            tablaClientes.setItems(rubrosFiltrados);
         }
     }
 
@@ -251,6 +252,7 @@ public class VentanaClientesController implements Initializable {
         this.colCalle.setCellValueFactory(new PropertyValueFactory<>("calle"));
         this.colEmail.setCellValueFactory(new PropertyValueFactory<>("mail"));
         this.colTele.setCellValueFactory(new PropertyValueFactory<>("telefono"));
+        this.colCuil.setCellValueFactory(new PropertyValueFactory<>("cuil"));
         // Establece los datos de la tabla con la lista de proveedores
         this.tablaClientes.setItems(clientes);
 
@@ -287,6 +289,8 @@ public class VentanaClientesController implements Initializable {
 
         // Llamado a completarTabla al inicializar el controlador
         completarTabla();
+
+        todosLosClientes = tablaClientes.getItems();
     }
 
     public void vaciarCampos() {
@@ -299,6 +303,7 @@ public class VentanaClientesController implements Initializable {
         campoEmail.setText("");
         campoTelefono.setText("");
         campoBuscar.setText("");
+        campoCuil.setText("");
         campoNombre.requestFocus();
     }
 }

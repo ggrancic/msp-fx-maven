@@ -23,6 +23,9 @@ import java.util.ResourceBundle;
 
 public class VentanaProveedoresController implements Initializable  {
     Alerta msj = new Alerta();
+
+    private ObservableList<Proveedor> todosLosProveedores;
+
     @FXML
     private Button btnAgregar;
 
@@ -217,17 +220,15 @@ public class VentanaProveedoresController implements Initializable  {
         // Obtener el texto ingresado en el campo de búsqueda
         String filtro = buscarCampo.getText().toLowerCase();
 
-        // Verificar si el campo de búsqueda está vacío
         if (filtro.isEmpty()) {
-            // Si está vacío, mostrar todos los registros en la tabla
-            completarTabla();
+            // Si el campo de búsqueda está vacío, mostrar todos los empleados originales
+            tablaProveedores.setItems(todosLosProveedores);
         } else {
-            // Crear una lista filtrada por registros que comiencen con la letra ingresada
-            ObservableList<Proveedor> proveedoresFiltrados = tablaProveedores.getItems().filtered(proveedor ->
-                    proveedor.getNombre().toLowerCase().startsWith(filtro)
+            // Filtrar la lista de todos los empleados originales y mostrar los resultados
+            ObservableList<Proveedor> rubrosFiltrados = todosLosProveedores.filtered(proveedor
+                    -> proveedor.getNombre().toLowerCase().startsWith(filtro)
             );
-            // Establecer la lista filtrada como la fuente de datos de la tabla
-            tablaProveedores.setItems(proveedoresFiltrados);
+            tablaProveedores.setItems(rubrosFiltrados);
         }
     }
 
@@ -288,6 +289,8 @@ public class VentanaProveedoresController implements Initializable  {
 
         // Llamado a completarTabla al inicializar el controlador
         completarTabla();
+
+        todosLosProveedores = tablaProveedores.getItems();
     }
 
     public void vaciarCampos() {
