@@ -99,8 +99,7 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
             stEmpleados.executeUpdate();
             stEmpleados.close();
         } catch (Exception e) {
-            //throw e;
-            e.printStackTrace();
+            throw e;
         } finally {
             this.cerrarConexion();
         }
