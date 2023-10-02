@@ -91,4 +91,29 @@ public class RubroDAOImpl extends ConexionMySQL implements RubroDAO {
             this.cerrarConexion();
         }
     }
+
+
+
+    // Método para obtener un rubro por nombre
+    public Rubro obtenerPorNombre(String nombre) throws Exception {
+        Rubro rubro = null;
+        try {
+            this.conectar();
+            PreparedStatement st = this.con.prepareStatement("SELECT * FROM rubros WHERE nombre = ?");
+            st.setString(1, nombre);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                rubro = new Rubro();
+                rubro.setIdRubro(rs.getInt("id_rubro"));
+                rubro.setNombre(rs.getString("nombre"));
+            }
+            rs.close();
+            st.close();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.cerrarConexion();
+        }
+        return rubro;
+    }
 }

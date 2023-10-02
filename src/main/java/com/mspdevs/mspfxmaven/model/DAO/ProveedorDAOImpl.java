@@ -1,16 +1,12 @@
 package com.mspdevs.mspfxmaven.model.DAO;
 
 import com.mspdevs.mspfxmaven.model.ConexionMySQL;
-import com.mspdevs.mspfxmaven.model.Persona;
 import com.mspdevs.mspfxmaven.model.Proveedor;
-import com.mspdevs.mspfxmaven.model.Rubro;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ProveedorDAOImpl extends ConexionMySQL implements ProveedorDAO {
     @Override
@@ -221,5 +217,33 @@ public class ProveedorDAOImpl extends ConexionMySQL implements ProveedorDAO {
             con.setAutoCommit(true);
             this.cerrarConexion();
         }
+    }
+
+
+
+
+    // Método para obtener un proveedor por nombre
+    public int obtenerPorNombre(String nombre) throws Exception {
+        int idProveedor = -1; // Valor predeterminado si no se encuentra el proveedor
+        try {
+            this.conectar();
+            //PreparedStatement st = this.con.prepareStatement("SELECT * FROM proveedores WHERE nombre = ?");
+            PreparedStatement st = this.con.prepareStatement(
+                    "SELECT p.id_proveedor FROM proveedores p " +
+                            "INNER JOIN personas per ON p.id_persona = per.id_persona " +
+                            "WHERE per.nombre = ?");
+            st.setString(1, nombre);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                idProveedor = rs.getInt("id_proveedor");
+            }
+            rs.close();
+            st.close();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.cerrarConexion();
+        }
+        return idProveedor;
     }
 }

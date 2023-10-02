@@ -271,7 +271,7 @@
                                     <Insets right="5.0" />
                                  </GridPane.margin>
                               </Label>
-                              <ComboBox fx:id="proveedorBox" prefWidth="150.0" GridPane.columnIndex="1" />
+                              <ComboBox fx:id="proveedorBox" prefWidth="150.0" promptText="Seleccionar" GridPane.columnIndex="1" />
                            </children>
                         </GridPane>
                         <GridPane layoutX="407.0" layoutY="86.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
