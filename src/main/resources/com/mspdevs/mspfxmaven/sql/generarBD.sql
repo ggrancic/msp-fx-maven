@@ -195,6 +195,7 @@ COLLATE = utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `mercadito`.`clientes` (
   `id_cliente` INT NOT NULL AUTO_INCREMENT,
   `idpersona` INT NOT NULL,
+  `cuil` VARCHAR(11) NOT NULL,
   PRIMARY KEY (`id_cliente`),
   INDEX `fk_clientes_personas1_idx` (`idpersona` ASC) ,
   CONSTRAINT `fk_clientes_personas1`
