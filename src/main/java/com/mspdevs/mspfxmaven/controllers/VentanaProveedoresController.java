@@ -111,7 +111,6 @@ public class VentanaProveedoresController implements Initializable  {
         String emailIngresado = this.campoEmail.getText();
         String telefonoIngresado = this.campoTelefono.getText();
 
-
         // Verificar si algún campo de texto está vacío
         if (nombreIngresado.isEmpty() || apellidoIngresado.isEmpty() || provinciaIngresada.isEmpty() || localidadIngresada.isEmpty() || calleIngresada.isEmpty() || emailIngresado.isEmpty() || telefonoIngresado.isEmpty()) {
             // Muestra un mensaje de error si falta ingresar datos en algún campo
@@ -232,7 +231,13 @@ public class VentanaProveedoresController implements Initializable  {
         }
     }
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Llamado a completarTabla al inicializar el controlador
+        completarTabla();
 
+        todosLosProveedores = tablaProveedores.getItems();
+    }
     public void completarTabla() {
         // Crear una instancia del DAO de Proveedor
         ProveedorDAOImpl proveedor = new ProveedorDAOImpl();
@@ -273,24 +278,8 @@ public class VentanaProveedoresController implements Initializable  {
                 campoCuit.setText(newValue.getCuit());
                 campoEmail.setText(newValue.getMail());
                 campoTelefono.setText(newValue.getTelefono());
-
             }
         });
-    }
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-
-        /*double colIdCustomWidth = tablaProveedores.getWidth() * 0.01;
-        colId.setMinWidth(colIdCustomWidth);
-
-        double colNomCustomWidth = tablaProveedores.getWidth() * 0.7;
-        colNom.setMinWidth(colNomCustomWidth);*/
-
-        // Llamado a completarTabla al inicializar el controlador
-        completarTabla();
-
-        todosLosProveedores = tablaProveedores.getItems();
     }
 
     public void vaciarCampos() {
@@ -306,5 +295,4 @@ public class VentanaProveedoresController implements Initializable  {
         buscarCampo.setText("");
         campoNombre.requestFocus();
     }
-
 }

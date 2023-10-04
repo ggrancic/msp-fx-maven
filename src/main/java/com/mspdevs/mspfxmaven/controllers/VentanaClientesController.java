@@ -109,7 +109,6 @@ public class VentanaClientesController implements Initializable {
         String telefonoIngresado = this.campoTelefono.getText();
         String cuilIngresado = this.campoCuil.getText();
 
-
         // Verificar si algún campo de texto está vacío
         if (nombreIngresado.isEmpty() || apellidoIngresado.isEmpty() || provinciaIngresada.isEmpty() || localidadIngresada.isEmpty() || calleIngresada.isEmpty() || emailIngresado.isEmpty() || telefonoIngresado.isEmpty()) {
             // Muestra un mensaje de error si falta ingresar datos en algún campo
@@ -138,7 +137,6 @@ public class VentanaClientesController implements Initializable {
                 msj.mostrarError("Error", "", "Ocurrió un error al agregar el cliente.");
             }
         }
-
     }
 
     @FXML
@@ -159,7 +157,6 @@ public class VentanaClientesController implements Initializable {
                 msj.mostrarError("Error", "", "No se pudo eliminar el elemento de la BD");
             }
         }
-
     }
 
     @FXML
@@ -185,6 +182,8 @@ public class VentanaClientesController implements Initializable {
         String provinciaIngresada = this.campoProvincia.getText();
         String localidadIngresada = this.campoLocalidad.getText();
         String calleIngresada = this.campoCalle.getText();
+        String cuilIngresado = this.campoCuil.getText();
+        String dniIngresado = cuilIngresado.substring(2, 10);
         String emailIngresado = this.campoEmail.getText();
         String telefonoIngresado = this.campoTelefono.getText();
 
@@ -198,6 +197,8 @@ public class VentanaClientesController implements Initializable {
         c.setProvincia(provinciaIngresada);
         c.setLocalidad(localidadIngresada);
         c.setCalle(calleIngresada);
+        c.setCuil(cuilIngresado);
+        c.setDni(dniIngresado);
         c.setMail(emailIngresado);
         c.setTelefono(telefonoIngresado);
         try {
@@ -211,25 +212,19 @@ public class VentanaClientesController implements Initializable {
         }
     }
 
-    @FXML
-    void filtrarClientes(KeyEvent event) {
-        // Obtener el texto ingresado en el campo de búsqueda
-        String filtro = campoBuscar.getText().toLowerCase();
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Llamado a completarTabla al inicializar el controlador
+        completarTabla();
 
-        if (filtro.isEmpty()) {
-            // Si el campo de búsqueda está vacío, mostrar todos los empleados originales
-            tablaClientes.setItems(todosLosClientes);
-        } else {
-            // Filtrar la lista de todos los empleados originales y mostrar los resultados
-            ObservableList<Cliente> rubrosFiltrados = todosLosClientes.filtered(cliente
-                    -> cliente.getNombre().toLowerCase().startsWith(filtro)
-            );
-            tablaClientes.setItems(rubrosFiltrados);
-        }
+        todosLosClientes = tablaClientes.getItems();
+
+        campoNombre.requestFocus();
     }
 
-
     public void completarTabla() {
+        campoNombre.requestFocus();
+
         // Crear una instancia del DAO de Proveedor
         ClienteDAOImpl cliente = new ClienteDAOImpl();
         ObservableList<Cliente> clientes = null;
@@ -265,32 +260,11 @@ public class VentanaClientesController implements Initializable {
                 campoProvincia.setText(newValue.getProvincia());
                 campoLocalidad.setText(newValue.getLocalidad());
                 campoCalle.setText(newValue.getCalle());
-                //campoCuit.setText(newValue.getCuit());
+                campoCuil.setText(newValue.getCuil());
                 campoEmail.setText(newValue.getMail());
                 campoTelefono.setText(newValue.getTelefono());
-
             }
         });
-    }
-
-
-
-
-
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-
-        /*double colIdCustomWidth = tablaProveedores.getWidth() * 0.01;
-        colId.setMinWidth(colIdCustomWidth);
-
-        double colNomCustomWidth = tablaProveedores.getWidth() * 0.7;
-        colNom.setMinWidth(colNomCustomWidth);*/
-
-        // Llamado a completarTabla al inicializar el controlador
-        completarTabla();
-
-        todosLosClientes = tablaClientes.getItems();
     }
 
     public void vaciarCampos() {
@@ -305,5 +279,22 @@ public class VentanaClientesController implements Initializable {
         campoBuscar.setText("");
         campoCuil.setText("");
         campoNombre.requestFocus();
+    }
+
+    @FXML
+    void filtrarClientes(KeyEvent event) {
+        // Obtener el texto ingresado en el campo de búsqueda
+        String filtro = campoBuscar.getText().toLowerCase();
+
+        if (filtro.isEmpty()) {
+            // Si el campo de búsqueda está vacío, mostrar todos los empleados originales
+            tablaClientes.setItems(todosLosClientes);
+        } else {
+            // Filtrar la lista de todos los empleados originales y mostrar los resultados
+            ObservableList<Cliente> rubrosFiltrados = todosLosClientes.filtered(cliente
+                    -> cliente.getNombre().toLowerCase().startsWith(filtro)
+            );
+            tablaClientes.setItems(rubrosFiltrados);
+        }
     }
 }

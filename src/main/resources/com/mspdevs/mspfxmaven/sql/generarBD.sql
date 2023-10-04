@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `mercadito`.`productos` (
   `id_producto` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(45) NULL,
   `precio_venta` DECIMAL(10,2) NULL,
-  `precio_lista` DECIMAL(10,2) NULL,
+  `codigo_barra` VARCHAR(12) NULL,
   `cantidad_disponible` INT NULL,
   `cantidad_minima` INT NULL,
   `id_rubro` INT NOT NULL,

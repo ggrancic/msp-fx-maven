@@ -199,7 +199,6 @@ public class VentanaEmpleadosController implements Initializable {
                 }
             }
         }
-
     }
 
     @FXML
@@ -215,7 +214,6 @@ public class VentanaEmpleadosController implements Initializable {
             vc.showAndWait();
             em.setClave(vc.getNuevaPw());
         }
-
     }
 
     @FXML
@@ -241,18 +239,12 @@ public class VentanaEmpleadosController implements Initializable {
         }
     }
 
-
-    void vaciarCampos() {
-        campoNombre.clear();
-        campoApellido.clear();
-        campoCalle.clear();
-        campoLocalidad.clear();
-        campoProvincia.clear();
-        campoTelefono.clear();
-        campoEmail.clear();
-        campoDNI.clear();
-        comboAdmin.setValue(null);
-        comboAdmin.setPromptText("Seleccionar");
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        completarTabla();
+        ObservableList<String> itemsComboAdmin = FXCollections.observableArrayList("Si","No");
+        this.comboAdmin.setItems(itemsComboAdmin);
+        todosLosEmpleados = tblEmpleados.getItems();
     }
 
     public void completarTabla() {
@@ -294,6 +286,18 @@ public class VentanaEmpleadosController implements Initializable {
         });
     }
 
+    void vaciarCampos() {
+        campoNombre.clear();
+        campoApellido.clear();
+        campoCalle.clear();
+        campoLocalidad.clear();
+        campoProvincia.clear();
+        campoTelefono.clear();
+        campoEmail.clear();
+        campoDNI.clear();
+        comboAdmin.setValue(null);
+        comboAdmin.setPromptText("Seleccionar");
+    }
 
     public String convertirValorCombo (String valor) {
         String nuevoValor = "";
@@ -314,14 +318,6 @@ public class VentanaEmpleadosController implements Initializable {
         }
 
         return nuevoValor;
-    }
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        completarTabla();
-        ObservableList<String> itemsComboAdmin = FXCollections.observableArrayList("Si","No");
-        this.comboAdmin.setItems(itemsComboAdmin);
-        todosLosEmpleados = tblEmpleados.getItems();
     }
 }
 

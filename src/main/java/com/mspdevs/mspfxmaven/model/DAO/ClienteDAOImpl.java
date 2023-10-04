@@ -167,7 +167,6 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
             con.setAutoCommit(true);
             this.cerrarConexion();
         }
-
     }
 
     @Override
@@ -198,11 +197,11 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
             stModificarPersona.executeUpdate();
             stModificarPersona.close();
 
-            // Luego, modificamos el registro correspondiente en la tabla "proveedores"
+            // Luego, modificamos el registro correspondiente en la tabla "clientes"
             PreparedStatement stModificarCliente = con.prepareStatement(
                     "UPDATE clientes " +
                             "SET cuil = ? " +
-                            "WHERE id_persona = ?"
+                            "WHERE idpersona = ?"
             );
             stModificarCliente.setString(1, cliente.getCuil());
             stModificarCliente.setInt(2, idPersona);

@@ -80,7 +80,6 @@ public class VentanaRubrosController implements Initializable {
 
     @FXML
     void accionBtnModificar(ActionEvent event) {
-
         // Obtiene el rubro seleccionado en la tabla
         Rubro r = this.tablaRubros.getSelectionModel().getSelectedItem();
 
@@ -98,7 +97,6 @@ public class VentanaRubrosController implements Initializable {
         }
 
         r.setNombre(nombreIngresado);
-
 
         try {
             RubroDAOImpl dao = new RubroDAOImpl();
@@ -132,7 +130,20 @@ public class VentanaRubrosController implements Initializable {
             );
             tablaRubros.setItems(rubrosFiltrados);
         }
+    }
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        double colIdCustomWidth = tablaRubros.getWidth() * 0.01;
+        colId.setMinWidth(colIdCustomWidth);
+
+        double colNomCustomWidth = tablaRubros.getWidth() * 0.7;
+        colNom.setMinWidth(colNomCustomWidth);
+
+        completarTabla();
+
+        todosLosRubros = tablaRubros.getItems();
     }
 
     public void completarTabla() {
@@ -161,21 +172,5 @@ public class VentanaRubrosController implements Initializable {
     public void vaciarCampos() {
         campoNombre.setText("");
     }
-
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-
-        double colIdCustomWidth = tablaRubros.getWidth() * 0.01;
-        colId.setMinWidth(colIdCustomWidth);
-
-        double colNomCustomWidth = tablaRubros.getWidth() * 0.7;
-        colNom.setMinWidth(colNomCustomWidth);
-
-        completarTabla();
-
-        todosLosRubros = tablaRubros.getItems();
-    }
-
 }
 

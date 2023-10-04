@@ -63,10 +63,8 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
                 idPersonaFK = result.getInt("id_persona");
                 miSt.close();
             } else {
-
                 // Este es el caso de que no existe la persona en la db. Por lo tanto, tengo que tomar los datos
                 // que vienen del formulario y dar de alta a la persona en la db.
-
                 String queryPersonas = "INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, mail, telefono)"
                         + " VALUES (?,?,?,?,?,?,?,?)";
                 PreparedStatement stPersonas = this.con.prepareStatement(queryPersonas);
@@ -89,7 +87,6 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
                 rs.close();
                 stGetId.close();
             }
-
             String queryEmpleados = "INSERT INTO empleados (nombre_usuario, clave, esAdmin, idpersona) VALUES (?,?,?,?)";
             PreparedStatement stEmpleados = this.con.prepareStatement(queryEmpleados);
             stEmpleados.setString(1, empleado.getNombre_usuario());
@@ -130,7 +127,6 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
             String queryPersonas = "UPDATE personas SET nombre = ?, apellido = ?, provincia = ?, localidad = ?, calle = ?, dni = ?, mail = ?, telefono = ?"
                     + " WHERE id_persona = ?";
             PreparedStatement stMP = this.con.prepareStatement(queryPersonas);
-
             stMP.setString(1, empleado.getNombre());
             stMP.setString(2, empleado.getApellido());
             stMP.setString(3, empleado.getProvincia());
@@ -154,10 +150,8 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
 
             stEm.executeUpdate();
             stEm.close();
-
             // Confirmamos la transacción (hacemos los cambios permanentes)
             con.commit();
-
         } catch (Exception e) {
             con.rollback();
             //throw e;

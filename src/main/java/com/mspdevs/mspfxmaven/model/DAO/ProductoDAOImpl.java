@@ -31,7 +31,7 @@ public class ProductoDAOImpl extends ConexionMySQL implements ProductoDAO {
                 producto.setIdProducto(rs.getInt("p.id_producto"));
                 producto.setNombre(rs.getString("p.nombre"));
                 producto.setPrecioVenta(rs.getDouble("p.precio_venta"));
-                producto.setPrecioLista(rs.getDouble("p.precio_lista"));
+                producto.setCodigoBarra(rs.getString("p.codigo_barra"));
                 producto.setCantidadMinima(rs.getInt("p.cantidad_minima"));
                 producto.setCantidadDisponible(rs.getInt("p.cantidad_disponible"));
 
@@ -46,7 +46,6 @@ public class ProductoDAOImpl extends ConexionMySQL implements ProductoDAO {
                 Producto todo = new Producto(producto, rubro, proveedor);
                 listaTodoEnUno.add(todo);
             }
-
             /*
             this.conectar();
             PreparedStatement st = this.con.prepareStatement(
@@ -105,11 +104,11 @@ public class ProductoDAOImpl extends ConexionMySQL implements ProductoDAO {
                 idProductoFK = result.getInt("id_producto");
                 miSt.close();
             } else {
-                PreparedStatement st = this.con.prepareStatement("INSERT INTO productos (nombre, precio_venta, precio_lista, cantidad_disponible, cantidad_minima" +
+                PreparedStatement st = this.con.prepareStatement("INSERT INTO productos (nombre, precio_venta, codigo_barra, cantidad_disponible, cantidad_minima" +
                         ", id_rubro, id_proveedor) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 st.setString(1, producto.getNombre());
                 st.setDouble(2, producto.getPrecioVenta());
-                st.setDouble(3, producto.getPrecioLista());
+                st.setString(3, producto.getCodigoBarra());
                 st.setInt(4, producto.getCantidadDisponible());
                 st.setInt(5, producto.getCantidadMinima());
                 st.setInt(6, producto.getIdRubroFK());
@@ -121,7 +120,6 @@ public class ProductoDAOImpl extends ConexionMySQL implements ProductoDAO {
         } finally {
             this.cerrarConexion();
         }
-
     }
 
     @Override
@@ -143,13 +141,13 @@ public class ProductoDAOImpl extends ConexionMySQL implements ProductoDAO {
         try {
             this.conectar();
             PreparedStatement st = this.con.prepareStatement(
-                    "UPDATE productos SET nombre = ?, precio_venta = ?, precio_lista = ?, " +
+                    "UPDATE productos SET nombre = ?, precio_venta = ?, codigo_barra = ?, " +
                             "cantidad_disponible = ?, cantidad_minima = ?, id_rubro = ?, id_proveedor = ? " +
                             "WHERE id_producto = ?"
             );
             st.setString(1, producto.getNombre());
             st.setDouble(2, producto.getPrecioVenta());
-            st.setDouble(3, producto.getPrecioLista());
+            st.setString(3, producto.getCodigoBarra());
             st.setInt(4, producto.getCantidadDisponible());
             st.setInt(5, producto.getCantidadMinima());
             st.setInt(6, producto.getIdRubroFK());

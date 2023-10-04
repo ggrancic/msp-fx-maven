@@ -47,7 +47,7 @@ public class VentanaProductosController {
     private TextField campoCantMin;
 
     @FXML
-    private TextField campoLista;
+    private TextField campoCodigo;
 
     @FXML
     private TextField campoNombre;
@@ -68,7 +68,7 @@ public class VentanaProductosController {
     private TableColumn<Producto, String> colNom;
 
     @FXML
-    private TableColumn<Producto, Double> colPrecioLista;
+    private TableColumn<Producto, String> colCodigoBarra;
 
     @FXML
     private TableColumn<Producto, Double> colPrecioVenta;
@@ -92,11 +92,10 @@ public class VentanaProductosController {
 
     @FXML
     void accionBotonAgregar(ActionEvent event) {
-
         // Obtiene el nombre seleccionado del ComboBox de rubros
         String nombreIngresado = this.campoNombre.getText();
         Double precioVentaIngresado = Double.valueOf(this.campoVenta.getText());
-        Double precioListaIngresado = Double.valueOf(this.campoLista.getText());
+        String codigoBarraIngresado = this.campoCodigo.getText();
         Integer cantDisponibleIngresado = Integer.valueOf(this.campoCantDisp.getText());
         Integer cantMinimaIngresado = Integer.valueOf(this.campoCantMin.getText());
         String RubroNombreSeleccionado = rubroBox.getSelectionModel().getSelectedItem();
@@ -114,7 +113,7 @@ public class VentanaProductosController {
 
             pro.setNombre(nombreIngresado);
             pro.setPrecioVenta(precioVentaIngresado);
-            pro.setPrecioLista(precioListaIngresado);
+            pro.setCodigoBarra(codigoBarraIngresado);
             pro.setCantidadDisponible(cantDisponibleIngresado);
             pro.setCantidadMinima(cantMinimaIngresado);
             pro.setIdRubroFK(RubroId);
@@ -151,7 +150,6 @@ public class VentanaProductosController {
         }
     }
 
-
     @FXML
     void accionBotonLimpiar(ActionEvent event) {
         // Limpia los campos de texto
@@ -159,7 +157,6 @@ public class VentanaProductosController {
         // Deselecciona la fila en la tabla
         tablaProducto.getSelectionModel().clearSelection(); //
     }
-
 
     @FXML
     void accionBotonModificar(ActionEvent event) {
@@ -173,7 +170,7 @@ public class VentanaProductosController {
         }
         String nombreIngresado = this.campoNombre.getText().trim();
         Double precioVentaIngresado = Double.valueOf(this.campoVenta.getText());
-        Double precioListaIngresado = Double.valueOf(this.campoLista.getText());
+        String codigoBarraIngresado = this.campoCodigo.getText();
         Integer cantDisponibleIngresado = Integer.valueOf(this.campoCantDisp.getText());
         Integer cantMinimaIngresado = Integer.valueOf(this.campoCantMin.getText());
         String RubroNombreSeleccionado = rubroBox.getSelectionModel().getSelectedItem();
@@ -189,7 +186,7 @@ public class VentanaProductosController {
             pro.setNombre(nombreIngresado);
             pro.setNombre(nombreIngresado);
             pro.setPrecioVenta(precioVentaIngresado);
-            pro.setPrecioLista(precioListaIngresado);
+            pro.setCodigoBarra(codigoBarraIngresado);
             pro.setCantidadDisponible(cantDisponibleIngresado);
             pro.setCantidadMinima(cantMinimaIngresado);
             pro.setIdRubroFK(RubroId);
@@ -203,7 +200,6 @@ public class VentanaProductosController {
             msj.mostrarError("Error", "", "No se pudo modificar el producto en la BD");
         }
     }
-
 
     @FXML
     void buscarProductoFiltro(KeyEvent event) {
@@ -221,7 +217,6 @@ public class VentanaProductosController {
             tablaProducto.setItems(empleadosFiltrados);
         }
     }
-
 
     @FXML
     void initialize() throws Exception {
@@ -244,7 +239,6 @@ public class VentanaProductosController {
 
         todosLosProductos = tablaProducto.getItems();
 
-
         // Crea una expresión regular para permitir solo números y un punto decimal
         final Pattern pattern = Pattern.compile("[0-9]*\\.?[0-9]*");
 
@@ -258,7 +252,7 @@ public class VentanaProductosController {
         };
 
         // Aplica el TextFormatter al TextField
-        campoLista.setTextFormatter(new TextFormatter<>(filter));
+        //campoLista.setTextFormatter(new TextFormatter<>(filter));
         campoVenta.setTextFormatter(new TextFormatter<>(filter));
 
         // Crea una expresión regular para permitir solo números enteros
@@ -276,8 +270,22 @@ public class VentanaProductosController {
         // Aplica el TextFormatter al TextField
         campoCantDisp.setTextFormatter(new TextFormatter<>(filter2));
         campoCantMin.setTextFormatter(new TextFormatter<>(filter2));
-    }
 
+
+        // Crea una expresión regular para permitir solo números enteros
+        final Pattern pattern3 = Pattern.compile("^[a-zA-Z0-9\\s]*$");
+
+        // Crea un operador unario para aplicar la restricción de formato
+        UnaryOperator<TextFormatter.Change> filter3 = change -> {
+            if (pattern3.matcher(change.getControlNewText()).matches()) {
+                return change;
+            } else {
+                return null;
+            }
+        };
+
+        campoNombre.setTextFormatter(new TextFormatter<>(filter3));
+    }
 
     public void completarTablaProductos() {
         ProductoDAOImpl productoDAO = new ProductoDAOImpl();
@@ -295,7 +303,7 @@ public class VentanaProductosController {
         this.colId.setCellValueFactory(new PropertyValueFactory<>("idProducto"));
         this.colNom.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         this.colPrecioVenta.setCellValueFactory(new PropertyValueFactory<>("precioVenta"));
-        this.colPrecioLista.setCellValueFactory(new PropertyValueFactory<>("precioLista"));
+        this.colCodigoBarra.setCellValueFactory(new PropertyValueFactory<>("codigoBarra"));
         this.colCantMinima.setCellValueFactory(new PropertyValueFactory<>("cantidadMinima"));
         this.colCantDisponible.setCellValueFactory(new PropertyValueFactory<>("cantidadDisponible"));
         this.colProveedor.setCellValueFactory(new PropertyValueFactory<>("proveedorNombre"));
@@ -310,7 +318,7 @@ public class VentanaProductosController {
                 // Llena los campos de entrada con los datos del proveedor seleccionado
                 campoNombre.setText(newValue.getNombre());
                 campoVenta.setText(String.valueOf(newValue.getPrecioVenta()));
-                campoLista.setText(String.valueOf(newValue.getPrecioLista()));
+                campoCodigo.setText(newValue.getCodigoBarra());
                 campoCantDisp.setText(String.valueOf(newValue.getCantidadDisponible()));
                 campoCantMin.setText(String.valueOf(newValue.getCantidadMinima()));
 
@@ -321,12 +329,11 @@ public class VentanaProductosController {
         });
     }
 
-
     public void vaciarCampos() {
         // Limpiar los campos de entrada
         campoNombre.setText("");
         campoVenta.setText("");
-        campoLista.setText("");
+        campoCodigo.setText("");
         campoCantDisp.setText("");
         campoCantMin.setText("");
         // Desseleccionar elementos en los ComboBox

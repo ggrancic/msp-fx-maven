@@ -43,7 +43,6 @@ public class RubroDAOImpl extends ConexionMySQL implements RubroDAO {
             PreparedStatement miSt = this.con.prepareStatement(consultaSiExiste);
             miSt.setString(1, rubro.getNombre());
             ResultSet result = miSt.executeQuery();
-
             // Inicializo el id...
             int idRubroFK = 0;
 
@@ -91,8 +90,6 @@ public class RubroDAOImpl extends ConexionMySQL implements RubroDAO {
             this.cerrarConexion();
         }
     }
-
-
 
     // Método para obtener un rubro por nombre
     public Rubro obtenerPorNombre(String nombre) throws Exception {
