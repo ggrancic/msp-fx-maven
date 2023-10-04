@@ -7,8 +7,6 @@ import javafx.collections.ObservableList;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RubroDAOImpl extends ConexionMySQL implements RubroDAO {
 
@@ -40,9 +38,22 @@ public class RubroDAOImpl extends ConexionMySQL implements RubroDAO {
     public void insertar(Rubro rubro) throws Exception {
         try {
             this.conectar();
-            PreparedStatement st = this.con.prepareStatement("INSERT INTO rubros (nombre) VALUES (?)");
-            st.setString(1, rubro.getNombre());
-            st.executeUpdate();
+            String consultaSiExiste = "SELECT nombre FROM rubros WHERE nombre = ?";
+            PreparedStatement miSt = this.con.prepareStatement(consultaSiExiste);
+            miSt.setString(1, rubro.getNombre());
+            ResultSet result = miSt.executeQuery();
+            // Inicializo el id...
+            int idRubroFK = 0;
+
+            if (result.next()) {
+                idRubroFK = result.getInt("id_rubro");
+                miSt.close();
+            } else {
+                PreparedStatement st = this.con.prepareStatement("INSERT INTO rubros (nombre) VALUES (?)");
+                st.setString(1, rubro.getNombre());
+                st.executeUpdate();
+            }
+
         } catch (Exception e) {
             throw e;
         } finally {
@@ -79,4 +90,28 @@ public class RubroDAOImpl extends ConexionMySQL implements RubroDAO {
             this.cerrarConexion();
         }
     }
+
+    // Método para obtener un rubro por nombre
+    public Rubro obtenerPorNombre(String nombre) throws Exception {
+        Rubro rubro = null;
+        try {
+            this.conectar();
+            PreparedStatement st = this.con.prepareStatement("SELECT * FROM rubros WHERE nombre = ?");
+            st.setString(1, nombre);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                rubro = new Rubro();
+                rubro.setIdRubro(rs.getInt("id_rubro"));
+                rubro.setNombre(rs.getString("nombre"));
+            }
+            rs.close();
+            st.close();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.cerrarConexion();
+        }
+        return rubro;
+    }
+
 }

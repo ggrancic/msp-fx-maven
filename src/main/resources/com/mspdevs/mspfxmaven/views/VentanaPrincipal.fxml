@@ -86,7 +86,9 @@
                         </ImageView>
                      </graphic>
                   </Button>
+
                   <Button fx:id="btnRubros" contentDisplay="TOP" layoutX="516.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#abrirVentanaRubros" text="Rubros">
+
                      <graphic>
                         <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -150,6 +152,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
+                  <Label fx:id="time" prefHeight="17.0" prefWidth="84.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="2">
@@ -164,6 +167,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
+                  <Label fx:id="fecha" prefHeight="17.0" prefWidth="72.0" />
                </children>
             </HBox>
          </children>

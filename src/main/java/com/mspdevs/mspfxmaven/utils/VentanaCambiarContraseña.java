@@ -16,8 +16,7 @@ public class VentanaCambiarContraseña extends Stage {
     
     private String nuevaPw;
     
-    
-    
+
     public VentanaCambiarContraseña() {
         Alerta msj = new Alerta();
         // Configura la ventana flotante
@@ -45,6 +44,7 @@ public class VentanaCambiarContraseña extends Stage {
             // por ejemplo, validar la nueva contraseña y guardarla en algún lugar.
             // Puedes mostrar un mensaje de éxito o error según el resultado.
             // Luego, cierra la ventana flotante.
+
             
             String pwIngresada = nuevaContraseñaField.getText();
             
@@ -63,7 +63,6 @@ public class VentanaCambiarContraseña extends Stage {
         // Crea una escena y establece el contenido
         Scene scene = new Scene(root, 300, 200);
         setScene(scene);
-        
         setTitle("Cambiar Contraseña");
     }
 

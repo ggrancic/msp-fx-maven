@@ -12,11 +12,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.scene.input.KeyEvent;
+import java.net.URL;
+import java.util.ResourceBundle;
+
 
 public class VentanaRubrosController implements Initializable {
-
     Alerta msj = new Alerta();
-    
+
     // Declarar una lista de respaldo para todos los empleados originales
     private ObservableList<Rubro> todosLosRubros;
 
@@ -92,8 +94,7 @@ public class VentanaRubrosController implements Initializable {
         }
         
         r.setNombre(nombreIngresado);
-        
-        
+
         try {
             RubroDAOImpl dao = new RubroDAOImpl();
             dao.modificar(r);
@@ -104,13 +105,13 @@ public class VentanaRubrosController implements Initializable {
             msj.mostrarError("Error", "", "No se pudo modificar el elemento en la BD");
         }
     }
-    
+
     @FXML
     void accionBtnLimpiar(ActionEvent event) {
         vaciarCampos();
         tablaRubros.getSelectionModel().clearSelection();
     }
-    
+
     @FXML
     void filtrarRubros(KeyEvent event) {
         // Obtener el texto ingresado en el campo de búsqueda
@@ -126,7 +127,6 @@ public class VentanaRubrosController implements Initializable {
             );
             tablaRubros.setItems(rubrosFiltrados);
         }
-
     }
 
     public void completarTabla() {

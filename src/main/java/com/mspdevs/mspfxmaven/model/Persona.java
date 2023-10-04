@@ -82,4 +82,5 @@ public class Persona {
     public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
+
 }

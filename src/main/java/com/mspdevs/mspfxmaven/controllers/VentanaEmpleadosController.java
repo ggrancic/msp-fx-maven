@@ -19,7 +19,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.fxml.Initializable;
 import javafx.scene.input.KeyEvent;
 
-
 public class VentanaEmpleadosController implements Initializable {
 
     Alerta msj = new Alerta();
@@ -109,8 +108,10 @@ public class VentanaEmpleadosController implements Initializable {
         String dniIngresado = this.campoDNI.getText();
 
         if (nombreIngresado.isEmpty() || apellidoIngresado.isEmpty() || calleIngresada.isEmpty()
+
         || telefonoIngresado.isEmpty() || provinciaIngresada.isEmpty() || localidadIngresada.isEmpty()
         || emailIngresado.isEmpty() || dniIngresado.isEmpty() || rolIngresado == null) {
+
             msj.mostrarError("Error", "", "Debe completar todos los campos");
         } else {
             Empleado em = new Empleado();
@@ -133,6 +134,7 @@ public class VentanaEmpleadosController implements Initializable {
                 msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el empleado correctamente.");
                 completarTabla();
                 vaciarCampos();
+
             } catch (Exception e) {
                 msj.mostrarError("Error", "", "No se pudo agrega el empleado en la BD");
             }
@@ -156,7 +158,6 @@ public class VentanaEmpleadosController implements Initializable {
             }
         }
     }
-    
     @FXML
     void accionBtnModificar(ActionEvent event) {
         // Obtiene el rubro seleccionado en la tabla
@@ -177,8 +178,10 @@ public class VentanaEmpleadosController implements Initializable {
             String dniIngresado = this.campoDNI.getText();
 
             if (nombreIngresado.isEmpty() || apellidoIngresado.isEmpty() || calleIngresada.isEmpty()
+
             || telefonoIngresado.isEmpty() || provinciaIngresada.isEmpty() || localidadIngresada.isEmpty()
             || emailIngresado.isEmpty() || dniIngresado.isEmpty() || rolIngresado == null) {
+
                 msj.mostrarError("Error", "", "Debe completar todos los campos");
             } else {
                 empl.setNombre_usuario(dniIngresado);
@@ -201,6 +204,7 @@ public class VentanaEmpleadosController implements Initializable {
                 } catch (Exception e) {
                     msj.mostrarError("Error", "", "No se pudo modificar el elemento en la BD");
                 }
+
                 }     
         }
          
@@ -210,7 +214,7 @@ public class VentanaEmpleadosController implements Initializable {
     void accionCambiarClave(ActionEvent event) {
         // Obtiene el rubro seleccionado en la tabla
         Empleado em = this.tblEmpleados.getSelectionModel().getSelectedItem();
-        
+
         if (em == null) {
             // Muestra un mensaje de error si no se selecciona ningún elemento en la tabla
             msj.mostrarError("Error", "", "Debe seleccionar un empleado de la lista para cambiar la clave.");
@@ -219,15 +223,14 @@ public class VentanaEmpleadosController implements Initializable {
             vc.showAndWait();
             em.setClave(vc.getNuevaPw());
         }
-        
     }
-    
+
     @FXML
     void accionBtnLimpiar(ActionEvent event) {
         vaciarCampos();
         tblEmpleados.getSelectionModel().clearSelection();
     }
-    
+
     @FXML
     void filtrarEmpleados(KeyEvent event) {
         // Obtener el texto ingresado en el campo de búsqueda
@@ -246,19 +249,6 @@ public class VentanaEmpleadosController implements Initializable {
     }
     
     
-    void vaciarCampos() {
-        campoNombre.clear();
-        campoApellido.clear();
-        campoCalle.clear();
-        campoLocalidad.clear();
-        campoProvincia.clear();
-        campoTelefono.clear();
-        campoEmail.clear();
-        campoDNI.clear();
-        comboAdmin.setValue(null);
-        comboAdmin.setPromptText("Seleccionar");
-    }
-
     public void completarTabla() {
         EmpleadoDAOImpl emple = new EmpleadoDAOImpl();
         ObservableList<Empleado> empleados = null;
@@ -280,7 +270,7 @@ public class VentanaEmpleadosController implements Initializable {
         this.colTel.setCellValueFactory(new PropertyValueFactory<>("telefono"));
         this.colCl.setCellValueFactory(new PropertyValueFactory<>("clave"));
         this.tblEmpleados.setItems(empleados);
-        
+
         // Configura un listener para la selección de fila en la tabla
         tblEmpleados.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
@@ -294,11 +284,24 @@ public class VentanaEmpleadosController implements Initializable {
                 campoTelefono.setText(newValue.getTelefono());
                 campoDNI.setText(newValue.getDni());
                 comboAdmin.setValue(reconvertirValorCombo(newValue.getEsAdmin()));
+
                 }
         });
     }
-    
-    
+
+    void vaciarCampos() {
+        campoNombre.clear();
+        campoApellido.clear();
+        campoCalle.clear();
+        campoLocalidad.clear();
+        campoProvincia.clear();
+        campoTelefono.clear();
+        campoEmail.clear();
+        campoDNI.clear();
+        comboAdmin.setValue(null);
+        comboAdmin.setPromptText("Seleccionar");
+    }
+
     public String convertirValorCombo (String valor) {
         String nuevoValor = "";
         if (valor == "Si") {
@@ -308,7 +311,7 @@ public class VentanaEmpleadosController implements Initializable {
         }
         return nuevoValor;
     }
-    
+
     public String reconvertirValorCombo (String valor) {
         String nuevoValor = "";
         if (valor.equals("S")) {

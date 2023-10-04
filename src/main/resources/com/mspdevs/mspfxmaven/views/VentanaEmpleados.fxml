@@ -152,13 +152,13 @@
                      </rowConstraints>
                      <children>
                         <GridPane>
-                          <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" prefWidth="50.0" />
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
-                          </columnConstraints>
-                          <rowConstraints>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                          </rowConstraints>
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" prefWidth="50.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="150.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
                            <children>
                               <TextField fx:id="campoNombre" GridPane.columnIndex="1" />
                               <Label text="Nombre">

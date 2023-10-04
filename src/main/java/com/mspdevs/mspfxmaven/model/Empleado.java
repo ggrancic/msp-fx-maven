@@ -1,6 +1,7 @@
 package com.mspdevs.mspfxmaven.model;
 
 public class Empleado extends Persona {
+
     int id_empleado;
     String nombre_usuario;
     String clave;
@@ -42,6 +43,7 @@ public class Empleado extends Persona {
     public int getIdPersonaFK() {
         return idPersonaFK;
     }
+
 
     public void setIdPersonaFK(int idPersonaFK) {
         this.idPersonaFK = idPersonaFK;

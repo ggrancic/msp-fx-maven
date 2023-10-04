@@ -55,6 +55,7 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
             PreparedStatement miSt = this.con.prepareStatement(consultaSiExiste);
             miSt.setString(1, empleado.getDni());
             ResultSet result = miSt.executeQuery();
+
             
             // Inicializo el id de la persona...
             int idPersonaFK = 0;
@@ -68,6 +69,7 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
             	// que vienen del formulario y dar de alta a la persona en la db.
             	
             	String queryPersonas = "INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, mail, telefono)"
+
                         + " VALUES (?,?,?,?,?,?,?,?)";
                 PreparedStatement stPersonas = this.con.prepareStatement(queryPersonas);
                 stPersonas.setString(1, empleado.getNombre());
@@ -80,7 +82,7 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
                 stPersonas.setString(8, empleado.getTelefono());
                 stPersonas.executeUpdate();
                 stPersonas.close();
-                
+
                 PreparedStatement stGetId = this.con.prepareStatement("SELECT LAST_INSERT_ID()");
                 ResultSet rs = stGetId.executeQuery();
                 if (rs.next()) {
@@ -89,7 +91,7 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
                 rs.close();
                 stGetId.close();
             }
-            
+
             String queryEmpleados = "INSERT INTO empleados (nombre_usuario, clave, esAdmin, idpersona) VALUES (?,?,?,?)";
             PreparedStatement stEmpleados = this.con.prepareStatement(queryEmpleados);
             stEmpleados.setString(1, empleado.getNombre_usuario());
@@ -126,11 +128,13 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
             System.out.println(empleado.getIdPersona());
             // Comenzamos una transacción para asegurar la integridad de los datos
             con.setAutoCommit(false);
+
             
             String queryPersonas = "UPDATE personas SET nombre = ?, apellido = ?, provincia = ?, localidad = ?, calle = ?, dni = ?, mail = ?, telefono = ?"
                     + " WHERE id_persona = ?";
             PreparedStatement stMP = this.con.prepareStatement(queryPersonas);
             
+
             stMP.setString(1, empleado.getNombre());
             stMP.setString(2, empleado.getApellido());
             stMP.setString(3, empleado.getProvincia());
@@ -140,6 +144,7 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
             stMP.setString(7, empleado.getMail());
             stMP.setString(8, empleado.getTelefono());
             stMP.setInt(9, empleado.getIdPersona());
+
             
             stMP.executeUpdate();
             stMP.close();
@@ -147,6 +152,7 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
             String queryEmpleado = "UPDATE empleados SET nombre_usuario = ?, clave = ?, esAdmin = ? WHERE idpersona = ?";
             PreparedStatement stEm = this.con.prepareStatement(queryEmpleado);
             
+
             stEm.setString(1, empleado.getNombre_usuario());
             stEm.setString(2, empleado.getClave());
             stEm.setString(3, empleado.getEsAdmin());
@@ -158,6 +164,7 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
             // Confirmamos la transacción (hacemos los cambios permanentes)
             con.commit();
             
+
         } catch (Exception e) {
             con.rollback();
             //throw e;

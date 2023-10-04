@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `mercadito`.`productos` (
   `id_producto` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(45) NULL,
   `precio_venta` DECIMAL(10,2) NULL,
-  `precio_lista` DECIMAL(10,2) NULL,
+  `codigo_barra` VARCHAR(12) NULL,
   `cantidad_disponible` INT NULL,
   `cantidad_minima` INT NULL,
   `id_rubro` INT NOT NULL,
@@ -195,6 +195,7 @@ COLLATE = utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS `mercadito`.`clientes` (
   `id_cliente` INT NOT NULL AUTO_INCREMENT,
   `idpersona` INT NOT NULL,
+  `cuil` VARCHAR(11) NOT NULL,
   PRIMARY KEY (`id_cliente`),
   INDEX `fk_clientes_personas1_idx` (`idpersona` ASC) ,
   CONSTRAINT `fk_clientes_personas1`
