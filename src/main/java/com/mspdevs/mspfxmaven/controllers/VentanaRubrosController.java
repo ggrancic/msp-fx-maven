@@ -3,6 +3,9 @@ package com.mspdevs.mspfxmaven.controllers;
 import com.mspdevs.mspfxmaven.model.DAO.RubroDAOImpl;
 import com.mspdevs.mspfxmaven.model.Rubro;
 import com.mspdevs.mspfxmaven.utils.Alerta;
+import com.mspdevs.mspfxmaven.utils.ManejoDeBotones;
+import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,8 +15,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.scene.input.KeyEvent;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 
 public class VentanaRubrosController implements Initializable {
@@ -21,6 +22,21 @@ public class VentanaRubrosController implements Initializable {
 
     // Declarar una lista de respaldo para todos los empleados originales
     private ObservableList<Rubro> todosLosRubros;
+
+    // Variable de instancia para el manejador de botones
+    private ManejoDeBotones manejador;
+
+    @FXML
+    private Button btnAgregar;
+
+    @FXML
+    private Button btnEliminar;
+
+    @FXML
+    private Button btnLimpiar;
+
+    @FXML
+    private Button btnModificar;
 
     @FXML
     private TextField campoBuscar;
@@ -50,6 +66,7 @@ public class VentanaRubrosController implements Initializable {
                 dao.insertar(r);
                 completarTabla();
                 vaciarCampos();
+                campoNombre.requestFocus();
                 msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el rubro correctamente.");
             } catch (Exception e) {
                 msj.mostrarError("Error", "", "No se pudo agrega el rubro en la BD");
@@ -67,6 +84,9 @@ public class VentanaRubrosController implements Initializable {
                 RubroDAOImpl dao = new RubroDAOImpl();
                 dao.eliminar(r);
                 completarTabla();
+                vaciarCampos();
+                campoNombre.requestFocus();
+                manejador.configurarBotones(false);
                 msj.mostrarAlertaInforme("Operacion exitosa", "", "El rubro se ha eliminado");
             } catch (Exception e) {
                 msj.mostrarError("Error", "", "No se pudo eliminar el elemento de la BD");
@@ -100,6 +120,8 @@ public class VentanaRubrosController implements Initializable {
             dao.modificar(r);
             completarTabla();
             vaciarCampos();
+            campoNombre.requestFocus();
+            manejador.configurarBotones(false);
             msj.mostrarAlertaInforme("Operación exitosa", "", "El rubro se ha modificado");
         } catch (Exception e) {
             msj.mostrarError("Error", "", "No se pudo modificar el elemento en la BD");
@@ -109,7 +131,9 @@ public class VentanaRubrosController implements Initializable {
     @FXML
     void accionBtnLimpiar(ActionEvent event) {
         vaciarCampos();
+        manejador.configurarBotones(false);
         tablaRubros.getSelectionModel().clearSelection();
+        campoNombre.requestFocus();
     }
 
     @FXML
@@ -146,6 +170,7 @@ public class VentanaRubrosController implements Initializable {
         
         tablaRubros.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
+                manejador.configurarBotones(true);
                 // Llena los campos de entrada con los datos del proveedor seleccionado
                 campoNombre.setText(newValue.getNombre());
             }
@@ -155,7 +180,6 @@ public class VentanaRubrosController implements Initializable {
     public void vaciarCampos() {
         campoNombre.setText("");
     }
-
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -168,6 +192,19 @@ public class VentanaRubrosController implements Initializable {
 
         completarTabla();
 
+        // Establecer el enfoque en campoNombre después de que la ventana se haya mostrado completamente
+        Platform.runLater(() -> campoNombre.requestFocus());
+
         todosLosRubros = tablaRubros.getItems();
+
+        // Instancia el ManejadorBotones en la inicialización del controlador
+        manejador = new ManejoDeBotones(btnModificar, btnEliminar, btnAgregar);
+        // Para deshabilitar "Modificar" y "Eliminar" y habilitar "Agregar"
+        manejador.configurarBotones(false);
+
+        // Asigna el TextFormatter al campoNombre
+        campoNombre.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
     }
 }
+
+

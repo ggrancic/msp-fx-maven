@@ -34,7 +34,7 @@
          <bottom>
             <ButtonBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <buttons>
-                  <Button mnemonicParsing="false" onAction="#accionBotonAgregar" prefHeight="35.0" prefWidth="100.0" styleClass="btn-agregar" stylesheets="@../styles/style.css" text="Agregar" textFill="WHITE">
+                  <Button fx:id="btnAgregar" mnemonicParsing="false" onAction="#accionBotonAgregar" prefHeight="35.0" prefWidth="100.0" styleClass="btn-agregar" stylesheets="@../styles/style.css" text="Agregar" textFill="WHITE">
                      <graphic>
                         <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                            <image>

@@ -1,12 +1,13 @@
 package com.mspdevs.mspfxmaven.controllers;
 
 import com.mspdevs.mspfxmaven.model.DAO.*;
-import com.mspdevs.mspfxmaven.model.Empleado;
 import com.mspdevs.mspfxmaven.model.Producto;
 import com.mspdevs.mspfxmaven.model.Proveedor;
 import com.mspdevs.mspfxmaven.model.Rubro;
 import com.mspdevs.mspfxmaven.utils.Alerta;
-import javafx.collections.FXCollections;
+import com.mspdevs.mspfxmaven.utils.ManejoDeBotones;
+import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,8 +16,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 
 import java.util.List;
-import java.util.function.UnaryOperator;
-import java.util.regex.Pattern;
 
 
 public class VentanaProductosController {
@@ -25,6 +24,9 @@ public class VentanaProductosController {
 
     // Declarar una lista de respaldo para todos los productos originales
     private ObservableList<Producto> todosLosProductos;
+
+    // Variable de instancia para el manejador de botones
+    private ManejoDeBotones manejador;
     @FXML
     private Button btnAgregar;
 
@@ -123,6 +125,7 @@ public class VentanaProductosController {
                 msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el producto correctamente.");
                 completarTablaProductos();
                 vaciarCampos();
+                campoNombre.requestFocus();
             } catch (Exception e) {
                 msj.mostrarError("Error", "", "No se pudo agregar el producto en la BD");
             }
@@ -142,6 +145,8 @@ public class VentanaProductosController {
                 ProductoDAOImpl dao = new ProductoDAOImpl();
                 dao.eliminar(pro);
                 completarTablaProductos();
+                manejador.configurarBotones(false);
+                campoNombre.requestFocus();
                 msj.mostrarAlertaInforme("Operacion exitosa", "", "El producto se ha eliminado");
                 vaciarCampos();
             } catch (Exception e) {
@@ -154,8 +159,10 @@ public class VentanaProductosController {
     void accionBotonLimpiar(ActionEvent event) {
         // Limpia los campos de texto
         vaciarCampos();
+        manejador.configurarBotones(false);
         // Deselecciona la fila en la tabla
-        tablaProducto.getSelectionModel().clearSelection(); //
+        tablaProducto.getSelectionModel().clearSelection();
+        campoNombre.requestFocus();
     }
 
     @FXML
@@ -195,6 +202,8 @@ public class VentanaProductosController {
             dao.modificar(pro);
             completarTablaProductos();
             vaciarCampos();
+            campoNombre.requestFocus();
+            manejador.configurarBotones(false);
             msj.mostrarAlertaInforme("Operación exitosa", "", "El producto se ha modificado");
         } catch (Exception e) {
             msj.mostrarError("Error", "", "No se pudo modificar el producto en la BD");
@@ -229,6 +238,9 @@ public class VentanaProductosController {
         List<Rubro> rubros = rubroDAO.listarTodos();
         List<Proveedor> proveedores = proveedorDAO.listarTodos();
 
+        // Establecer el enfoque en campoNombre después de que la ventana se haya mostrado completamente
+        Platform.runLater(() -> campoNombre.requestFocus());
+
         // Cargar los nombres en los ComboBox
         for (Rubro rubro : rubros) {
             rubroBox.getItems().add(rubro.getNombre());
@@ -239,52 +251,18 @@ public class VentanaProductosController {
 
         todosLosProductos = tablaProducto.getItems();
 
-        // Crea una expresión regular para permitir solo números y un punto decimal
-        final Pattern pattern = Pattern.compile("[0-9]*\\.?[0-9]*");
-
-        // Crea un operador unario para aplicar la restricción de formato
-        UnaryOperator<TextFormatter.Change> filter = change -> {
-            if (pattern.matcher(change.getControlNewText()).matches()) {
-                return change;
-            } else {
-                return null;
-            }
-        };
-
-        // Aplica el TextFormatter al TextField
-        //campoLista.setTextFormatter(new TextFormatter<>(filter));
-        campoVenta.setTextFormatter(new TextFormatter<>(filter));
-
-        // Crea una expresión regular para permitir solo números enteros
-        final Pattern pattern2 = Pattern.compile("\\d*");
-
-        // Crea un operador unario para aplicar la restricción de formato
-        UnaryOperator<TextFormatter.Change> filter2 = change -> {
-            if (pattern2.matcher(change.getControlNewText()).matches()) {
-                return change;
-            } else {
-                return null;
-            }
-        };
-
-        // Aplica el TextFormatter al TextField
-        campoCantDisp.setTextFormatter(new TextFormatter<>(filter2));
-        campoCantMin.setTextFormatter(new TextFormatter<>(filter2));
+        // Instancia el ManejadorBotones en la inicialización del controlador
+        manejador = new ManejoDeBotones(btnModificar, btnEliminar, btnAgregar);
+        // Para deshabilitar "Modificar" y "Eliminar" y habilitar "Agregar"
+        manejador.configurarBotones(false);
 
 
-        // Crea una expresión regular para permitir solo números enteros
-        final Pattern pattern3 = Pattern.compile("^[a-zA-Z0-9\\s]*$");
-
-        // Crea un operador unario para aplicar la restricción de formato
-        UnaryOperator<TextFormatter.Change> filter3 = change -> {
-            if (pattern3.matcher(change.getControlNewText()).matches()) {
-                return change;
-            } else {
-                return null;
-            }
-        };
-
-        campoNombre.setTextFormatter(new TextFormatter<>(filter3));
+        // Aplica el TextFormatter a los campos
+        campoNombre.setTextFormatter(ManejoDeEntrada.soloLetrasNumEspAcento());
+        campoVenta.setTextFormatter(ManejoDeEntrada.soloNumerosDecimales());
+        campoCodigo.setTextFormatter(ManejoDeEntrada.soloCodigoBarra());
+        campoCantDisp.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
+        campoCantMin.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
     }
 
     public void completarTablaProductos() {
@@ -315,6 +293,7 @@ public class VentanaProductosController {
         // Configura un listener para la selección de fila en la tabla
         tablaProducto.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
+                manejador.configurarBotones(true);
                 // Llena los campos de entrada con los datos del proveedor seleccionado
                 campoNombre.setText(newValue.getNombre());
                 campoVenta.setText(String.valueOf(newValue.getPrecioVenta()));

@@ -2,12 +2,10 @@ package com.mspdevs.mspfxmaven.controllers;
 
 import com.mspdevs.mspfxmaven.model.Cliente;
 import com.mspdevs.mspfxmaven.model.DAO.ClienteDAOImpl;
-import com.mspdevs.mspfxmaven.model.DAO.ProveedorDAOImpl;
-import com.mspdevs.mspfxmaven.model.DAO.RubroDAOImpl;
 import com.mspdevs.mspfxmaven.model.Persona;
-import com.mspdevs.mspfxmaven.model.Proveedor;
-import com.mspdevs.mspfxmaven.model.Rubro;
 import com.mspdevs.mspfxmaven.utils.Alerta;
+import com.mspdevs.mspfxmaven.utils.ManejoDeBotones;
+import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,7 +16,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
-import javafx.stage.Stage;
+import javafx.application.Platform;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -27,6 +25,9 @@ public class VentanaClientesController implements Initializable {
     Alerta msj = new Alerta();
 
     private ObservableList<Cliente> todosLosClientes;
+
+    // Variable de instancia para el manejador de botones
+    private ManejoDeBotones manejador;
 
     @FXML
     private Button btnAgregar;
@@ -131,6 +132,7 @@ public class VentanaClientesController implements Initializable {
                 dao.insertar(c);
                 completarTabla();
                 vaciarCampos();
+                campoNombre.requestFocus();
                 msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el cliente correctamente.");
             } catch (Exception e) {
                 e.printStackTrace(); // Imprime el stack trace de la excepción para depuración
@@ -152,6 +154,9 @@ public class VentanaClientesController implements Initializable {
                 dao.eliminar(c);
                 completarTabla();
                 vaciarCampos();
+                campoNombre.requestFocus();
+                // Para habilitar "Modificar" y "Eliminar" y deshabilitar "Agregar"
+                manejador.configurarBotones(true);
                 msj.mostrarAlertaInforme("Operacion exitosa", "", "El cliente se ha eliminado");
             } catch (Exception e) {
                 msj.mostrarError("Error", "", "No se pudo eliminar el elemento de la BD");
@@ -163,8 +168,10 @@ public class VentanaClientesController implements Initializable {
     void accionBotonLimpiar(ActionEvent event) {
         // Limpia los campos de texto
         vaciarCampos();
+        manejador.configurarBotones(false);
         // Deselecciona la fila en la tabla
-        tablaClientes.getSelectionModel().clearSelection(); //
+        tablaClientes.getSelectionModel().clearSelection();
+        campoNombre.requestFocus();
     }
 
     @FXML
@@ -206,6 +213,9 @@ public class VentanaClientesController implements Initializable {
             dao.modificar(c);
             completarTabla();
             vaciarCampos();
+            campoNombre.requestFocus();
+            // Para habilitar "Modificar" y "Eliminar" y deshabilitar "Agregar"
+            manejador.configurarBotones(false);
             msj.mostrarAlertaInforme("Operación exitosa", "", "El cliente se ha modificado");
         } catch (Exception e) {
             msj.mostrarError("Error", "", "No se pudo modificar el elemento en la BD");
@@ -219,7 +229,22 @@ public class VentanaClientesController implements Initializable {
 
         todosLosClientes = tablaClientes.getItems();
 
-        campoNombre.requestFocus();
+        // Establecer el enfoque en campoNombre después de que la ventana se haya mostrado completamente
+        Platform.runLater(() -> campoNombre.requestFocus());
+
+        // Instancia el ManejadorBotones en la inicialización del controlador
+        manejador = new ManejoDeBotones(btnModificar, btnEliminar, btnAgregar);
+        // Para deshabilitar "Modificar" y "Eliminar" y habilitar "Agregar"
+        manejador.configurarBotones(false);
+
+        campoNombre.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
+        campoApellido.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
+        campoCalle.setTextFormatter(ManejoDeEntrada.soloLetrasNumEspAcento());
+        campoTelefono.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
+        campoProvincia.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
+        campoLocalidad.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
+        campoEmail.setTextFormatter(ManejoDeEntrada.soloEmail());
+        campoCuil.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
     }
 
     public void completarTabla() {
@@ -254,6 +279,7 @@ public class VentanaClientesController implements Initializable {
         // Configura un listener para la selección de fila en la tabla
         tablaClientes.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
+                manejador.configurarBotones(true);
                 // Llena los campos de entrada con los datos del proveedor seleccionado
                 campoNombre.setText(newValue.getNombre());
                 campoApellido.setText(newValue.getApellido());

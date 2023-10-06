@@ -3,15 +3,15 @@ package com.mspdevs.mspfxmaven.controllers;
 import com.mspdevs.mspfxmaven.model.DAO.EmpleadoDAOImpl;
 import com.mspdevs.mspfxmaven.model.Empleado;
 import com.mspdevs.mspfxmaven.utils.Alerta;
+import com.mspdevs.mspfxmaven.utils.ManejoDeBotones;
+import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
 import com.mspdevs.mspfxmaven.utils.VentanaCambiarContraseña;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
-import javafx.beans.property.StringProperty;
+
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -25,6 +25,21 @@ public class VentanaEmpleadosController implements Initializable {
     
     // Declarar una lista de respaldo para todos los empleados originales
     private ObservableList<Empleado> todosLosEmpleados;
+
+    // Variable de instancia para el manejador de botones
+    private ManejoDeBotones manejador;
+
+    @FXML
+    private Button btnAgregar;
+
+    @FXML
+    private Button btnEliminar;
+
+    @FXML
+    private Button btnLimpiar;
+
+    @FXML
+    private Button btnModificar;
     
     @FXML
     private TextField campoApellido;
@@ -134,7 +149,7 @@ public class VentanaEmpleadosController implements Initializable {
                 msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el empleado correctamente.");
                 completarTabla();
                 vaciarCampos();
-
+                campoNombre.requestFocus();
             } catch (Exception e) {
                 msj.mostrarError("Error", "", "No se pudo agrega el empleado en la BD");
             }
@@ -152,6 +167,9 @@ public class VentanaEmpleadosController implements Initializable {
                 dao.eliminar(em);
                 completarTabla();
                 vaciarCampos();
+                campoNombre.requestFocus();
+                // Para habilitar "Modificar" y "Eliminar" y deshabilitar "Agregar"
+                manejador.configurarBotones(false);
                 msj.mostrarAlertaInforme("Operacion exitosa", "", "El empleado se ha eliminado");
             } catch (Exception e) {
                 msj.mostrarError("Error", "", "No se pudo eliminar el elemento de la BD");
@@ -200,6 +218,9 @@ public class VentanaEmpleadosController implements Initializable {
                     dao.modificar(empl);
                     completarTabla();
                     vaciarCampos();
+                    campoNombre.requestFocus();
+                    // Para habilitar "Modificar" y "Eliminar" y deshabilitar "Agregar"
+                    manejador.configurarBotones(false);
                     msj.mostrarAlertaInforme("Operación exitosa", "", "El empleado se ha modificado");
                 } catch (Exception e) {
                     msj.mostrarError("Error", "", "No se pudo modificar el elemento en la BD");
@@ -228,7 +249,10 @@ public class VentanaEmpleadosController implements Initializable {
     @FXML
     void accionBtnLimpiar(ActionEvent event) {
         vaciarCampos();
+        // Para habilitar "Modificar" y "Eliminar" y deshabilitar "Agregar"
+        manejador.configurarBotones(false);
         tblEmpleados.getSelectionModel().clearSelection();
+        campoNombre.requestFocus();
     }
 
     @FXML
@@ -274,6 +298,7 @@ public class VentanaEmpleadosController implements Initializable {
         // Configura un listener para la selección de fila en la tabla
         tblEmpleados.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
+                manejador.configurarBotones(true);
                 // Llena los campos de entrada con los datos del proveedor seleccionado
                 campoNombre.setText(newValue.getNombre());
                 campoApellido.setText(newValue.getApellido());
@@ -284,7 +309,6 @@ public class VentanaEmpleadosController implements Initializable {
                 campoTelefono.setText(newValue.getTelefono());
                 campoDNI.setText(newValue.getDni());
                 comboAdmin.setValue(reconvertirValorCombo(newValue.getEsAdmin()));
-
                 }
         });
     }
@@ -329,5 +353,22 @@ public class VentanaEmpleadosController implements Initializable {
         ObservableList<String> itemsComboAdmin = FXCollections.observableArrayList("Si","No");
         this.comboAdmin.setItems(itemsComboAdmin);
         todosLosEmpleados = tblEmpleados.getItems();
+
+        // Establecer el enfoque en campoNombre después de que la ventana se haya mostrado completamente
+        Platform.runLater(() -> campoNombre.requestFocus());
+
+        // Instancia el ManejadorBotones en la inicialización del controlador
+        manejador = new ManejoDeBotones(btnModificar, btnEliminar, btnAgregar);
+        // Para deshabilitar "Modificar" y "Eliminar" y habilitar "Agregar"
+        manejador.configurarBotones(false);
+
+        campoNombre.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
+        campoApellido.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
+        campoCalle.setTextFormatter(ManejoDeEntrada.soloLetrasNumEspAcento());
+        campoTelefono.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
+        campoProvincia.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
+        campoLocalidad.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
+        campoEmail.setTextFormatter(ManejoDeEntrada.soloEmail());
+        campoDNI.setTextFormatter(ManejoDeEntrada.soloDni());
     }
 }
