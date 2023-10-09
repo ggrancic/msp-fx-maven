@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class ManejoDeEntrada {
     // Patrón para letras, espacios y acentos
-    private static final Pattern letrasEspacioAcento = Pattern.compile("^[a-zA-ZáéíóúÁÉÍÓÚüÜ\\s]*$");
+    private static final Pattern letrasEspacioAcento = Pattern.compile("^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\\s]*$");
     // Operador para filtrar caracteres ingresados
     private static final UnaryOperator<TextFormatter.Change> letrasEspacioAcentoFiltro = change -> {
         if (letrasEspacioAcento.matcher(change.getControlNewText()).matches()) {
@@ -23,7 +23,7 @@ public class ManejoDeEntrada {
 
 
     // Patrón para letras, números, espacios y acentos
-    private static final Pattern letrasNumEspAcento = Pattern.compile("^[a-zA-Z0-9\\sáéíóúÁÉÍÓÚüÜ]*$");
+    private static final Pattern letrasNumEspAcento = Pattern.compile("^[a-zA-Z0-9\\sáéíóúÁÉÍÓÚüÜñÑ]*$");
     // Operador para filtrar caracteres ingresados
     private static final UnaryOperator<TextFormatter.Change> letrasNumEspAcentoFiltro = change -> {
         if (letrasNumEspAcento.matcher(change.getControlNewText()).matches()) {
@@ -38,7 +38,7 @@ public class ManejoDeEntrada {
     }
 
     // Patrón para codigo de barras
-    private static final Pattern codigoBarra = Pattern.compile("^[a-zA-Z0-9]*$");
+    private static final Pattern codigoBarra = Pattern.compile("^[a-zA-Z0-9ñÑ]*$");
     // Operador para filtrar caracteres ingresados
     private static final UnaryOperator<TextFormatter.Change> codigoBarraFiltro = change -> {
         if (codigoBarra.matcher(change.getControlNewText()).matches()) {
@@ -53,7 +53,7 @@ public class ManejoDeEntrada {
     }
 
     // Patrón para email
-    private static final Pattern email = Pattern.compile("^[a-zA-Z0-9\\p{Punct}]*$");
+    private static final Pattern email = Pattern.compile("^[a-zA-Z0-9\\p{Punct}ñÑ]*$");
     // Operador para filtrar caracteres ingresados
     private static final UnaryOperator<TextFormatter.Change> emailFiltro = change -> {
         if (email.matcher(change.getControlNewText()).matches()) {
