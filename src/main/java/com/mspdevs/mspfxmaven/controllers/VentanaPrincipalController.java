@@ -102,7 +102,7 @@ public class VentanaPrincipalController implements Initializable {
     
     @FXML
     void abrirVentanaCompras(ActionEvent event) throws IOException {
-    	GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaCompras.fxml"));
+    	BorderPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaCompras.fxml"));
     	bpane.setCenter(centro);
     }
     
