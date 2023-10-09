@@ -101,7 +101,7 @@
             </ToolBar>
             <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="109.0" prefWidth="200.0" HBox.hgrow="NEVER">
               <items>
-                  <Button contentDisplay="TOP" mnemonicParsing="false" text="Cerrar Sesión">
+                  <Button fx:id="btnCerrar" contentDisplay="TOP" mnemonicParsing="false" onAction="#cerrarAplicacion" text="Cerrar Sesión">
                      <graphic>
                         <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -138,6 +138,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
+                  <Label fx:id="usuarioLogueado" prefHeight="17.0" prefWidth="107.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefWidth="100.0" spacing="10.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">

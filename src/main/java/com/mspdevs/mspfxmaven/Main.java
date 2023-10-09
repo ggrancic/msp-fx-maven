@@ -1,5 +1,7 @@
 package com.mspdevs.mspfxmaven;
 
+import com.mspdevs.mspfxmaven.controllers.LoginMSPController;
+import com.mspdevs.mspfxmaven.controllers.VentanaPrincipalController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,7 +14,6 @@ import java.io.IOException;
  * JavaFX App
  */
 public class Main extends Application {
-
     private static Scene scene;
 
     @Override
@@ -25,8 +26,37 @@ public class Main extends Application {
         primarystage.show();
     }
 
+
+
+    // ...
+
     public static void main(String[] args) {
         launch();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private VentanaPrincipalController ventanaPrincipalController; // Declaración de la variable
+    private Stage primaryStage;
+    private LoginMSPController loginController; // Referencia a loginController
+
+    // ...
+
+    public void setLoginController(LoginMSPController loginController) {
+        this.loginController = loginController;
     }
 
 }

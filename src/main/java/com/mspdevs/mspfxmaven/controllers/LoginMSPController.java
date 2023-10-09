@@ -25,6 +25,8 @@ import javafx.stage.Stage;
  *
  */
 public class LoginMSPController implements Initializable {
+    private VentanaPrincipalController ventanaPrincipalController;
+
     // Acá van los atributos de la ventana (botones, campos, etc).
     // Esto lo genera SceneBuilder o bien se puede
     // generar programáticamente.
@@ -71,9 +73,7 @@ public class LoginMSPController implements Initializable {
 
     @FXML
     void verificarLogin(MouseEvent event) {
-
         // Acá manejo si lo ingresado existe en la db o no.
-
         String usuarioIngresado = campoUser.getText();
         String claveIngresada = campoClave.getText();
 
@@ -84,6 +84,8 @@ public class LoginMSPController implements Initializable {
             alertaDatosErroneos.setContentText("Ingrese las credenciales correctas");
             alertaDatosErroneos.showAndWait();
         } else {
+            // Establece el nombre de usuario logueado
+            setNombreUsuarioLogueado(usuarioIngresado);
             try {
                 irAPantallaPcpal("/com/mspdevs/mspfxmaven/views/VentanaPrincipal.fxml", event);
             } catch (Exception e) {
@@ -102,4 +104,26 @@ public class LoginMSPController implements Initializable {
         newStage.setMaximized(true);
         newStage.show();
     }
+
+
+
+
+
+
+
+    // Variable para almacenar el nombre de usuario
+    private String nombreUsuarioLogueado;
+
+    // ...
+
+    // Método para obtener el nombre de usuario
+    public String getNombreUsuarioLogueado() {
+        return nombreUsuarioLogueado;
+    }
+
+    // Método para establecer el nombre de usuario
+    public void setNombreUsuarioLogueado(String nombreUsuario) {
+        this.nombreUsuarioLogueado = nombreUsuario;
+    }
+
 }

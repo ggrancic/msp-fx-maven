@@ -16,6 +16,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Button;
@@ -23,16 +27,25 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 
 public class VentanaPrincipalController implements Initializable {
+
+    private LoginMSPController loginController;
     
     @FXML
     private HBox hbox ;
     
     @FXML
     private BorderPane bpane;
+
+    @FXML
+    private Label usuarioLogueado;
+
+    @FXML
+    private Button btnCerrar;
     
     @FXML
     private Button btnClientes;
@@ -95,10 +108,10 @@ public class VentanaPrincipalController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
         // Acá se inicializa todo lo referido a los elementos del fxml.
         Timenow();
-        
+
+        //usuarioLogueado.setText(loginController.getNombreUsuarioLogueado());
     }
 
     private void Timenow(){
@@ -126,5 +139,67 @@ public class VentanaPrincipalController implements Initializable {
         clock.setCycleCount(Animation.INDEFINITE);
         clock.play();
     }
-    
+
+    public void irAPantallaLogin(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mspdevs/mspfxmaven/views/LoginMSP.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage.show();
+
+            // Obtener el Stage actual y cerrarlo
+            Stage currentStage = (Stage) btnCerrar.getScene().getWindow();
+            currentStage.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    void cerrarAplicacion(ActionEvent event) {
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacion.setTitle("Confirmar");
+        confirmacion.setHeaderText("¿Desea salir o cerrar sesión?");
+        ButtonType salirButton = new ButtonType("Salir");
+        ButtonType noButton = new ButtonType("No salir");
+        ButtonType cerrarSesionButton = new ButtonType("Cerrar sesión");
+
+        confirmacion.getButtonTypes().setAll(salirButton, noButton, cerrarSesionButton);
+
+        Stage stage = (Stage) confirmacion.getDialogPane().getScene().getWindow();
+        stage.setAlwaysOnTop(true);
+
+        confirmacion.showAndWait().ifPresent(response -> {
+            if (response == salirButton) {
+                // Cerrar la aplicación
+                stop = true; // Detener el hilo de actualización del tiempo
+                Stage currentStage = (Stage) btnCerrar.getScene().getWindow();
+                currentStage.close();
+            } else if (response == noButton) {
+                // No hacer nada, simplemente cerrar la ventana de confirmación
+            } else if (response == cerrarSesionButton) {
+                // Cerrar sesión y volver a la ventana de inicio de sesión
+                stop = true; // Detener el hilo de actualización del tiempo
+                irAPantallaLogin(event);
+            }
+        });
+    }
+
+
+    // ... otros métodos ...
+
+    // Método para obtener una referencia al controlador de inicio de sesión
+    private LoginMSPController obtenerControladorLogin() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mspdevs/mspfxmaven/views/LoginMSP.fxml"));
+            Parent root = loader.load();
+            LoginMSPController loginController = loader.getController();
+            return loginController;
+        } catch (IOException e) {
+            System.out.println("Error al obtener el controlador de inicio de sesión: " + e.getMessage());
+            return null;
+        }
+    }
 }
