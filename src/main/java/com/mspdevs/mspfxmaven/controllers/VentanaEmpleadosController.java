@@ -1,11 +1,12 @@
 package com.mspdevs.mspfxmaven.controllers;
 
+import com.mspdevs.mspfxmaven.model.Cliente;
 import com.mspdevs.mspfxmaven.model.DAO.EmpleadoDAOImpl;
+import com.mspdevs.mspfxmaven.model.DAO.ProveedorDAOImpl;
 import com.mspdevs.mspfxmaven.model.Empleado;
-import com.mspdevs.mspfxmaven.utils.Alerta;
-import com.mspdevs.mspfxmaven.utils.ManejoDeBotones;
-import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
-import com.mspdevs.mspfxmaven.utils.VentanaCambiarContraseña;
+import com.mspdevs.mspfxmaven.model.Proveedor;
+import com.mspdevs.mspfxmaven.utils.*;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -112,6 +113,34 @@ public class VentanaEmpleadosController implements Initializable {
 
     @FXML
     void accionBotonAgregar(ActionEvent event) {
+        // Obtener los valores de los campos en un objeto Empleado
+        Empleado empleado = obtenerValoresDeCampos();
+
+        // Verifica si algún campo de texto está vacío
+        if (empleado.getNombre().isEmpty() || empleado.getApellido().isEmpty() || empleado.getProvincia().isEmpty() ||
+                empleado.getLocalidad().isEmpty() || empleado.getCalle().isEmpty() ||
+                empleado.getMail().isEmpty() || empleado.getTelefono().isEmpty()) {
+            // Mostrar mensaje de error si falta ingresar datos
+            msj.mostrarError("Error", "", "Falta ingresar datos.");
+        } else {
+            // Realiza las validaciones con ValidacionDeEntrada
+            if (ValidacionDeEntrada.validarEmail(empleado.getMail())  && ValidacionDeEntrada.validarSeleccionComboBox(comboAdmin, "Debe indicar si sera administrador o no.")
+                && ValidacionDeEntrada.validarTelefono(empleado.getTelefono()) && ValidacionDeEntrada.validarDNI(empleado.getDni())) {
+                try {
+                    EmpleadoDAOImpl dao = new EmpleadoDAOImpl();
+                    dao.insertar(empleado);
+                    completarTabla();
+                    vaciarCampos();
+                    campoNombre.requestFocus();
+                    manejador.configurarBotones(false);
+                    msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el empleado correctamente.");
+                } catch (Exception e) {
+                    msj.mostrarError("Error", "", "No se pudo agregar el empleado.");
+                }
+            }
+        }
+
+        /*
         String nombreIngresado = this.campoNombre.getText();
         String apellidoIngresado = this.campoApellido.getText();
         String calleIngresada = this.campoCalle.getText();
@@ -153,7 +182,7 @@ public class VentanaEmpleadosController implements Initializable {
             } catch (Exception e) {
                 msj.mostrarError("Error", "", "No se pudo agrega el empleado en la BD");
             }
-        }
+        }*/
     }
 
     @FXML
@@ -184,7 +213,51 @@ public class VentanaEmpleadosController implements Initializable {
         if (empl == null) {
             // Muestra un mensaje de error si no se selecciona ningún elemento en la tabla
             msj.mostrarError("Error", "", "Debe seleccionar un empleado de la lista para modificar.");
+        }
+
+        // Obtiene los valores de los campos
+        Empleado empleado = obtenerValoresDeCampos();
+
+        // Verifica si algún campo de texto está vacío
+        if (empleado.getNombre().isEmpty() || empleado.getApellido().isEmpty() || empleado.getProvincia().isEmpty() ||
+                empleado.getLocalidad().isEmpty() || empleado.getCalle().isEmpty() ||
+                empleado.getMail().isEmpty() || empleado.getTelefono().isEmpty()) {
+            // Mostrar mensaje de error si falta ingresar datos
+            msj.mostrarError("Error", "", "Falta ingresar datos.");
         } else {
+            // Realiza las validaciones con ValidacionDeEntrada
+            if (ValidacionDeEntrada.validarEmail(empleado.getMail())  &&
+                    ValidacionDeEntrada.validarSeleccionComboBox(comboAdmin, "Debe indicar si sera administrador o no.")
+                    && ValidacionDeEntrada.validarTelefono(empleado.getTelefono()) && ValidacionDeEntrada.validarDNI(empleado.getDni())) {
+                empl.setNombre_usuario(empleado.getDni());
+                empl.setNombre(empleado.getNombre());
+                empl.setApellido(empleado.getApellido());
+                empl.setCalle(empleado.getCalle());
+                empl.setTelefono(empleado.getTelefono());
+                empl.setProvincia(empleado.getProvincia());
+                empl.setLocalidad(empleado.getLocalidad());
+                empl.setMail(empleado.getMail());
+                empl.setEsAdmin(empleado.getEsAdmin());
+                empl.setDni(empleado.getDni());
+                try {
+                    EmpleadoDAOImpl dao = new EmpleadoDAOImpl();
+                    dao.modificar(empl);
+                    completarTabla();
+                    vaciarCampos();
+                    campoNombre.requestFocus();
+                    comboAdmin.setPromptText("Selecciona una opción");
+                    // Para habilitar "Modificar" y "Eliminar" y deshabilitar "Agregar"
+                    manejador.configurarBotones(false);
+                    msj.mostrarAlertaInforme("Operación exitosa", "", "El empleado se ha modificado");
+                } catch (Exception e) {
+                    msj.mostrarError("Error", "", "No se pudo modificar el empleado.");
+                }
+            }
+        }
+
+
+
+        /*else {
             String nombreIngresado = this.campoNombre.getText();
             String apellidoIngresado = this.campoApellido.getText();
             String calleIngresada = this.campoCalle.getText();
@@ -226,9 +299,8 @@ public class VentanaEmpleadosController implements Initializable {
                     msj.mostrarError("Error", "", "No se pudo modificar el elemento en la BD");
                 }
 
-                }     
-        }
-         
+            }
+        }*/
     }
 
     @FXML
@@ -370,5 +442,34 @@ public class VentanaEmpleadosController implements Initializable {
         campoLocalidad.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoEmail.setTextFormatter(ManejoDeEntrada.soloEmail());
         campoDNI.setTextFormatter(ManejoDeEntrada.soloDni());
+    }
+
+
+
+
+    private Empleado obtenerValoresDeCampos() {
+        String nombreIngresado = FormatoTexto.formatearTexto(this.campoNombre.getText());
+        String apellidoIngresado = FormatoTexto.formatearTexto(this.campoApellido.getText());
+        String provinciaIngresada = FormatoTexto.formatearTexto(this.campoProvincia.getText());
+        String localidadIngresada = FormatoTexto.formatearTexto(this.campoLocalidad.getText());
+        String calleIngresada = FormatoTexto.formatearTexto(this.campoCalle.getText());
+        String dniIngresado = this.campoDNI.getText();
+        String emailIngresado = this.campoEmail.getText();
+        String telefonoIngresado = this.campoTelefono.getText();
+        String rolIngresado = this.convertirValorCombo(comboAdmin.getValue());
+
+        Empleado empleado = new Empleado();
+        empleado.setNombre(nombreIngresado);
+        empleado.setApellido(apellidoIngresado);
+        empleado.setProvincia(provinciaIngresada);
+        empleado.setLocalidad(localidadIngresada);
+        empleado.setCalle(calleIngresada);
+        empleado.setDni(dniIngresado);
+        empleado.setMail(emailIngresado);
+        empleado.setTelefono(telefonoIngresado);
+        empleado.setClave(dniIngresado);
+        empleado.setEsAdmin(rolIngresado);
+
+        return empleado;
     }
 }

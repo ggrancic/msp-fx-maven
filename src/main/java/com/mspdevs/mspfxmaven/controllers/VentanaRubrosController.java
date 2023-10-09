@@ -3,6 +3,7 @@ package com.mspdevs.mspfxmaven.controllers;
 import com.mspdevs.mspfxmaven.model.DAO.RubroDAOImpl;
 import com.mspdevs.mspfxmaven.model.Rubro;
 import com.mspdevs.mspfxmaven.utils.Alerta;
+import com.mspdevs.mspfxmaven.utils.FormatoTexto;
 import com.mspdevs.mspfxmaven.utils.ManejoDeBotones;
 import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
 import javafx.application.Platform;
@@ -55,7 +56,7 @@ public class VentanaRubrosController implements Initializable {
 
     @FXML
     void agregarRubro(ActionEvent event) {
-        String nombreIngresado = this.campoNombre.getText();
+        String nombreIngresado = FormatoTexto.formatearTexto(this.campoNombre.getText());
         if (nombreIngresado.isEmpty()) {
             msj.mostrarError("Error", "", "Debe ingresar el nombre del rubro");
         } else {
@@ -69,7 +70,7 @@ public class VentanaRubrosController implements Initializable {
                 campoNombre.requestFocus();
                 msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el rubro correctamente.");
             } catch (Exception e) {
-                msj.mostrarError("Error", "", "No se pudo agrega el rubro en la BD");
+                msj.mostrarError("Error", "", "No se pudo agregar el rubro.");
             }
         }
     }
@@ -96,7 +97,6 @@ public class VentanaRubrosController implements Initializable {
     
      @FXML
     void accionBtnModificar(ActionEvent event) {
-        
         // Obtiene el rubro seleccionado en la tabla
         Rubro r = this.tablaRubros.getSelectionModel().getSelectedItem();
         
@@ -105,8 +105,8 @@ public class VentanaRubrosController implements Initializable {
             msj.mostrarError("Error", "", "Debe seleccionar un rubro de la lista para modificar.");
             return;
         }
-        
-        String nombreIngresado = this.campoNombre.getText();
+
+         String nombreIngresado = FormatoTexto.formatearTexto(this.campoNombre.getText());
         
         if (nombreIngresado.isEmpty()) {
             msj.mostrarError("Error", "", "Debe ingresar el nombre del rubro.");

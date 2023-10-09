@@ -1,12 +1,11 @@
 package com.mspdevs.mspfxmaven.controllers;
 
 import com.mspdevs.mspfxmaven.model.DAO.*;
+import com.mspdevs.mspfxmaven.model.Empleado;
 import com.mspdevs.mspfxmaven.model.Producto;
 import com.mspdevs.mspfxmaven.model.Proveedor;
 import com.mspdevs.mspfxmaven.model.Rubro;
-import com.mspdevs.mspfxmaven.utils.Alerta;
-import com.mspdevs.mspfxmaven.utils.ManejoDeBotones;
-import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
+import com.mspdevs.mspfxmaven.utils.*;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -93,19 +92,149 @@ public class VentanaProductosController {
     RubroDAOImpl rubroDAO = new RubroDAOImpl();
 
     @FXML
-    void accionBotonAgregar(ActionEvent event) {
-        // Obtiene el nombre seleccionado del ComboBox de rubros
-        String nombreIngresado = this.campoNombre.getText();
-        Double precioVentaIngresado = Double.valueOf(this.campoVenta.getText());
+    void accionBotonAgregar(ActionEvent event) throws Exception {
+
+        String nombreIngresado = FormatoTexto.formatearTexto(this.campoNombre.getText());
+        String precioVentaTexto = this.campoVenta.getText();
         String codigoBarraIngresado = this.campoCodigo.getText();
-        Integer cantDisponibleIngresado = Integer.valueOf(this.campoCantDisp.getText());
-        Integer cantMinimaIngresado = Integer.valueOf(this.campoCantMin.getText());
+        String cantDisponibleTexto = this.campoCantDisp.getText();
+        String cantMinimaTexto = this.campoCantMin.getText();
         String RubroNombreSeleccionado = rubroBox.getSelectionModel().getSelectedItem();
         String ProveedorNombreSeleccionado = proveedorBox.getSelectionModel().getSelectedItem();
 
         ProveedorDAOImpl proveedorDAO = new ProveedorDAOImpl();
         RubroDAOImpl rubroDAO = new RubroDAOImpl();
 
+        // Verifica si algún campo de texto está vacío
+        if (nombreIngresado.isEmpty() || precioVentaTexto.isEmpty() ||
+                cantDisponibleTexto.isEmpty() || cantMinimaTexto.isEmpty()) {
+            // Mostrar mensaje de error si falta ingresar datos
+            msj.mostrarError("Error", "", "Falta ingresar datos.");
+        } else {
+
+                if (ValidacionDeEntrada.validarCodigoDeBarra(codigoBarraIngresado) &&
+                        ValidacionDeEntrada.validarPrecioVenta(precioVentaTexto) &&
+                        ValidacionDeEntrada.validarSeleccionComboBox(proveedorBox, "Debe seleccionar un proveedor.") &&
+                        ValidacionDeEntrada.validarSeleccionComboBox(rubroBox, "Debe seleccionar un rubro.")) {
+                    // Verificar valores numéricos
+                    Double precioVentaIngresado = Double.valueOf(precioVentaTexto);
+                    Integer cantDisponibleIngresado = Integer.valueOf(cantDisponibleTexto);
+                    Integer cantMinimaIngresado = Integer.valueOf(cantMinimaTexto);
+                    // Realizar la operación si todas las validaciones son exitosas
+                    int ProveedorId = proveedorDAO.obtenerPorNombre(ProveedorNombreSeleccionado);
+                    int RubroId = rubroDAO.obtenerPorNombre(RubroNombreSeleccionado).getIdRubro();
+
+                    Producto pro = new Producto();
+                    ProductoDAOImpl dao = new ProductoDAOImpl();
+
+                    pro.setNombre(nombreIngresado);
+                    pro.setPrecioVenta(precioVentaIngresado);
+                    pro.setCodigoBarra(codigoBarraIngresado);
+                    pro.setCantidadDisponible(cantDisponibleIngresado);
+                    pro.setCantidadMinima(cantMinimaIngresado);
+                    pro.setIdRubroFK(RubroId);
+                    pro.setIdProveedorFK(ProveedorId);
+
+                    try {
+                        dao.insertar(pro);
+                        msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el producto correctamente.");
+                        completarTablaProductos();
+                        vaciarCampos();
+                        campoNombre.requestFocus();
+                    } catch (Exception e) {
+                        msj.mostrarError("Error", "", "No se pudo agregar el producto en la BD");
+                    }
+                }
+            }
+
+        /*// Obtener los valores de los campos en un objeto Empleado
+        Producto producto = obtenerValoresDeCampos();
+
+        // Verifica si algún campo de texto está vacío
+        if (producto.getNombre().isEmpty() || producto.getPrecioVenta().isEmpty()) {
+            // Mostrar mensaje de error si falta ingresar datos
+            msj.mostrarError("Error", "", "Falta ingresar datos.");
+        } else {
+            // Verificar valores numéricos
+            if (ValidacionDeEntrada.validarCodigoDeBarra(producto.getCodigoBarra())  &&
+                    ValidacionDeEntrada.validarSeleccionComboBox(proveedorBox, "Debe seleccionar un proveedor.") &&
+                    ValidacionDeEntrada.validarSeleccionComboBox(rubroBox, "Debe seleccionar un rubro.")) {
+                // Realizar la operación si todas las validaciones son exitosas
+                try {
+                    ProductoDAOImpl dao = new ProductoDAOImpl();
+                    dao.insertar(producto);
+                    completarTablaProductos();
+                    vaciarCampos();
+                    campoNombre.requestFocus();
+                    manejador.configurarBotones(false);
+                    msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el producto correctamente.");
+                } catch (Exception e) {
+                    msj.mostrarError("Error", "", "No se pudo agregar el producto a la BD");
+                }
+            }
+        }*/
+
+
+
+
+
+        /*
+
+        // Obtiene el nombre seleccionado del ComboBox de rubros
+        String nombreIngresado = this.campoNombre.getText();
+        String precioVentaTexto = this.campoVenta.getText();
+        String codigoBarraIngresado = this.campoCodigo.getText();
+        String cantDisponibleTexto = this.campoCantDisp.getText();
+        String cantMinimaTexto = this.campoCantMin.getText();
+        String RubroNombreSeleccionado = rubroBox.getSelectionModel().getSelectedItem();
+        String ProveedorNombreSeleccionado = proveedorBox.getSelectionModel().getSelectedItem();
+
+        ProveedorDAOImpl proveedorDAO = new ProveedorDAOImpl();
+        RubroDAOImpl rubroDAO = new RubroDAOImpl();
+
+        // Verifica si algún campo de texto está vacío
+        if (nombreIngresado.isEmpty() || ValidacionDeEntrada.validarDoubleNoNulo(precioVentaIngresado, "Campo Vacio") ||
+                ValidacionDeEntrada.validarIntegerNoNulo(cantDisponibleIngresado, "Campo Vacio") ||
+                ValidacionDeEntrada.validarIntegerNoNulo(cantMinimaIngresado, "Campo Vacio")) {
+            // Mostrar mensaje de error si falta ingresar datos
+            msj.mostrarError("Error", "", "Falta ingresar datos.");
+        } else {
+            // Verificar valores numéricos
+            if (ValidacionDeEntrada.validarCodigoDeBarra(codigoBarraIngresado) &&
+                    ValidacionDeEntrada.validarSeleccionComboBox(proveedorBox, "Debe seleccionar un proveedor.") &&
+                    ValidacionDeEntrada.validarSeleccionComboBox(rubroBox, "Debe seleccionar un rubro.")) {
+                // Realizar la operación si todas las validaciones son exitosas
+                try {
+                    int ProveedorId = proveedorDAO.obtenerPorNombre(ProveedorNombreSeleccionado);
+                    int RubroId = rubroDAO.obtenerPorNombre(RubroNombreSeleccionado).getIdRubro();
+                    //msj.mostrarAlertaInforme("Operación exitosa", "", "El rubro id es " + RubroId + ", y proveedor: " + ProveedorId);
+                    Producto pro = new Producto();
+                    ProductoDAOImpl dao = new ProductoDAOImpl();
+
+                    pro.setNombre(nombreIngresado);
+                    pro.setPrecioVenta(precioVentaIngresado);
+                    pro.setCodigoBarra(codigoBarraIngresado);
+                    pro.setCantidadDisponible(cantDisponibleIngresado);
+                    pro.setCantidadMinima(cantMinimaIngresado);
+                    pro.setIdRubroFK(RubroId);
+                    pro.setIdProveedorFK(ProveedorId);
+                    try {
+                        dao.insertar(pro);
+                        msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el producto correctamente.");
+                        completarTablaProductos();
+                        vaciarCampos();
+                        campoNombre.requestFocus();
+                    } catch (Exception e) {
+                        msj.mostrarError("Error", "", "No se pudo agregar el producto en la BD");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }*/
+
+
+        /*
         try {
             int ProveedorId = proveedorDAO.obtenerPorNombre(ProveedorNombreSeleccionado);
             int RubroId = rubroDAO.obtenerPorNombre(RubroNombreSeleccionado).getIdRubro();
@@ -131,7 +260,7 @@ public class VentanaProductosController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
 
@@ -166,7 +295,69 @@ public class VentanaProductosController {
     }
 
     @FXML
-    void accionBotonModificar(ActionEvent event) {
+    void accionBotonModificar(ActionEvent event) throws Exception {
+        // Obtiene el proveedor seleccionado en la tabla
+        Producto pro = this.tablaProducto.getSelectionModel().getSelectedItem();
+
+        if (pro == null) {
+            // Muestra un mensaje de error si no se selecciona ningún elemento en la tabla
+            msj.mostrarError("Error", "", "Debe seleccionar un producto de la lista para modificar.");
+            return;
+        }
+        String nombreIngresado = FormatoTexto.formatearTexto(this.campoNombre.getText());
+        String precioVentaTexto = this.campoVenta.getText();
+        String codigoBarraIngresado = this.campoCodigo.getText().toUpperCase();
+        String cantDisponibleTexto = this.campoCantDisp.getText();
+        String cantMinimaTexto = this.campoCantMin.getText();
+        String RubroNombreSeleccionado = rubroBox.getSelectionModel().getSelectedItem();
+        String ProveedorNombreSeleccionado = proveedorBox.getSelectionModel().getSelectedItem();
+        ProveedorDAOImpl proveedorDAO = new ProveedorDAOImpl();
+        RubroDAOImpl rubroDAO = new RubroDAOImpl();
+
+        // Verifica si algún campo de texto está vacío
+        if (nombreIngresado.isEmpty() || precioVentaTexto.isEmpty() ||
+                cantDisponibleTexto.isEmpty() || cantMinimaTexto.isEmpty()) {
+            // Mostrar mensaje de error si falta ingresar datos
+            msj.mostrarError("Error", "", "Falta ingresar datos.");
+        } else {
+            if (ValidacionDeEntrada.validarCodigoDeBarra(codigoBarraIngresado) &&
+                    ValidacionDeEntrada.validarPrecioVenta(precioVentaTexto) &&
+                    ValidacionDeEntrada.validarSeleccionComboBox(proveedorBox, "Debe seleccionar un proveedor.") &&
+                    ValidacionDeEntrada.validarSeleccionComboBox(rubroBox, "Debe seleccionar un rubro.")) {
+                // Verificar valores numéricos
+                Double precioVentaIngresado = Double.valueOf(precioVentaTexto);
+                Integer cantDisponibleIngresado = Integer.valueOf(cantDisponibleTexto);
+                Integer cantMinimaIngresado = Integer.valueOf(cantMinimaTexto);
+                // Realizar la operación si todas las validaciones son exitosas
+                int ProveedorId = proveedorDAO.obtenerPorNombre(ProveedorNombreSeleccionado);
+                int RubroId = rubroDAO.obtenerPorNombre(RubroNombreSeleccionado).getIdRubro();
+
+                pro.setNombre(nombreIngresado);
+                pro.setPrecioVenta(precioVentaIngresado);
+                pro.setCodigoBarra(codigoBarraIngresado);
+                pro.setCantidadDisponible(cantDisponibleIngresado);
+                pro.setCantidadMinima(cantMinimaIngresado);
+                pro.setIdRubroFK(RubroId);
+                pro.setIdProveedorFK(ProveedorId);
+
+                try {
+                    ProductoDAOImpl dao = new ProductoDAOImpl();
+                    dao.modificar(pro);
+                    completarTablaProductos();
+                    vaciarCampos();
+                    campoNombre.requestFocus();
+                    manejador.configurarBotones(false);
+                    msj.mostrarAlertaInforme("Operación exitosa", "", "El producto se ha modificado");
+                } catch (Exception e) {
+                    msj.mostrarError("Error", "", "No se pudo modificar el producto en la BD");
+                }
+            }
+        }
+
+
+
+
+        /*
         // Obtiene el proveedor seleccionado en la tabla
         Producto pro = this.tablaProducto.getSelectionModel().getSelectedItem();
 
@@ -207,7 +398,7 @@ public class VentanaProductosController {
             msj.mostrarAlertaInforme("Operación exitosa", "", "El producto se ha modificado");
         } catch (Exception e) {
             msj.mostrarError("Error", "", "No se pudo modificar el producto en la BD");
-        }
+        }*/
     }
 
     @FXML
@@ -322,5 +513,29 @@ public class VentanaProductosController {
         proveedorBox.setPromptText("Seleccionar");
         // Colocar el foco en campoNombre
         campoNombre.requestFocus();
+    }
+
+
+
+    private Producto obtenerValoresDeCampos() {
+        String nombreIngresado = this.campoNombre.getText();
+        String precioVentaTexto = this.campoVenta.getText();
+        String codigoBarraIngresado = this.campoCodigo.getText();
+        String cantDisponibleTexto = this.campoCantDisp.getText();
+        String cantMinimaTexto = this.campoCantMin.getText();
+        String RubroNombreSeleccionado = rubroBox.getSelectionModel().getSelectedItem();
+        String ProveedorNombreSeleccionado = proveedorBox.getSelectionModel().getSelectedItem();
+
+
+        Producto producto = new Producto();
+        producto.setNombre(nombreIngresado);
+        producto.setPrecioVenta(Double.parseDouble(precioVentaTexto));
+        producto.setCodigoBarra(codigoBarraIngresado);
+        producto.setCantidadDisponible(Integer.parseInt(cantDisponibleTexto));
+        producto.setCantidadMinima(Integer.parseInt(cantMinimaTexto));
+        producto.setRubroNombre(RubroNombreSeleccionado);
+        producto.setProveedorNombre(ProveedorNombreSeleccionado);
+
+        return producto;
     }
 }

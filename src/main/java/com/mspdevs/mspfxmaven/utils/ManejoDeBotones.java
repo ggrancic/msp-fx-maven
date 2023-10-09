@@ -1,6 +1,7 @@
 package com.mspdevs.mspfxmaven.utils;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
 
 public class ManejoDeBotones {
     private Button btnModificar;

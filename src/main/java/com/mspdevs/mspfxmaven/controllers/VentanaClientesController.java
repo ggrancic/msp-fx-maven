@@ -2,10 +2,10 @@ package com.mspdevs.mspfxmaven.controllers;
 
 import com.mspdevs.mspfxmaven.model.Cliente;
 import com.mspdevs.mspfxmaven.model.DAO.ClienteDAOImpl;
+import com.mspdevs.mspfxmaven.model.DAO.ProveedorDAOImpl;
 import com.mspdevs.mspfxmaven.model.Persona;
-import com.mspdevs.mspfxmaven.utils.Alerta;
-import com.mspdevs.mspfxmaven.utils.ManejoDeBotones;
-import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
+import com.mspdevs.mspfxmaven.model.Proveedor;
+import com.mspdevs.mspfxmaven.utils.*;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -100,6 +100,41 @@ public class VentanaClientesController implements Initializable {
 
     @FXML
     void accionBotonAgregar(ActionEvent event) {
+        // Obtener los valores de los campos en un objeto Proveedor
+        Cliente cliente = obtenerValoresDeCampos();
+
+        // Verifica si algún campo de texto está vacío
+        if (cliente.getNombre().isEmpty() || cliente.getApellido().isEmpty() || cliente.getProvincia().isEmpty() ||
+                cliente.getLocalidad().isEmpty() || cliente.getCalle().isEmpty() || cliente.getCuil().isEmpty() ||
+                cliente.getMail().isEmpty() || cliente.getTelefono().isEmpty()) {
+            // Mostrar mensaje de error si falta ingresar datos
+            msj.mostrarError("Error", "", "Falta ingresar datos.");
+        } else {
+            // Realiza las validaciones con ValidacionDeEntrada
+            if (ValidacionDeEntrada.validarEmail(cliente.getMail()) &&
+                    ValidacionDeEntrada.validarCuil(cliente.getCuil()) &&
+                    ValidacionDeEntrada.validarTelefono(cliente.getTelefono())) {
+                // Extrae el DNI del CUIT (últimos 7 caracteres)
+                String cuilIngresado = cliente.getCuil();
+                int inicioDNI = 2;
+                int finDNI = (cuilIngresado.length() == 11) ? 10 : 9; // Si tiene 11 caracteres, toma los dígitos de 2 a 10, de lo contrario, toma los de 2 a 9
+                String dniIngresado = cuilIngresado.substring(inicioDNI, finDNI);
+                cliente.setDni(dniIngresado);
+
+                try {
+                    ClienteDAOImpl dao = new ClienteDAOImpl();
+                    dao.insertar(cliente);
+                    completarTabla();
+                    vaciarCampos();
+                    campoNombre.requestFocus();
+                    manejador.configurarBotones(false);
+                    msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el cliente correctamente.");
+                } catch (Exception e) {
+                    msj.mostrarError("Error", "", "No se pudo agregar el cliente.");
+                }
+            }
+        }
+        /*
         // Obtiene los valores ingresados en los campos de texto
         String nombreIngresado = this.campoNombre.getText();
         String apellidoIngresado = this.campoApellido.getText();
@@ -138,7 +173,7 @@ public class VentanaClientesController implements Initializable {
                 e.printStackTrace(); // Imprime el stack trace de la excepción para depuración
                 msj.mostrarError("Error", "", "Ocurrió un error al agregar el cliente.");
             }
-        }
+        }*/
     }
 
     @FXML
@@ -176,6 +211,55 @@ public class VentanaClientesController implements Initializable {
 
     @FXML
     void accionBotonModificar(ActionEvent event) {
+        // Obtiene el proveedor seleccionado en la tabla
+        Cliente c = this.tablaClientes.getSelectionModel().getSelectedItem();
+        // Obtiene los valores de los campos
+        Cliente cliente = obtenerValoresDeCampos();
+
+        // Verifica si algún campo de texto está vacío
+        if (cliente.getNombre().isEmpty() || cliente.getApellido().isEmpty() || cliente.getProvincia().isEmpty() ||
+                cliente.getLocalidad().isEmpty() || cliente.getCalle().isEmpty() || cliente.getCuil().isEmpty() ||
+                cliente.getMail().isEmpty() || cliente.getTelefono().isEmpty()) {
+            // Mostrar mensaje de error si falta ingresar datos
+            msj.mostrarError("Error", "", "Falta ingresar datos.");
+        } else {
+            // Realiza las validaciones con ValidacionDeEntrada
+            // Realiza las validaciones con ValidacionDeEntrada
+            if (ValidacionDeEntrada.validarEmail(cliente.getMail()) &&
+                    ValidacionDeEntrada.validarCuil(cliente.getCuil()) &&
+                    ValidacionDeEntrada.validarTelefono(cliente.getTelefono())) {
+                // Extrae el DNI del CUIT (últimos 7 caracteres)
+                String cuilIngresado = cliente.getCuil();
+                int inicioDNI = 2;
+                int finDNI = (cuilIngresado.length() == 11) ? 10 : 9; // Si tiene 11 caracteres, toma los dígitos de 2 a 10, de lo contrario, toma los de 2 a 9
+                String dniIngresado = cuilIngresado.substring(inicioDNI, finDNI);
+                cliente.setDni(dniIngresado);
+                try {
+                    // Actualiza los valores del proveedor
+                    c.setNombre(cliente.getNombre());
+                    c.setApellido(cliente.getApellido());
+                    c.setProvincia(cliente.getProvincia());
+                    c.setLocalidad(cliente.getLocalidad());
+                    c.setCalle(cliente.getCalle());
+                    c.setCuil(cliente.getCuil());
+                    c.setDni(cliente.getDni());
+                    c.setMail(cliente.getMail());
+                    c.setTelefono(cliente.getTelefono());
+
+                    ClienteDAOImpl dao = new ClienteDAOImpl();
+                    dao.modificar(c);
+                    completarTabla();
+                    vaciarCampos();
+                    campoNombre.requestFocus();
+                    // Para habilitar "Modificar" y "Eliminar" y deshabilitar "Agregar"
+                    manejador.configurarBotones(false);
+                    msj.mostrarAlertaInforme("Operación exitosa", "", "El cliente se ha modificado");
+                } catch (Exception e) {
+                    msj.mostrarError("Error", "", "No se pudo agregar el cliente.");
+                }
+            }
+        }
+        /*
         // Obtiene el proveedor seleccionado en la tabla
         Cliente c = this.tablaClientes.getSelectionModel().getSelectedItem();
 
@@ -219,7 +303,7 @@ public class VentanaClientesController implements Initializable {
             msj.mostrarAlertaInforme("Operación exitosa", "", "El cliente se ha modificado");
         } catch (Exception e) {
             msj.mostrarError("Error", "", "No se pudo modificar el elemento en la BD");
-        }
+        }*/
     }
 
     @Override
@@ -322,5 +406,32 @@ public class VentanaClientesController implements Initializable {
             );
             tablaClientes.setItems(rubrosFiltrados);
         }
+    }
+
+
+
+    private Cliente obtenerValoresDeCampos() {
+        String nombreIngresado = FormatoTexto.formatearTexto(this.campoNombre.getText());
+        String apellidoIngresado = FormatoTexto.formatearTexto(this.campoApellido.getText());
+        String provinciaIngresada = FormatoTexto.formatearTexto(this.campoProvincia.getText());
+        String localidadIngresada = FormatoTexto.formatearTexto(this.campoLocalidad.getText());
+        String calleIngresada = FormatoTexto.formatearTexto(this.campoCalle.getText());
+        String cuilIngresado = this.campoCuil.getText();
+        //String dniIngresado = cuitIngresado.substring(2, 10);
+        String emailIngresado = this.campoEmail.getText();
+        String telefonoIngresado = this.campoTelefono.getText();
+
+        Cliente cliente = new Cliente();
+        cliente.setNombre(nombreIngresado);
+        cliente.setApellido(apellidoIngresado);
+        cliente.setProvincia(provinciaIngresada);
+        cliente.setLocalidad(localidadIngresada);
+        cliente.setCalle(calleIngresada);
+        cliente.setCuil(cuilIngresado);
+        //proveedor.setDni(dniIngresado);
+        cliente.setMail(emailIngresado);
+        cliente.setTelefono(telefonoIngresado);
+
+        return cliente;
     }
 }
