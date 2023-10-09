@@ -202,4 +202,36 @@ public class VentanaPrincipalController implements Initializable {
             return null;
         }
     }
+
+
+
+
+    // Método para crear un backup de la base de datos
+    private void crearBackupBaseDeDatos() {
+        String nombreUsuario = "usuarioMercadito"; // Reemplaza con tu usuario de la base de datos
+        String contrasena = "mercadito"; // Reemplaza con tu contraseña de la base de datos
+        String rutaBackup = "/ruta/del/archivo/backup_mercadito.sql"; // Reemplaza con la ruta deseada
+
+        // Comando para crear el backup
+        String comando = "mysqldump -u " + nombreUsuario + " -p" + contrasena + " mercadito > " + rutaBackup;
+
+        try {
+            // Ejecutar el comando para crear el backup
+            ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", comando);
+            Process process = processBuilder.start();
+
+            // Esperar a que el proceso termine
+            int exitCode = process.waitFor();
+
+            if (exitCode == 0) {
+                // El backup se creó con éxito
+                System.out.println("Backup de la base de datos creado con éxito.");
+            } else {
+                // Ocurrió un error al crear el backup
+                System.err.println("Error al crear el backup de la base de datos.");
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }

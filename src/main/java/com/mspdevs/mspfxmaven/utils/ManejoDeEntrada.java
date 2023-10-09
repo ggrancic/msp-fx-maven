@@ -53,9 +53,12 @@ public class ManejoDeEntrada {
     }*/
 
     // Patrón para email
-    private static final Pattern email = Pattern.compile("^[a-zA-Z0-9\\p{Punct}ñÑ]*$");
+    private static final Pattern email = Pattern.compile("^[a-zA-Z0-9ñ@\\-_.]+$");
     // Operador para filtrar caracteres ingresados
     private static final UnaryOperator<TextFormatter.Change> emailFiltro = change -> {
+        if (change.getControlNewText().isEmpty()) {
+            return change;
+        }
         if (email.matcher(change.getControlNewText()).matches()) {
             if (change.getControlNewText().length() <= 255) { // Cambiar límite según necesidades
                 return change;
