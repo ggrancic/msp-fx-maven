@@ -38,7 +38,7 @@ public class ManejoDeEntrada {
     }
 
     // Patrón para codigo de barras
-    private static final Pattern codigoBarra = Pattern.compile("^[a-zA-Z0-9ñÑ]*$");
+    /*private static final Pattern codigoBarra = Pattern.compile("^[a-zA-Z0-9ñÑ]*$");
     // Operador para filtrar caracteres ingresados
     private static final UnaryOperator<TextFormatter.Change> codigoBarraFiltro = change -> {
         if (codigoBarra.matcher(change.getControlNewText()).matches()) {
@@ -50,7 +50,7 @@ public class ManejoDeEntrada {
     };
     public static TextFormatter<String> soloCodigoBarra() {
         return new TextFormatter<>(codigoBarraFiltro);
-    }
+    }*/
 
     // Patrón para email
     private static final Pattern email = Pattern.compile("^[a-zA-Z0-9\\p{Punct}ñÑ]*$");
@@ -101,11 +101,22 @@ public class ManejoDeEntrada {
         }
         return null;
     };
+    private static final UnaryOperator<TextFormatter.Change> numerosCodigoBarras = change -> {
+        if (numerosEnteros.matcher(change.getControlNewText()).matches()) {
+            if (change.getControlNewText().length() <= 13) { // Cambiar límite según necesidades
+                return change;
+            }
+        }
+        return null;
+    };
     // Método para obtener un TextFormatter para números enteros
     public static TextFormatter<String> soloNumerosEnteros() {
         return new TextFormatter<>(numerosEnterosFiltro);
     }
     public static TextFormatter<String> soloDni() {
         return new TextFormatter<>(numerosDni);
+    }
+    public static TextFormatter<String> soloCodigoBarras() {
+        return new TextFormatter<>(numerosCodigoBarras);
     }
 }

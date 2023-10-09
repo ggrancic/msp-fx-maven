@@ -451,7 +451,7 @@ public class VentanaProductosController {
         // Aplica el TextFormatter a los campos
         campoNombre.setTextFormatter(ManejoDeEntrada.soloLetrasNumEspAcento());
         campoVenta.setTextFormatter(ManejoDeEntrada.soloNumerosDecimales());
-        campoCodigo.setTextFormatter(ManejoDeEntrada.soloCodigoBarra());
+        campoCodigo.setTextFormatter(ManejoDeEntrada.soloCodigoBarras());
         campoCantDisp.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
         campoCantMin.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
     }
