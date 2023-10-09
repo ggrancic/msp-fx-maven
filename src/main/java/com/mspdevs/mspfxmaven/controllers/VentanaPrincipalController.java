@@ -12,12 +12,14 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Button;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -49,6 +51,9 @@ public class VentanaPrincipalController implements Initializable {
 
     @FXML
     private Label fecha;
+    
+    @FXML
+    private Button btnCompra;
 
     private volatile boolean stop = false;
 
@@ -80,6 +85,12 @@ public class VentanaPrincipalController implements Initializable {
     void abrirVentanaRubros(MouseEvent event) throws IOException {
         GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaRubros.fxml"));
         bpane.setCenter(centro);
+    }
+    
+    @FXML
+    void abrirVentanaCompras(ActionEvent event) throws IOException {
+    	GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaCompras.fxml"));
+    	bpane.setCenter(centro);
     }
     
     @Override
