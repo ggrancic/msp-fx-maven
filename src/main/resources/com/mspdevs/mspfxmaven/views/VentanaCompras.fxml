@@ -19,24 +19,23 @@
 <?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.SearchableComboBox?>
 
-
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.VentanaComprasController">
    <left>
       <VBox alignment="TOP_CENTER" styleClass="login-left-pane" stylesheets="@../styles/style.css" BorderPane.alignment="CENTER">
          <children>
-            <ImageView fitHeight="128.0" fitWidth="128.0" pickOnBounds="true" preserveRatio="true" styleClass="shadow-abajo">
+            <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" styleClass="shadow-abajo">
                <image>
                   <Image url="@../imgs/compraswhite128.png" />
                </image>
             </ImageView>
             <Label alignment="CENTER" contentDisplay="CENTER" styleClass="shadow-abajo-2" text="Gestión de Compras" textFill="WHITE">
                <font>
-                  <Font name="SansSerif Bold" size="20.0" />
+                  <Font name="SansSerif Bold" size="18.0" />
                </font>
             </Label>
          </children>
          <padding>
-            <Insets left="20.0" right="20.0" top="10.0" />
+            <Insets left="10.0" right="10.0" top="10.0" />
          </padding>
       </VBox>
    </left>
