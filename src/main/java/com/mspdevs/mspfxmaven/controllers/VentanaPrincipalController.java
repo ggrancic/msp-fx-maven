@@ -5,9 +5,12 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import com.mspdevs.mspfxmaven.utils.Alerta;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -31,7 +34,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 
+
 public class VentanaPrincipalController implements Initializable {
+    Alerta msj = new Alerta();
 
     private LoginMSPController loginController;
     
@@ -72,10 +77,10 @@ public class VentanaPrincipalController implements Initializable {
 
     @FXML
     void abrirVentanaCliente(MouseEvent event) throws IOException {
-        GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaCliente.fxml"));    
+        GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaCliente.fxml"));
         bpane.setCenter(centro);
     }
-    
+
     @FXML
     void abrirVentanaInventario(MouseEvent event) throws IOException {
         GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaProductos.fxml"));
@@ -111,6 +116,7 @@ public class VentanaPrincipalController implements Initializable {
         // Acá se inicializa todo lo referido a los elementos del fxml.
         Timenow();
 
+        // BACKUP DE BD
         //usuarioLogueado.setText(loginController.getNombreUsuarioLogueado());
     }
 
@@ -182,6 +188,8 @@ public class VentanaPrincipalController implements Initializable {
             } else if (response == cerrarSesionButton) {
                 // Cerrar sesión y volver a la ventana de inicio de sesión
                 stop = true; // Detener el hilo de actualización del tiempo
+                // Lógica para crear el backup de la base de datos
+                //realizarBackupBaseDeDatos();
                 irAPantallaLogin(event);
             }
         });
@@ -207,31 +215,39 @@ public class VentanaPrincipalController implements Initializable {
 
 
     // Método para crear un backup de la base de datos
-    private void crearBackupBaseDeDatos() {
-        String nombreUsuario = "usuarioMercadito"; // Reemplaza con tu usuario de la base de datos
-        String contrasena = "mercadito"; // Reemplaza con tu contraseña de la base de datos
-        String rutaBackup = "/ruta/del/archivo/backup_mercadito.sql"; // Reemplaza con la ruta deseada
-
-        // Comando para crear el backup
-        String comando = "mysqldump -u " + nombreUsuario + " -p" + contrasena + " mercadito > " + rutaBackup;
+    private void realizarBackupBaseDeDatos() {
+        String dbUser = "usuarioMercadito";
+        String dbPassword = "mercadito";
+        String dbName = "mercadito";
+        String rutaBackup = "F:\\Backup\\backup_mercadito.sql";
 
         try {
-            // Ejecutar el comando para crear el backup
-            ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", comando);
-            Process process = processBuilder.start();
+            String rutaMysqldump = "C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysqldump";
+            String[] command = {
+                    rutaMysqldump,
+                    "--user=" + dbUser,
+                    "--password=" + dbPassword,
+                    dbName,
+                    "--result-file=" + rutaBackup
+            };
 
-            // Esperar a que el proceso termine
+            ProcessBuilder processBuilder = new ProcessBuilder(command);
+            processBuilder.redirectErrorStream(true);
+            Process process = processBuilder.start();
             int exitCode = process.waitFor();
 
             if (exitCode == 0) {
-                // El backup se creó con éxito
-                System.out.println("Backup de la base de datos creado con éxito.");
+                msj.mostrarAlertaInforme("Hola","Backup realizado con éxito", "El backup de la base de datos se ha creado correctamente.");
             } else {
-                // Ocurrió un error al crear el backup
-                System.err.println("Error al crear el backup de la base de datos.");
+                msj.mostrarAlertaInforme("Hola","Error en el backup", "No se pudo realizar el backup de la base de datos.");
             }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            msj.mostrarAlertaInforme("Hola","Error en el backup", "Error de entrada/salida: " + e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restaura la bandera de interrupción
+            msj.mostrarAlertaInforme("Hola", "Error en el backup", "La operación fue interrumpida: " + e.getMessage());
+        } catch (Exception e) {
+            msj.mostrarAlertaInforme("Hola","Error en el backup", "Error general: " + e.getMessage());
         }
     }
 }
