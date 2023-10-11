@@ -67,6 +67,9 @@ public class VentanaPrincipalController implements Initializable {
     
     @FXML
     private Button btnCompra;
+    
+    @FXML
+    private Button btnVentas;
 
     private volatile boolean stop = false;
 
@@ -103,6 +106,12 @@ public class VentanaPrincipalController implements Initializable {
     @FXML
     void abrirVentanaCompras(ActionEvent event) throws IOException {
     	GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaCompras.fxml"));
+    	bpane.setCenter(centro);
+    }
+    
+    @FXML
+    void abrirVentanaVentas(ActionEvent event) throws IOException {
+    	GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaVentas.fxml"));
     	bpane.setCenter(centro);
     }
     
