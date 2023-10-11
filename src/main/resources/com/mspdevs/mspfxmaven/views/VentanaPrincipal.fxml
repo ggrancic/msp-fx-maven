@@ -20,7 +20,7 @@
          <children>
             <ToolBar HBox.hgrow="ALWAYS">
               <items>
-                <Button fx:id="btnClientes" contentDisplay="TOP" mnemonicParsing="false" onMouseClicked="#abrirVentanaCliente" style="-fx-background-color: lightgray;" text="Clientes">
+                <Button fx:id="btnClientes" contentDisplay="TOP" mnemonicParsing="false" onMouseClicked="#abrirVentanaCliente" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Clientes">
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -35,7 +35,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button contentDisplay="TOP" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" style="-fx-background-color: lightgray;" text="Ventas">
+                  <Button contentDisplay="TOP" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Ventas">
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -47,7 +47,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnCompras" contentDisplay="TOP" mnemonicParsing="false" onAction="#abrirVentanaCompras" style="-fx-background-color: lightgray;" text="Compras">
+                  <Button fx:id="btnCompras" contentDisplay="TOP" mnemonicParsing="false" onAction="#abrirVentanaCompras" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Compras">
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -59,7 +59,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnInventario" contentDisplay="TOP" layoutX="178.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#abrirVentanaInventario" style="-fx-background-color: lightgray;" text="Inventario">
+                  <Button fx:id="btnInventario" contentDisplay="TOP" layoutX="178.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#abrirVentanaInventario" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Inventario">
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -71,7 +71,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button contentDisplay="TOP" mnemonicParsing="false" style="-fx-background-color: lightgray;" text="Reportes">
+                  <Button contentDisplay="TOP" mnemonicParsing="false" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Reportes">
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -83,7 +83,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnProveedores" contentDisplay="TOP" layoutX="346.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#abrirVentanaProveedores" style="-fx-background-color: lightgray;" text="Proveedores">
+                  <Button fx:id="btnProveedores" contentDisplay="TOP" layoutX="346.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#abrirVentanaProveedores" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Proveedores">
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -95,7 +95,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnUsuarios" contentDisplay="TOP" layoutX="430.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#abrirVentanaUsuarios" style="-fx-background-color: lightgray;" text="Usuarios">
+                  <Button fx:id="btnUsuarios" contentDisplay="TOP" layoutX="430.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#abrirVentanaUsuarios" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Usuarios">
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -108,7 +108,7 @@
                      </font>
                   </Button>
 
-                  <Button fx:id="btnRubros" contentDisplay="TOP" layoutX="516.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#abrirVentanaRubros" style="-fx-background-color: lightgray;" text="Rubros">
+                  <Button fx:id="btnRubros" contentDisplay="TOP" layoutX="516.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#abrirVentanaRubros" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Rubros">
 
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
@@ -125,7 +125,7 @@
             </ToolBar>
             <ToolBar nodeOrientation="RIGHT_TO_LEFT" HBox.hgrow="NEVER">
               <items>
-                  <Button fx:id="btnCerrar" contentDisplay="TOP" mnemonicParsing="false" onAction="#cerrarAplicacion" style="-fx-background-color: lightgray;" text="Cerrar Sesión">
+                  <Button fx:id="btnCerrar" contentDisplay="TOP" mnemonicParsing="false" onAction="#cerrarAplicacion" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Cerrar Sesión">
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>

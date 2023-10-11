@@ -91,3 +91,11 @@
     -fx-text-fill: #fff;
     -fx-size: 40px;
 }
+
+.btnArriba {
+	-fx-background-color: lightgray;
+}
+
+.btnArriba:hover {
+	-fx-background-color: gray;
+}
