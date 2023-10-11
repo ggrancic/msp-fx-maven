@@ -23,7 +23,7 @@
 <?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.SearchableComboBox?>
 
-<GridPane stylesheets="@../styles/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.VentanaComprasController">
+<GridPane stylesheets="@../styles/style.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.VentanaComprasController">
    <columnConstraints>
       <ColumnConstraints halignment="CENTER" hgrow="NEVER" />
       <ColumnConstraints hgrow="ALWAYS" />
@@ -41,7 +41,7 @@
             </ImageView>
             <Label alignment="CENTER" contentDisplay="CENTER" styleClass="shadow-abajo-2" text="Gestión de Compras" textFill="WHITE">
                <font>
-                  <Font name="SansSerif Bold" size="20.0" />
+                  <Font name="SansSerif Bold" size="16.0" />
                </font>
             </Label>
          </children>
@@ -100,7 +100,10 @@
                                  </font>
                               </Label>
                               <SearchableComboBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" promptText="Seleccionar" />
-                              <Button minWidth="-Infinity" mnemonicParsing="false" prefWidth="130.0" text="NUEVO PROVEEDOR" />
+                              <Button minWidth="-Infinity" mnemonicParsing="false" prefWidth="130.0" text="NUEVO PROVEEDOR">
+                                 <font>
+                                    <Font size="11.0" />
+                                 </font></Button>
                            </children>
                         </HBox>
                      </children>
