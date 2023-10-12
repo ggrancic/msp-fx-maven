@@ -35,7 +35,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button contentDisplay="TOP" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Ventas">
+                  <Button fx:id="btnVentas" contentDisplay="TOP" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#abrirVentanaVentas" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Ventas">
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -113,7 +113,7 @@
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../imgs/grupo.png" />
+                              <Image url="@../imgs/subcarpeta32.png" />
                            </image>
                         </ImageView>
                      </graphic>
