@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="320.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox alignment="CENTER_LEFT" prefHeight="50.0" style="-fx-background-color: linear-gradient(to top right, rgb(207, 150, 207), rgb(107, 116, 179));">
+         <children>
+            <Label text="Nuevo Cliente" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+               <padding>
+                  <Insets left="10.0" />
+               </padding>
+            </Label>
+         </children>
+      </HBox>
+      <SplitPane dividerPositions="0.5" stylesheets="@../styles/style.css">
+         <items>
+            <VBox spacing="15.0">
+               <children>
+                  <HBox alignment="CENTER" spacing="55.0">
+                     <children>
+                        <Label text="DNI">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" layoutX="10.0" layoutY="30.0" spacing="50.0">
+                     <children>
+                        <Label text="CUIL">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" spacing="20.0">
+                     <children>
+                        <Label text="NOMBRE">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" layoutX="10.0" layoutY="69.0" spacing="15.0">
+                     <children>
+                        <Label text="APELLIDO">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField />
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets top="20.0" />
+               </padding>
+            </VBox>
+            <VBox layoutX="10.0" layoutY="10.0" spacing="15.0">
+               <children>
+                  <HBox alignment="CENTER" spacing="50.0">
+                     <children>
+                        <Label text="CALLE">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" layoutX="10.0" layoutY="30.0" spacing="20.0">
+                     <children>
+                        <Label text="TELEFONO">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" spacing="20.0">
+                     <children>
+                        <Label text="PROVINCIA">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" layoutX="10.0" layoutY="69.0" spacing="15.0">
+                     <children>
+                        <Label text="LOCALIDAD">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField />
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets top="20.0" />
+               </padding>
+            </VBox>
+         </items>
+      </SplitPane>
+      <HBox alignment="CENTER" spacing="30.0">
+         <children>
+            <Button fx:id="btnAceptar" mnemonicParsing="false" prefHeight="35.0" prefWidth="100.0" styleClass="btn-agregar" stylesheets="@../styles/style.css" text="Agregar" textFill="WHITE">
+               <graphic>
+                  <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../imgs/cheque.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <font>
+                  <Font name="SansSerif Regular" size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="btnCancelar" mnemonicParsing="false" prefHeight="35.0" prefWidth="100.0" styleClass="btn-borrar" stylesheets="@../styles/style.css" text="Cancelar" textFill="WHITE">
+               <graphic>
+                  <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../imgs/x.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <font>
+                  <Font name="SansSerif Regular" size="14.0" />
+               </font>
+            </Button>
+         </children>
+         <VBox.margin>
+            <Insets top="40.0" />
+         </VBox.margin>
+      </HBox>
+   </children>
+</VBox>

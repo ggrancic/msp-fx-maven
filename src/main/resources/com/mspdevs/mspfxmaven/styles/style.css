@@ -99,3 +99,14 @@
 .btnArriba:hover {
 	-fx-background-color: gray;
 }
+
+.split-pane {
+    -fx-box-border: transparent;
+}
+
+.split-pane:horizontal > .split-pane-divider {
+   -fx-background-color: transparent;
+}
+.split-pane:vertical > .split-pane-divider {
+   -fx-background-color: transparent;
+}
