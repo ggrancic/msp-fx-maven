@@ -36,6 +36,7 @@
 		    <artifactId>controlsfx</artifactId>
 		    <version>11.1.2</version>
 		</dependency>
+
         <!-- https://mvnrepository.com/artifact/javax.mail/mail
 
         <dependency>

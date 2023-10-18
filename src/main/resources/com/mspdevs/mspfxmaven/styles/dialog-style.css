@@ -1,0 +1,41 @@
+/* Estilo personalizado para la ventana de confirmación */
+.dialog-pane .window {
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+
+.dialog-pane .window .container {
+    -fx-background-color: transparent;
+}
+
+.dialog-pane .window .container .label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.dialog-pane .window .container .content {
+    -fx-font-size: 14px;
+}
+
+/* Ocultar los botones superiores (minimizar, maximizar, cerrar) */
+.dialog-pane .window .container .button-bar {
+    -fx-padding: 0;
+    -fx-spacing: 0;
+    -fx-alignment: CENTER_RIGHT;
+    -fx-background-color: transparent;
+}
+
+.dialog-pane .window .container .button-bar .button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.dialog-pane .window .container .button-bar .button:hover {
+    -fx-background-color: #e0e0e0;
+}
+
+.dialog-pane .window .container .button-bar .button:pressed {
+    -fx-background-color: #b0b0b0;
+}

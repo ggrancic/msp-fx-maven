@@ -59,6 +59,85 @@ public class ValidacionDeEntrada {
         }
     }
 
+    public static boolean validarNumeroFactura(String numFactura) {
+        // Validar que el código de barra tenga exactamente 13 caracteres
+        if (numFactura.length() == 12) {
+            return true;
+        } else {
+            msj.mostrarError("Error", "", "El número de factura debe tener 12 dígitos.");
+            return false;
+        }
+    }
+
+    public static boolean validarCantidad(String cantidadIngresada) {
+        // Verificar si el campo está vacío
+        if (cantidadIngresada.isEmpty()) {
+            msj.mostrarError("Error", "", "La cantidad no debe estar vacia.");
+            return false;
+        }
+
+
+        // Contar el número de dígitos en el texto
+        int contadorDigitos = 0;
+        for (char c : cantidadIngresada.toCharArray()) {
+            if (Character.isDigit(c)) {
+                contadorDigitos++;
+            }
+        }
+
+        // Verificar si hay entre 1 y 3 dígitos
+        if (contadorDigitos >= 1 && contadorDigitos <= 3) {
+            return true;
+        } else {
+            msj.mostrarError("Error", "", "La cantidad debe tener entre 1 y 3 números..");
+            return false;
+        }
+    }
+
+    public static boolean validarGanancia(String gananciaIngresada) {
+        // Verificar si el campo está vacío
+        if (gananciaIngresada.isEmpty()) {
+            msj.mostrarError("Error", "", "La ganancia no debe estar vacia.");
+            return false;
+        }
+
+        // Contar el número de dígitos en el texto
+        int contadorDigitos = 0;
+        for (char c : gananciaIngresada.toCharArray()) {
+            if (Character.isDigit(c)) {
+                contadorDigitos++;
+            }
+        }
+
+        // Verificar si hay entre 1 y 3 dígitos
+        if (contadorDigitos >= 1 && contadorDigitos <= 3) {
+            return true;
+        } else {
+            msj.mostrarError("Error", "", "La ganancia debe tener entre 1 y 3 números.");
+            return false;
+        }
+    }
+
+    public static boolean validarSeleccionTipoProveedorYNumeroFactura(String numeroFactura, String tipo, String proveedor) {
+        if (numeroFactura == null || numeroFactura.isEmpty()) {
+            msj.mostrarError("Error", "", "Debe indicar el número de factura");
+            return false;
+        }
+        if (numeroFactura.length() != 12) {
+            msj.mostrarError("Error", "", "El número de factura debe tener exactamente 12 dígitos.");
+            return false;
+        }
+        if (tipo == null || tipo.isEmpty()) {
+            msj.mostrarError("Error", "", "Debe seleccionar un tipo de factura");
+            return false;
+        }
+        if (proveedor == null || proveedor.isEmpty()) {
+            msj.mostrarError("Error", "", "Debe seleccionar un proveedor");
+            return false;
+        }
+        return true;
+    }
+
     public static boolean validarSeleccionComboBox(ComboBox<?> comboBox, String mensajeError) {
         // Verificar si se ha seleccionado un elemento en el ComboBox
         if (comboBox.getSelectionModel().getSelectedItem() != null) {

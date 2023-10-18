@@ -124,7 +124,7 @@
                                     <TableColumn fx:id="colCodigoBarra" editable="false" prefWidth="105.0" text="Código" />
                                     <TableColumn fx:id="colCantDisponible" editable="false" prefWidth="105.0" text="Cant. Disponible" />
                                     <TableColumn fx:id="colCantMinima" editable="false" prefWidth="105.0" text="Cant. Minima" />
-                                    <TableColumn fx:id="colProveedor" editable="false" prefWidth="105.0" text="Proveedor" />
+                                    <TableColumn fx:id="colProveedor" editable="false" prefWidth="105.0" sortable="false" text="Proveedor" />
                                     <TableColumn fx:id="colRubro" editable="false" prefWidth="105.0" text="Rubro" />
                                  </columns>
                                  <columnResizePolicy>

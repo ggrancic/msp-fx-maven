@@ -96,6 +96,14 @@ public class ManejoDeEntrada {
         }
         return null;
     };
+    private static final UnaryOperator<TextFormatter.Change> numerosTelefono = change -> {
+        if (numerosEnteros.matcher(change.getControlNewText()).matches()) {
+            if (change.getControlNewText().length() <= 10) { // Cambiar límite según necesidades
+                return change;
+            }
+        }
+        return null;
+    };
     private static final UnaryOperator<TextFormatter.Change> numerosDni = change -> {
         if (numerosEnteros.matcher(change.getControlNewText()).matches()) {
             if (change.getControlNewText().length() <= 8) { // Cambiar límite según necesidades
@@ -112,6 +120,22 @@ public class ManejoDeEntrada {
         }
         return null;
     };
+    private static final UnaryOperator<TextFormatter.Change> numerosFactura = change -> {
+        if (numerosEnteros.matcher(change.getControlNewText()).matches()) {
+            if (change.getControlNewText().length() <= 12) { // Cambiar límite según necesidades
+                return change;
+            }
+        }
+        return null;
+    };
+    private static final UnaryOperator<TextFormatter.Change> numerosCantidadGanancia = change -> {
+        if (numerosEnteros.matcher(change.getControlNewText()).matches()) {
+            if (change.getControlNewText().length() <= 3) { // Cambiar límite según necesidades
+                return change;
+            }
+        }
+        return null;
+    };
     // Método para obtener un TextFormatter para números enteros
     public static TextFormatter<String> soloNumerosEnteros() {
         return new TextFormatter<>(numerosEnterosFiltro);
@@ -119,7 +143,16 @@ public class ManejoDeEntrada {
     public static TextFormatter<String> soloDni() {
         return new TextFormatter<>(numerosDni);
     }
+    public static TextFormatter<String> soloTelefono() {
+        return new TextFormatter<>(numerosTelefono);
+    }
     public static TextFormatter<String> soloCodigoBarras() {
         return new TextFormatter<>(numerosCodigoBarras);
+    }
+    public static TextFormatter<String> soloNumerosFactura() {
+        return new TextFormatter<>(numerosFactura);
+    }
+    public static TextFormatter<String> soloCantidadGanancia() {
+        return new TextFormatter<>(numerosCantidadGanancia);
     }
 }

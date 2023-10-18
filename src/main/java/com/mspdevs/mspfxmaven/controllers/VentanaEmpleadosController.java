@@ -437,7 +437,7 @@ public class VentanaEmpleadosController implements Initializable {
         campoNombre.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoApellido.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoCalle.setTextFormatter(ManejoDeEntrada.soloLetrasNumEspAcento());
-        campoTelefono.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
+        campoTelefono.setTextFormatter(ManejoDeEntrada.soloTelefono());
         campoProvincia.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoLocalidad.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoEmail.setTextFormatter(ManejoDeEntrada.soloEmail());
@@ -454,7 +454,7 @@ public class VentanaEmpleadosController implements Initializable {
         String localidadIngresada = FormatoTexto.formatearTexto(this.campoLocalidad.getText());
         String calleIngresada = FormatoTexto.formatearTexto(this.campoCalle.getText());
         String dniIngresado = this.campoDNI.getText();
-        String emailIngresado = this.campoEmail.getText();
+        String emailIngresado = this.campoEmail.getText().toLowerCase();;
         String telefonoIngresado = this.campoTelefono.getText();
         String rolIngresado = this.convertirValorCombo(comboAdmin.getValue());
 

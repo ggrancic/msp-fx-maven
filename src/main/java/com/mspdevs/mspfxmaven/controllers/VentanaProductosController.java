@@ -14,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -141,6 +142,7 @@ public class VentanaProductosController {
                         completarTablaProductos();
                         vaciarCampos();
                         campoNombre.requestFocus();
+                        System.out.println("Cantidad de productos seleccionados: " + todosLosProductos.size());
                     } catch (Exception e) {
                         msj.mostrarError("Error", "", "No se pudo agregar el producto en la BD");
                     }
@@ -292,6 +294,7 @@ public class VentanaProductosController {
         // Deselecciona la fila en la tabla
         tablaProducto.getSelectionModel().clearSelection();
         campoNombre.requestFocus();
+        System.out.println("Cantidad de productos seleccionados: " + todosLosProductos.size());
     }
 
     @FXML
@@ -420,6 +423,10 @@ public class VentanaProductosController {
 
     @FXML
     void initialize() throws Exception {
+        colId.setSortType(TableColumn.SortType.DESCENDING);
+        tablaProducto.getSortOrder().add(colId);
+        tablaProducto.sort();
+
         completarTablaProductos();
 
         RubroDAOImpl rubroDAO = new RubroDAOImpl();
@@ -459,6 +466,10 @@ public class VentanaProductosController {
     public void completarTablaProductos() {
         ProductoDAOImpl productoDAO = new ProductoDAOImpl();
         ObservableList<Producto> productos = null;
+
+        colId.setSortType(TableColumn.SortType.DESCENDING);
+        tablaProducto.getSortOrder().add(colId);
+        tablaProducto.sort();
 
         try {
             productos = productoDAO.listarTodos();
@@ -517,6 +528,10 @@ public class VentanaProductosController {
 
 
 
+
+
+    /*
+
     private Producto obtenerValoresDeCampos() {
         String nombreIngresado = this.campoNombre.getText();
         String precioVentaTexto = this.campoVenta.getText();
@@ -537,5 +552,5 @@ public class VentanaProductosController {
         producto.setProveedorNombre(ProveedorNombreSeleccionado);
 
         return producto;
-    }
+    }*/
 }
