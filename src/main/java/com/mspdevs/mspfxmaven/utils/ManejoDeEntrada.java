@@ -136,6 +136,20 @@ public class ManejoDeEntrada {
         }
         return null;
     };
+
+    // Crea un filtro que permita solo dígitos y una longitud máxima de 3
+    static UnaryOperator<TextFormatter.Change> filtroCantidad = change -> {
+        String newText = change.getControlNewText();
+        if (newText.matches("\\d{0,3}")) {
+            return change;
+        }
+        return null;
+    };
+
+    // Aplica el filtro al TextFormatter
+    public static TextFormatter<String> soloCantidad() { return new TextFormatter<>(filtroCantidad);}
+
+
     // Método para obtener un TextFormatter para números enteros
     public static TextFormatter<String> soloNumerosEnteros() {
         return new TextFormatter<>(numerosEnterosFiltro);

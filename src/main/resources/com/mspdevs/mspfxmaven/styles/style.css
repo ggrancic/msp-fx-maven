@@ -110,3 +110,8 @@
 .split-pane:vertical > .split-pane-divider {
    -fx-background-color: transparent;
 }
+
+.background-dark {
+    -fx-background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semi-transparente */
+    -fx-background-radius: 0; /* Sin bordes redondeados */
+}

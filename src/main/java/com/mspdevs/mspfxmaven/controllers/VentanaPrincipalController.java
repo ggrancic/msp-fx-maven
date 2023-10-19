@@ -259,4 +259,9 @@ public class VentanaPrincipalController implements Initializable {
             msj.mostrarAlertaInforme("Hola","Error en el backup", "Error general: " + e.getMessage());
         }
     }
+
+
+    public void mostrarUsuario(String usuario) {
+        usuarioLogueado.setText(usuario);
+    }
 }

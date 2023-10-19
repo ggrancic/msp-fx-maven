@@ -12,7 +12,7 @@
 <?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.SearchableComboBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.ModalNuevoProductoController">
    <children>
       <HBox alignment="CENTER_LEFT" prefHeight="50.0" style="-fx-background-color: linear-gradient(to top right, rgb(207, 150, 207), rgb(107, 116, 179));">
          <children>
@@ -38,7 +38,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField />
+                  <TextField fx:id="campoCodigo" />
                </children>
             </HBox>
             <HBox alignment="CENTER" spacing="105.0">
@@ -48,7 +48,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <TextField />
+                  <TextField fx:id="campoNombre" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" spacing="40.0">
@@ -58,7 +58,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <Spinner prefWidth="80.0" />
+                  <Spinner fx:id="campoCantMin" editable="true" prefWidth="80.0" />
                </children>
                <padding>
                   <Insets left="128.0" />
@@ -71,7 +71,7 @@
                         <Font size="14.0" />
                      </font>
                   </Label>
-                  <SearchableComboBox prefWidth="140.0" promptText="Seleccionar" />
+                  <SearchableComboBox fx:id="rubroBox" prefWidth="140.0" promptText="Seleccionar" />
                </children>
                <padding>
                   <Insets left="129.0" />
@@ -79,7 +79,7 @@
             </HBox>
             <HBox alignment="CENTER" spacing="30.0">
                <children>
-                  <Button fx:id="btnAceptar" mnemonicParsing="false" prefHeight="35.0" prefWidth="100.0" styleClass="btn-agregar" stylesheets="@../styles/style.css" text="Agregar" textFill="WHITE">
+                  <Button fx:id="btnAgregar" mnemonicParsing="false" onAction="#accionBotonAgregar" prefHeight="35.0" prefWidth="100.0" styleClass="btn-agregar" stylesheets="@../styles/style.css" text="Agregar" textFill="WHITE">
                      <graphic>
                         <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -91,7 +91,7 @@
                         <Font name="SansSerif Regular" size="14.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnCancelar" mnemonicParsing="false" prefHeight="35.0" prefWidth="100.0" styleClass="btn-borrar" stylesheets="@../styles/style.css" text="Cancelar" textFill="WHITE">
+                  <Button fx:id="btnCancelar" mnemonicParsing="false" onAction="#accionBtnCancelar" prefHeight="35.0" prefWidth="100.0" styleClass="btn-borrar" stylesheets="@../styles/style.css" text="Cancelar" textFill="WHITE">
                      <graphic>
                         <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                            <image>

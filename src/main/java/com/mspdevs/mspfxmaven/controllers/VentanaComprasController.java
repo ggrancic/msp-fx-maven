@@ -1,6 +1,7 @@
 package com.mspdevs.mspfxmaven.controllers;
 
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
@@ -24,10 +25,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
@@ -135,6 +143,9 @@ public class VentanaComprasController implements Initializable {
     boolean productoEncontrado = false; // Variable para verificar si se encontró el producto
 
 
+    private String proveedorSeleccionado;
+
+
     @FXML
     void accionAgregarALista(ActionEvent event) throws Exception {
         // Recopila los datos de los campos
@@ -147,6 +158,20 @@ public class VentanaComprasController implements Initializable {
         // Validación: verifica si los campos requeridos están vacíos
         if (nombre.isEmpty() || precioVenta.isEmpty() || precioLista.isEmpty() || cantidad == "0" || cantidad.isEmpty() || ganancia.isEmpty()) {
             msj.mostrarAlertaInforme("Error", "", "Debe completar todos los campos.");
+            return;
+        }
+
+        // Validación: verifica que el precio de lista y el precio de venta no sean 0.00
+        double precioListaDoubleValidacion = Double.parseDouble(precioLista);
+        double precioVentaDoubleValidacion = Double.parseDouble(precioVenta);
+        if (precioListaDoubleValidacion <= 0 || precioVentaDoubleValidacion <= 0) {
+            msj.mostrarAlertaInforme("Error", "", "El precio de lista y el precio de venta deben ser mayores que 0.00.");
+            return;
+        }
+
+        // Validación: verifica que el precio de venta sea mayor que el precio de lista
+        if (precioVentaDoubleValidacion <= precioListaDoubleValidacion) {
+            msj.mostrarAlertaInforme("Error", "", "El precio de venta debe ser mayor que el precio de lista.");
             return;
         }
 
@@ -284,7 +309,44 @@ public class VentanaComprasController implements Initializable {
     }
 
     @FXML
-    void accionCrearProducto(ActionEvent event) {
+    void accionCrearProducto(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mspdevs/mspfxmaven/views/ModalNuevoProducto.fxml"));
+        Parent root = loader.load();
+
+        ModalNuevoProductoController modalNuevoProductoController = loader.getController();
+        modalNuevoProductoController.obtenerProveedor(proveedorBox.getValue());
+
+        Scene scene = new Scene(root);
+        Stage newStage = new Stage();
+        newStage.setScene(scene);
+        newStage.initStyle(StageStyle.UNDECORATED);
+        newStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
+        newStage.initModality(Modality.APPLICATION_MODAL);
+        newStage.showAndWait();
+
+        // Deseleccionar los elementos del RadioButton
+        busquedaProducto.selectToggle(null);
+
+        // Vaciar el ComboBox
+        productoBox.setItems(FXCollections.observableArrayList());
+        campoNombre.clear();
+        campoPrecioLista.clear();
+        campoPrecioVenta.clear();
+        campoCantidad.getValueFactory().setValue(1);
+        campoGanancia.setText("0");
+        campoGanancia.setDisable(true);
+
+        // Deshabilitar el botón
+        //btnAgregar.setDisable(false);
+
+        /*
+        Stage dialog = new Stage();
+        Parent root = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/ModalNuevoProducto.fxml"));
+        dialog.setScene(new Scene(root));
+        dialog.initStyle(StageStyle.UNDECORATED);
+        dialog.initOwner(((Node)event.getSource()).getScene().getWindow() );
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.showAndWait();*/
 
     }
 
@@ -414,8 +476,25 @@ public class VentanaComprasController implements Initializable {
     }
 
     @FXML
-    void accionNuevoProveedor(ActionEvent event) {
-        System.out.println("Cantidad de productos seleccionados: " + todosLosProductos.size());
+    void accionNuevoProveedor(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mspdevs/mspfxmaven/views/ModalNuevoProveedor.fxml"));
+        Parent root = loader.load();
+
+        Scene scene = new Scene(root);
+        Stage newStage = new Stage();
+        newStage.setScene(scene);
+        newStage.initStyle(StageStyle.UNDECORATED);
+        newStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
+        newStage.initModality(Modality.APPLICATION_MODAL);
+        newStage.showAndWait();
+
+        // Verificar si el ComboBox tiene elementos antes de limpiarlo
+        if (!proveedorBox.getItems().isEmpty()) {
+            // Limpia el ComboBox antes de cargar la nueva lista
+            proveedorBox.getItems().clear();
+        }
+        // Luego de agregar el proveedor, actualiza el ComboBox
+        actualizarComboBoxProveedores();
     }
 
     @FXML
@@ -484,7 +563,7 @@ public class VentanaComprasController implements Initializable {
                     Producto producto = row.getItem();
 
                     // Crea un cuadro de diálogo de confirmación
-                    boolean confirmado = msj.mostrarConfirmacion("Confirmación", "Eliminar producto de la Tabla", "¿Está seguro de que desea eliminar este producto?");
+                    boolean confirmado = msj.mostrarConfirmacion("Confirmación", "", "¿Está seguro de que desea quitar este producto de la tabla?");
 
                     if (confirmado) {
                         // Si el usuario confirma, elimina el producto de la lista observable y actualiza el TableView
@@ -543,7 +622,7 @@ public class VentanaComprasController implements Initializable {
             validarCamposYHabilitarBoton(btnAgregarProducto);
             validarCamposYHabilitarBoton(btnAgregar);
             validarCamposYHabilitarBoton(btnCrearProducto);
-            validarCamposYHabilitarBoton(btnGuardar);
+            //validarCamposYHabilitarBoton(btnGuardar);
         });
 
         // Agrega un listener para el ComboBox "tipoFacturaBox"
@@ -551,7 +630,7 @@ public class VentanaComprasController implements Initializable {
             validarCamposYHabilitarBoton(btnAgregarProducto);
             validarCamposYHabilitarBoton(btnAgregar);
             validarCamposYHabilitarBoton(btnCrearProducto);
-            validarCamposYHabilitarBoton(btnGuardar);
+            //validarCamposYHabilitarBoton(btnGuardar);
         });
 
         // Agrega un listener para el SearchableComboBox "proveedorBox"
@@ -559,7 +638,7 @@ public class VentanaComprasController implements Initializable {
             validarCamposYHabilitarBoton(btnAgregarProducto);
             validarCamposYHabilitarBoton(btnAgregar);
             validarCamposYHabilitarBoton(btnCrearProducto);
-            validarCamposYHabilitarBoton(btnGuardar);
+            //validarCamposYHabilitarBoton(btnGuardar);
         });
 
         // Personaliza el formato del DatePicker a "año/mes/día"
@@ -691,18 +770,8 @@ public class VentanaComprasController implements Initializable {
         campoGanancia.setTextFormatter(ManejoDeEntrada.soloCantidadGanancia());
         //campoCantidad.setTextFormatter(ManejoDeEntrada.soloCantidadGanancia());
 
-        // Crea un filtro que permita solo dígitos y una longitud máxima de 3
-        UnaryOperator<TextFormatter.Change> filtro = change -> {
-            String newText = change.getControlNewText();
-            if (newText.matches("\\d{0,3}")) {
-                return change;
-            }
-            return null;
-        };
 
-        // Aplica el filtro al TextFormatter
-        TextFormatter<String> textFormatter = new TextFormatter<>(filtro);
-        campoCantidad.getEditor().setTextFormatter(textFormatter);
+        campoCantidad.getEditor().setTextFormatter(ManejoDeEntrada.soloCantidad());
 
         // Agrega un listener para escuchar los cambios en el valor del Spinner
         campoCantidad.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -874,8 +943,6 @@ public class VentanaComprasController implements Initializable {
         campoPrecioVenta.setText(String.valueOf(precioVenta));
     }
 
-    SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, Integer.MAX_VALUE, 0);
-
     public void vaciarCampos() {
         // Limpia los campos de entrada
         campoNumFactura.setText("");
@@ -1025,5 +1092,37 @@ public class VentanaComprasController implements Initializable {
 
         // Habilita o deshabilita el botón de guardar según el valor de totalPrecioLista
         btnGuardar.setDisable(total == 0.0);
+    }
+
+
+
+    private void actualizarComboBoxProveedores() {
+        ProveedorDAOImpl proveedorDAO = new ProveedorDAOImpl();
+
+        // Obteniene la lista de proveedores desde la base de datos
+        List<Proveedor> proveedores = null;
+        try {
+            proveedores = proveedorDAO.listarTodos();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        // Cargar los nombres en los ComboBox
+        for (Proveedor proveedor : proveedores) {
+            proveedorBox.getItems().add(proveedor.getNombre());
+        }
+    }
+
+
+
+
+
+    @FXML
+    void proveedorSeleccionado(ActionEvent event) {
+        proveedorSeleccionado = proveedorBox.getValue();
+    }
+
+    // Agregar un método para obtener el nombre del proveedor seleccionado
+    public String getProveedorSeleccionado() {
+        return proveedorSeleccionado;
     }
 }
