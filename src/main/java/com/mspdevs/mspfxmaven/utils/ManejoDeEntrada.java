@@ -53,9 +53,12 @@ public class ManejoDeEntrada {
     }*/
 
     // Patrón para email
-    private static final Pattern email = Pattern.compile("^[a-zA-Z0-9\\p{Punct}ñÑ]*$");
+    private static final Pattern email = Pattern.compile("^[a-zA-Z0-9ñ@\\-_.]+$");
     // Operador para filtrar caracteres ingresados
     private static final UnaryOperator<TextFormatter.Change> emailFiltro = change -> {
+        if (change.getControlNewText().isEmpty()) {
+            return change;
+        }
         if (email.matcher(change.getControlNewText()).matches()) {
             if (change.getControlNewText().length() <= 255) { // Cambiar límite según necesidades
                 return change;
@@ -93,6 +96,14 @@ public class ManejoDeEntrada {
         }
         return null;
     };
+    private static final UnaryOperator<TextFormatter.Change> numerosTelefono = change -> {
+        if (numerosEnteros.matcher(change.getControlNewText()).matches()) {
+            if (change.getControlNewText().length() <= 10) { // Cambiar límite según necesidades
+                return change;
+            }
+        }
+        return null;
+    };
     private static final UnaryOperator<TextFormatter.Change> numerosDni = change -> {
         if (numerosEnteros.matcher(change.getControlNewText()).matches()) {
             if (change.getControlNewText().length() <= 8) { // Cambiar límite según necesidades
@@ -109,6 +120,36 @@ public class ManejoDeEntrada {
         }
         return null;
     };
+    private static final UnaryOperator<TextFormatter.Change> numerosFactura = change -> {
+        if (numerosEnteros.matcher(change.getControlNewText()).matches()) {
+            if (change.getControlNewText().length() <= 12) { // Cambiar límite según necesidades
+                return change;
+            }
+        }
+        return null;
+    };
+    private static final UnaryOperator<TextFormatter.Change> numerosCantidadGanancia = change -> {
+        if (numerosEnteros.matcher(change.getControlNewText()).matches()) {
+            if (change.getControlNewText().length() <= 3) { // Cambiar límite según necesidades
+                return change;
+            }
+        }
+        return null;
+    };
+
+    // Crea un filtro que permita solo dígitos y una longitud máxima de 3
+    static UnaryOperator<TextFormatter.Change> filtroCantidad = change -> {
+        String newText = change.getControlNewText();
+        if (newText.matches("\\d{0,3}")) {
+            return change;
+        }
+        return null;
+    };
+
+    // Aplica el filtro al TextFormatter
+    public static TextFormatter<String> soloCantidad() { return new TextFormatter<>(filtroCantidad);}
+
+
     // Método para obtener un TextFormatter para números enteros
     public static TextFormatter<String> soloNumerosEnteros() {
         return new TextFormatter<>(numerosEnterosFiltro);
@@ -116,7 +157,16 @@ public class ManejoDeEntrada {
     public static TextFormatter<String> soloDni() {
         return new TextFormatter<>(numerosDni);
     }
+    public static TextFormatter<String> soloTelefono() {
+        return new TextFormatter<>(numerosTelefono);
+    }
     public static TextFormatter<String> soloCodigoBarras() {
         return new TextFormatter<>(numerosCodigoBarras);
+    }
+    public static TextFormatter<String> soloNumerosFactura() {
+        return new TextFormatter<>(numerosFactura);
+    }
+    public static TextFormatter<String> soloCantidadGanancia() {
+        return new TextFormatter<>(numerosCantidadGanancia);
     }
 }

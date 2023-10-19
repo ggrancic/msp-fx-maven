@@ -4,6 +4,7 @@ public class Producto {
     private int idProducto;
     private String nombre;
     private double precioVenta;
+    private double precioLista;
     private String codigoBarra;
     private int cantidadDisponible;
     private int cantidadMinima;
@@ -24,6 +25,7 @@ public class Producto {
         this.idProveedorFK = proveedor.getIdProveedor();
         this.proveedorNombre = proveedor.getNombre();
         this.rubroNombre = rubro.getNombre();
+        //this.precioLista = producto.getPrecioLista();
     }
 
     //Agregado recien
@@ -89,4 +91,15 @@ public class Producto {
     public void setRubroNombre(String rubroNombre) {
         this.rubroNombre = rubroNombre;
     }
+
+
+
+
+    public double getPrecioLista() {
+        return precioLista;
+    }
+    public void setPrecioLista(double precioLista) {
+        this.precioLista = precioLista;
+    }
+
 }

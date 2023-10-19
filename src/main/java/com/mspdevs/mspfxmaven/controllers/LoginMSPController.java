@@ -2,6 +2,8 @@ package com.mspdevs.mspfxmaven.controllers;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import com.mspdevs.mspfxmaven.model.Empleado;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -38,6 +40,8 @@ public class LoginMSPController implements Initializable {
     @FXML
     private Button btnLogin;
 
+    private Parent root;
+
 // --------- METODOS ---------
 
     @Override
@@ -49,6 +53,34 @@ public class LoginMSPController implements Initializable {
 
     // Acá voy a poner todo lo referido a las consultas sql.
 
+    public Empleado buscarEmpleado(String user, String pass) {
+        Empleado empleado = null;
+        try {
+            ConexionMySQL c = new ConexionMySQL();
+            c.conectar();
+            PreparedStatement st = (PreparedStatement) c.getCon().prepareStatement("SELECT id_empleado, nombre_usuario, clave, nombre, apellido " +
+                    "FROM mercadito.empleados em JOIN mercadito.personas per ON em.idpersona = per.id_persona WHERE nombre_usuario=? AND clave=?");
+            st.setString(1, user);
+            st.setString(2, pass);
+            ResultSet rs = st.executeQuery();
+
+            if (rs.next()) {
+                empleado = new Empleado();
+                empleado.setId_empleado(rs.getInt("id_empleado"));
+                empleado.setNombre_usuario(rs.getString("nombre_usuario"));
+                empleado.setClave(rs.getString("clave"));
+                empleado.setNombre(rs.getString("nombre"));
+                empleado.setApellido(rs.getString("apellido"));
+            }
+            st.close();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+
+        return empleado;
+    }
+
+    /*
     public boolean buscarEmpleado(String user, String pass) {
         boolean existe = false;
         try {
@@ -69,10 +101,33 @@ public class LoginMSPController implements Initializable {
 
         return existe;
 
-    }
+    }*/
 
     @FXML
     void verificarLogin(MouseEvent event) {
+        String usuarioIngresado = campoUser.getText();
+        String claveIngresada = campoClave.getText();
+
+        Empleado empleado = buscarEmpleado(usuarioIngresado, claveIngresada);
+
+        if (empleado != null) {
+            // Establece el nombre de usuario logueado
+            setNombreUsuarioLogueado(usuarioIngresado);
+            // Pasa el objeto Empleado a la pantalla principal
+            try {
+                irAPantallaPcpal("/com/mspdevs/mspfxmaven/views/VentanaPrincipal.fxml", event, empleado);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        } else {
+            Alert alertaDatosErroneos = new Alert(AlertType.ERROR);
+            alertaDatosErroneos.setTitle("Error");
+            alertaDatosErroneos.setHeaderText(null);
+            alertaDatosErroneos.setContentText("Ingrese las credenciales correctas");
+            alertaDatosErroneos.showAndWait();
+        }
+
+        /*
         // Acá manejo si lo ingresado existe en la db o no.
         String usuarioIngresado = campoUser.getText();
         String claveIngresada = campoClave.getText();
@@ -87,13 +142,31 @@ public class LoginMSPController implements Initializable {
             // Establece el nombre de usuario logueado
             setNombreUsuarioLogueado(usuarioIngresado);
             try {
-                irAPantallaPcpal("/com/mspdevs/mspfxmaven/views/VentanaPrincipal.fxml", event);
+                irAPantallaPcpal("/com/mspdevs/mspfxmaven/views/VentanaPrincipal.fxml", event, usuarioIngresado);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-        }
+        }*/
     }
 
+    public void irAPantallaPcpal(String url, Event evt, Empleado empleado) throws Exception {
+        ((Node)(evt.getSource())).getScene().getWindow().hide();
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(url));
+        Parent root = loader.load();
+
+        VentanaPrincipalController ventanaPrincipalController1 = loader.getController();
+        ventanaPrincipalController1.mostrarUsuario(empleado.getNombre() + " " + empleado.getApellido());
+
+        Scene scene = new Scene(root);
+        Stage newStage = new Stage();
+        newStage.setScene(scene);
+        newStage.setMaximized(true);
+        newStage.show();
+    }
+
+
+    /*
     public void irAPantallaPcpal(String url, Event evt) throws Exception {
         ((Node)(evt.getSource())).getScene().getWindow().hide();
 
@@ -104,8 +177,7 @@ public class LoginMSPController implements Initializable {
         newStage.setMaximized(true);
         newStage.show();
     }
-
-
+     */
 
 
 

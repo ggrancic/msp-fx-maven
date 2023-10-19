@@ -5,9 +5,12 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import com.mspdevs.mspfxmaven.utils.Alerta;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -31,7 +34,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 
+
 public class VentanaPrincipalController implements Initializable {
+    Alerta msj = new Alerta();
 
     private LoginMSPController loginController;
     
@@ -67,15 +72,18 @@ public class VentanaPrincipalController implements Initializable {
     
     @FXML
     private Button btnCompra;
+    
+    @FXML
+    private Button btnVentas;
 
     private volatile boolean stop = false;
 
     @FXML
     void abrirVentanaCliente(MouseEvent event) throws IOException {
-        GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaCliente.fxml"));    
+        GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaCliente.fxml"));
         bpane.setCenter(centro);
     }
-    
+
     @FXML
     void abrirVentanaInventario(MouseEvent event) throws IOException {
         GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaProductos.fxml"));
@@ -106,11 +114,18 @@ public class VentanaPrincipalController implements Initializable {
     	bpane.setCenter(centro);
     }
     
+    @FXML
+    void abrirVentanaVentas(ActionEvent event) throws IOException {
+    	GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaVentas.fxml"));
+    	bpane.setCenter(centro);
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Acá se inicializa todo lo referido a los elementos del fxml.
         Timenow();
 
+        // BACKUP DE BD
         //usuarioLogueado.setText(loginController.getNombreUsuarioLogueado());
     }
 
@@ -182,6 +197,8 @@ public class VentanaPrincipalController implements Initializable {
             } else if (response == cerrarSesionButton) {
                 // Cerrar sesión y volver a la ventana de inicio de sesión
                 stop = true; // Detener el hilo de actualización del tiempo
+                // Lógica para crear el backup de la base de datos
+                //realizarBackupBaseDeDatos();
                 irAPantallaLogin(event);
             }
         });
@@ -201,5 +218,50 @@ public class VentanaPrincipalController implements Initializable {
             System.out.println("Error al obtener el controlador de inicio de sesión: " + e.getMessage());
             return null;
         }
+    }
+
+
+
+
+    // Método para crear un backup de la base de datos
+    private void realizarBackupBaseDeDatos() {
+        String dbUser = "usuarioMercadito";
+        String dbPassword = "mercadito";
+        String dbName = "mercadito";
+        String rutaBackup = "F:\\Backup\\backup_mercadito.sql";
+
+        try {
+            String rutaMysqldump = "C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysqldump";
+            String[] command = {
+                    rutaMysqldump,
+                    "--user=" + dbUser,
+                    "--password=" + dbPassword,
+                    dbName,
+                    "--result-file=" + rutaBackup
+            };
+
+            ProcessBuilder processBuilder = new ProcessBuilder(command);
+            processBuilder.redirectErrorStream(true);
+            Process process = processBuilder.start();
+            int exitCode = process.waitFor();
+
+            if (exitCode == 0) {
+                msj.mostrarAlertaInforme("Hola","Backup realizado con éxito", "El backup de la base de datos se ha creado correctamente.");
+            } else {
+                msj.mostrarAlertaInforme("Hola","Error en el backup", "No se pudo realizar el backup de la base de datos.");
+            }
+        } catch (IOException e) {
+            msj.mostrarAlertaInforme("Hola","Error en el backup", "Error de entrada/salida: " + e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restaura la bandera de interrupción
+            msj.mostrarAlertaInforme("Hola", "Error en el backup", "La operación fue interrumpida: " + e.getMessage());
+        } catch (Exception e) {
+            msj.mostrarAlertaInforme("Hola","Error en el backup", "Error general: " + e.getMessage());
+        }
+    }
+
+
+    public void mostrarUsuario(String usuario) {
+        usuarioLogueado.setText(usuario);
     }
 }

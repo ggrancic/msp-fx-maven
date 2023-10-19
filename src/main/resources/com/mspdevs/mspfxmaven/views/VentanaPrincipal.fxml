@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="bpane" prefHeight="768.0" prefWidth="1360.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.VentanaPrincipalController">
+<BorderPane fx:id="bpane" prefHeight="768.0" prefWidth="1360.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.VentanaPrincipalController">
    <top>
       <HBox prefWidth="200.0" BorderPane.alignment="TOP_LEFT">
          <children>
@@ -35,7 +35,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button contentDisplay="TOP" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Ventas">
+                  <Button fx:id="btnVentas" contentDisplay="TOP" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#abrirVentanaVentas" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Ventas">
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -113,7 +113,7 @@
                      <graphic>
                         <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../imgs/grupo.png" />
+                              <Image url="@../imgs/subcarpeta32.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -165,7 +165,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <Label fx:id="usuarioLogueado" prefHeight="17.0" prefWidth="107.0" />
+                  <Label fx:id="usuarioLogueado" prefHeight="17.0" prefWidth="198.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefWidth="100.0" spacing="10.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">

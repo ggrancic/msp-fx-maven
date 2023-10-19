@@ -15,6 +15,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
+import org.controlsfx.control.SearchableComboBox;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -61,7 +62,7 @@ public class VentanaProveedoresController implements Initializable  {
     private TextField campoNombre;
 
     @FXML
-    private TextField campoProvincia;
+    private SearchableComboBox<String> comboProvincia;
 
     @FXML
     private TextField campoTelefono;
@@ -192,16 +193,21 @@ public class VentanaProveedoresController implements Initializable  {
             // Muestra un mensaje de error si no se selecciona ningún elemento en la tabla
             msj.mostrarError("Error", "", "Debe seleccionar un elemento de la lista");
         } else {
-            try {
-                ProveedorDAOImpl dao = new ProveedorDAOImpl();
-                dao.eliminar(p);
-                completarTabla();
-                vaciarCampos();
-                campoNombre.requestFocus();
-                manejador.configurarBotones(false);
-                msj.mostrarAlertaInforme("Operacion exitosa", "", "El proveedor se ha eliminado");
-            } catch (Exception e) {
-                msj.mostrarError("Error", "", "No se pudo eliminar el elemento de la BD");
+            // Mostrar una ventana de confirmación
+            boolean confirmacion = msj.mostrarConfirmacion("Confirmar Eliminación", "",
+                    "¿Está seguro de que desea eliminar este proveedor?");
+            if (confirmacion) { // Si se confirma la eliminación
+                try {
+                    ProveedorDAOImpl dao = new ProveedorDAOImpl();
+                    dao.eliminar(p);
+                    completarTabla();
+                    vaciarCampos();
+                    campoNombre.requestFocus();
+                    manejador.configurarBotones(false);
+                    msj.mostrarAlertaInforme("Operacion exitosa", "", "El proveedor se ha eliminado");
+                } catch (Exception e) {
+                    msj.mostrarError("Error", "", "No se pudo eliminar el elemento de la BD");
+                }
             }
         }
     }
@@ -245,26 +251,31 @@ public class VentanaProveedoresController implements Initializable  {
                 int finDNI = (cuitIngresado.length() == 11) ? 10 : 9; // Si tiene 11 caracteres, toma los dígitos de 2 a 10, de lo contrario, toma los de 2 a 9
                 String dniIngresado = cuitIngresado.substring(inicioDNI, finDNI);
                 proveedor.setDni(dniIngresado);
-                try {// Actualiza los valores del proveedor
-                    p.setNombre(proveedor.getNombre());
-                    p.setApellido(proveedor.getApellido());
-                    p.setProvincia(proveedor.getProvincia());
-                    p.setLocalidad(proveedor.getLocalidad());
-                    p.setCalle(proveedor.getCalle());
-                    p.setCuit(proveedor.getCuit());
-                    p.setDni(proveedor.getDni());
-                    p.setMail(proveedor.getMail());
-                    p.setTelefono(proveedor.getTelefono());
+                // Mostrar una ventana de confirmación
+                boolean confirmacion = msj.mostrarConfirmacion("Confirmar Modificación", "",
+                        "¿Está seguro de que desea modificar este proveedor?");
+                if (confirmacion) { // Si se confirma la modificación
+                    try {// Actualiza los valores del proveedor
+                        p.setNombre(proveedor.getNombre());
+                        p.setApellido(proveedor.getApellido());
+                        p.setProvincia(proveedor.getProvincia());
+                        p.setLocalidad(proveedor.getLocalidad());
+                        p.setCalle(proveedor.getCalle());
+                        p.setCuit(proveedor.getCuit());
+                        p.setDni(proveedor.getDni());
+                        p.setMail(proveedor.getMail());
+                        p.setTelefono(proveedor.getTelefono());
 
-                    ProveedorDAOImpl dao = new ProveedorDAOImpl();
-                    dao.modificar(p);
-                    completarTabla();
-                    vaciarCampos();
-                    campoNombre.requestFocus();
-                    manejador.configurarBotones(false);
-                    msj.mostrarAlertaInforme("Operación exitosa", "", "El proveedor se ha modificado");
-                } catch (Exception e) {
-                    msj.mostrarError("Error", "", "No se pudo modificar el elemento en la BD");
+                        ProveedorDAOImpl dao = new ProveedorDAOImpl();
+                        dao.modificar(p);
+                        completarTabla();
+                        vaciarCampos();
+                        campoNombre.requestFocus();
+                        manejador.configurarBotones(false);
+                        msj.mostrarAlertaInforme("Operación exitosa", "", "El proveedor se ha modificado");
+                    } catch (Exception e) {
+                        msj.mostrarError("Error", "", "No se pudo modificar el elemento en la BD");
+                    }
                 }
             }
         }
@@ -292,6 +303,9 @@ public class VentanaProveedoresController implements Initializable  {
         // Llamado a completarTabla al inicializar el controlador
         completarTabla();
 
+        // Carga la lista de provincias desde la clase ProvinciasArgentinas
+        comboProvincia.setItems(ProvinciasArgentinas.getProvincias());
+
         todosLosProveedores = tablaProveedores.getItems();
 
         // Establecer el enfoque en campoNombre después de que la ventana se haya mostrado completamente
@@ -305,8 +319,8 @@ public class VentanaProveedoresController implements Initializable  {
         campoNombre.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoApellido.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoCalle.setTextFormatter(ManejoDeEntrada.soloLetrasNumEspAcento());
-        campoTelefono.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
-        campoProvincia.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
+        campoTelefono.setTextFormatter(ManejoDeEntrada.soloTelefono());
+        //campoProvincia.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoLocalidad.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoEmail.setTextFormatter(ManejoDeEntrada.soloEmail());
         campoCuit.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
@@ -346,7 +360,7 @@ public class VentanaProveedoresController implements Initializable  {
                 // Llena los campos de entrada con los datos del proveedor seleccionado
                 campoNombre.setText(newValue.getNombre());
                 campoApellido.setText(newValue.getApellido());
-                campoProvincia.setText(newValue.getProvincia());
+                comboProvincia.getSelectionModel().select(newValue.getProvincia());
                 campoLocalidad.setText(newValue.getLocalidad());
                 campoCalle.setText(newValue.getCalle());
                 campoCuit.setText(newValue.getCuit());
@@ -360,7 +374,7 @@ public class VentanaProveedoresController implements Initializable  {
         // Limpiar los campos de entrada y foucs en nombre
         campoNombre.setText("");
         campoApellido.setText("");
-        campoProvincia.setText("");
+        comboProvincia.getSelectionModel().clearSelection();
         campoLocalidad.setText("");
         campoCalle.setText("");
         campoEmail.setText("");
@@ -381,12 +395,18 @@ public class VentanaProveedoresController implements Initializable  {
     private Proveedor obtenerValoresDeCampos() {
         String nombreIngresado = FormatoTexto.formatearTexto(this.campoNombre.getText());
         String apellidoIngresado = FormatoTexto.formatearTexto(this.campoApellido.getText());
-        String provinciaIngresada = FormatoTexto.formatearTexto(this.campoProvincia.getText());
+        String provinciaIngresada = this.comboProvincia.getSelectionModel().getSelectedItem();
         String localidadIngresada = FormatoTexto.formatearTexto(this.campoLocalidad.getText());
         String calleIngresada = FormatoTexto.formatearTexto(this.campoCalle.getText());
         String cuitIngresado = this.campoCuit.getText();
         //String dniIngresado = cuitIngresado.substring(2, 10);
         String emailIngresado = this.campoEmail.getText();
+        if (emailIngresado != null && !emailIngresado.isEmpty()) {
+            emailIngresado.toLowerCase();
+            // Realiza las operaciones con lowerCaseText
+        } else {
+            emailIngresado = "";
+        }
         String telefonoIngresado = this.campoTelefono.getText();
 
         Proveedor proveedor = new Proveedor();
