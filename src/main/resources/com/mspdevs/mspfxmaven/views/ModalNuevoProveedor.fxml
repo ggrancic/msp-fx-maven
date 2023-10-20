@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="320.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.ModalNuevoProveedorController">
+<VBox fx:id="contenedor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="600.0" style="-fx-border-color: linear-gradient(to top right, rgb(207, 150, 207), rgb(107, 116, 179)); -fx-border-width: 3px; -fx-background-color: lightgray;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.ModalNuevoProveedorController">
    <children>
       <HBox alignment="CENTER_LEFT" prefHeight="50.0" style="-fx-background-color: linear-gradient(to top right, rgb(207, 150, 207), rgb(107, 116, 179));">
          <children>
@@ -25,7 +25,7 @@
             </Label>
          </children>
       </HBox>
-      <SplitPane dividerPositions="0.5" stylesheets="@../styles/style.css">
+      <SplitPane dividerPositions="0.5" style="-fx-background-color: lightgray;" stylesheets="@../styles/style.css">
          <items>
             <VBox spacing="15.0">
                <children>
@@ -36,7 +36,7 @@
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="campoDni" />
+                        <TextField fx:id="campoDni" onAction="#autoCompletarCampos" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" layoutX="10.0" layoutY="30.0" spacing="50.0">
@@ -67,6 +67,16 @@
                            </font>
                         </Label>
                         <TextField fx:id="campoApellido" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" layoutX="10.0" layoutY="150.0" spacing="40.0">
+                     <children>
+                        <Label text="EMAIL">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="campoEmail" />
                      </children>
                   </HBox>
                </children>
@@ -151,7 +161,7 @@
             </Button>
          </children>
          <VBox.margin>
-            <Insets top="40.0" />
+            <Insets top="30.0" />
          </VBox.margin>
       </HBox>
    </children>
