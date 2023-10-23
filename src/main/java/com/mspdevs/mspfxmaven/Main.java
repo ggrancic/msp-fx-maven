@@ -3,6 +3,7 @@ package com.mspdevs.mspfxmaven;
 import com.mspdevs.mspfxmaven.controllers.LoginMSPController;
 import com.mspdevs.mspfxmaven.controllers.VentanaPrincipalController;
 import com.mspdevs.mspfxmaven.utils.Alerta;
+import com.mspdevs.mspfxmaven.utils.PantallaInicioUtil;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -24,6 +25,20 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primarystage) throws IOException {
+        Main.primaryStage = primarystage; // Guarda una referencia al Stage principal
+        PantallaInicioUtil.mostrarPantallaInicio(primaryStage);
+        // Agrega un manejador al evento de cierre de la ventana
+        primarystage.setOnCloseRequest(e -> {
+            e.consume();
+            // Crea un cuadro de diálogo de confirmación
+            boolean confirmado = msj.mostrarConfirmacion("Confirmación", "",
+                    "¿Estás seguro de que deseas cerrar la aplicación?");
+            if (confirmado) {
+                // Si el usuario elige "Sí", cierra la ventana y, por lo tanto, la aplicación
+                primarystage.close();
+            }
+        });
+        /*
         Parent root = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/LoginMSP.fxml"));
         Scene scene = new Scene(root, 800, 600);
         primarystage.setScene(scene);
@@ -38,7 +53,7 @@ public class Main extends Application {
             if (confirmado) {
                 // Si el usuario elige "Sí", cierra la ventana y, por lo tanto, la aplicación
                 primarystage.close();
-            }
+            }*/
 
             /*
             // Crea un cuadro de diálogo de confirmación
@@ -59,6 +74,7 @@ public class Main extends Application {
                     primarystage.close();
                 }
             });*/
+        /*
         });
         primarystage.show();
 
@@ -67,7 +83,7 @@ public class Main extends Application {
         primarystage.getIcons().add(icon);
 
         // Establece la referencia al Stage principal
-        primaryStage = primarystage;
+        primaryStage = primarystage;*/
     }
 
 

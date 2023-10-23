@@ -170,7 +170,6 @@ public class LoginMSPController implements Initializable {
 
         VentanaPrincipalController principalController = loader.getController();
         principalController.setCerrarEvento(newStage); // Configura el evento de cierre
-
     }
 
 
