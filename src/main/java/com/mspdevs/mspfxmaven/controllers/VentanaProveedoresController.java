@@ -300,6 +300,7 @@ public class VentanaProveedoresController implements Initializable  {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        comboProvincia.setValue("Chaco");
         // Llamado a completarTabla al inicializar el controlador
         completarTabla();
 
@@ -382,6 +383,7 @@ public class VentanaProveedoresController implements Initializable  {
         campoCuit.setText("");
         buscarCampo.setText("");
         campoNombre.requestFocus();
+        comboProvincia.setValue("Chaco");
     }
 
 

@@ -19,6 +19,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.fxml.Initializable;
 import javafx.scene.input.KeyEvent;
+import org.controlsfx.control.SearchableComboBox;
 
 public class VentanaEmpleadosController implements Initializable {
 
@@ -64,7 +65,7 @@ public class VentanaEmpleadosController implements Initializable {
     private TextField campoNombre;
 
     @FXML
-    private TextField campoProvincia;
+    private SearchableComboBox<String> comboProvincia;
 
     @FXML
     private TextField campoTelefono;
@@ -374,7 +375,7 @@ public class VentanaEmpleadosController implements Initializable {
                 // Llena los campos de entrada con los datos del proveedor seleccionado
                 campoNombre.setText(newValue.getNombre());
                 campoApellido.setText(newValue.getApellido());
-                campoProvincia.setText(newValue.getProvincia());
+                comboProvincia.getSelectionModel().select(newValue.getProvincia());
                 campoLocalidad.setText(newValue.getLocalidad());
                 campoCalle.setText(newValue.getCalle());
                 campoEmail.setText(newValue.getMail());
@@ -390,12 +391,13 @@ public class VentanaEmpleadosController implements Initializable {
         campoApellido.clear();
         campoCalle.clear();
         campoLocalidad.clear();
-        campoProvincia.clear();
+        comboProvincia.getSelectionModel().clearSelection();
         campoTelefono.clear();
         campoEmail.clear();
         campoDNI.clear();
         comboAdmin.setValue(null);
         comboAdmin.setPromptText("Seleccionar");
+        comboProvincia.setValue("Chaco");
     }
 
     public String convertirValorCombo (String valor) {
@@ -421,6 +423,9 @@ public class VentanaEmpleadosController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Carga la lista de provincias desde la clase ProvinciasArgentinas
+        comboProvincia.setItems(ProvinciasArgentinas.getProvincias());
+        comboProvincia.setValue("Chaco");
         completarTabla();
         ObservableList<String> itemsComboAdmin = FXCollections.observableArrayList("Si","No");
         this.comboAdmin.setItems(itemsComboAdmin);
@@ -438,7 +443,7 @@ public class VentanaEmpleadosController implements Initializable {
         campoApellido.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoCalle.setTextFormatter(ManejoDeEntrada.soloLetrasNumEspAcento());
         campoTelefono.setTextFormatter(ManejoDeEntrada.soloTelefono());
-        campoProvincia.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
+        //campoProvincia.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoLocalidad.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoEmail.setTextFormatter(ManejoDeEntrada.soloEmail());
         campoDNI.setTextFormatter(ManejoDeEntrada.soloDni());
@@ -450,7 +455,7 @@ public class VentanaEmpleadosController implements Initializable {
     private Empleado obtenerValoresDeCampos() {
         String nombreIngresado = FormatoTexto.formatearTexto(this.campoNombre.getText());
         String apellidoIngresado = FormatoTexto.formatearTexto(this.campoApellido.getText());
-        String provinciaIngresada = FormatoTexto.formatearTexto(this.campoProvincia.getText());
+        String provinciaIngresada = this.comboProvincia.getSelectionModel().getSelectedItem();
         String localidadIngresada = FormatoTexto.formatearTexto(this.campoLocalidad.getText());
         String calleIngresada = FormatoTexto.formatearTexto(this.campoCalle.getText());
         String dniIngresado = this.campoDNI.getText();

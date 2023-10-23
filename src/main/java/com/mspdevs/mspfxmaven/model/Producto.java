@@ -13,6 +13,11 @@ public class Producto {
     private String proveedorNombre;
     private String rubroNombre;
 
+    private int cantidadVendida;
+    private double totalVendido;
+
+
+
     //Agregado recien
     public Producto(Producto producto, Rubro rubro, Proveedor proveedor) {
         this.idProducto = producto.getIdProducto();
@@ -25,6 +30,9 @@ public class Producto {
         this.idProveedorFK = proveedor.getIdProveedor();
         this.proveedorNombre = proveedor.getNombre();
         this.rubroNombre = rubro.getNombre();
+
+        // Agregado para ventas
+        this.totalVendido = producto.getTotalVendido();
         //this.precioLista = producto.getPrecioLista();
     }
 
@@ -94,6 +102,19 @@ public class Producto {
 
 
 
+
+    public int getCantidadVendida() {
+        return cantidadVendida;
+    }
+    public void setCantidadVendida(int cantidadVendida) {
+        this.cantidadVendida = cantidadVendida;
+    }
+    public double getTotalVendido() {
+        return totalVendido;
+    }
+    public void setTotalVendido(double totalVendido) {
+        this.totalVendido= totalVendido;
+    }
 
     public double getPrecioLista() {
         return precioLista;

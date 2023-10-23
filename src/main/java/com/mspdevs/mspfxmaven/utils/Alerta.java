@@ -31,8 +31,8 @@ public class Alerta {
         alert.setContentText(contenido);
 
         // Crear botones personalizados para confirmación
-        ButtonType botonAceptar = new ButtonType("Aceptar", ButtonBar.ButtonData.OK_DONE);
-        ButtonType botonCancelar = new ButtonType("Cancelar", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType botonAceptar = new ButtonType("Si", ButtonBar.ButtonData.OK_DONE);
+        ButtonType botonCancelar = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
 
         // Agregar los botones a la ventana de confirmación
         alert.getButtonTypes().setAll(botonAceptar, botonCancelar);

@@ -274,4 +274,25 @@ public class ProductoDAOImpl extends ConexionMySQL implements ProductoDAO {
         }
     }
 
+    public void actualizarProductoPorVenta(int idProducto, int nuevaCantidadDisponible) throws Exception {
+        try {
+            this.conectar();
+
+            PreparedStatement st = this.con.prepareStatement(
+                    "UPDATE productos SET cantidad_disponible = ? WHERE id_producto = ?"
+            );
+            st.setInt(1, nuevaCantidadDisponible);
+            st.setInt(2, idProducto);
+
+            int filasAfectadas = st.executeUpdate();
+            if (filasAfectadas != 1) {
+                throw new Exception("No se pudo actualizar el producto con ID: " + idProducto);
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.cerrarConexion();
+        }
+    }
+
 }

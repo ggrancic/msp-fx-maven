@@ -8,8 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="35.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="35.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.ModalFinalizarVentaController">
    <children>
       <Label text="VENTA FINALIZADA">
          <font>
@@ -23,12 +22,12 @@
       </ImageView>
       <HBox alignment="CENTER" spacing="50.0">
          <children>
-            <Button mnemonicParsing="false" text="IMPRIMIR COMPROBANTE">
+            <Button fx:id="btnImprimirComprobante" mnemonicParsing="false" onAction="#accionImprimirComprobante" text="IMPRIMIR COMPROBANTE">
                <font>
                   <Font size="18.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" text="SALIR">
+            <Button fx:id="btnSalir" mnemonicParsing="false" onAction="#accionSalir" text="SALIR">
                <font>
                   <Font size="18.0" />
                </font>

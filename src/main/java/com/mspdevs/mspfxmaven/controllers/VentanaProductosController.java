@@ -525,32 +525,4 @@ public class VentanaProductosController {
         // Colocar el foco en campoNombre
         campoNombre.requestFocus();
     }
-
-
-
-
-
-    /*
-
-    private Producto obtenerValoresDeCampos() {
-        String nombreIngresado = this.campoNombre.getText();
-        String precioVentaTexto = this.campoVenta.getText();
-        String codigoBarraIngresado = this.campoCodigo.getText();
-        String cantDisponibleTexto = this.campoCantDisp.getText();
-        String cantMinimaTexto = this.campoCantMin.getText();
-        String RubroNombreSeleccionado = rubroBox.getSelectionModel().getSelectedItem();
-        String ProveedorNombreSeleccionado = proveedorBox.getSelectionModel().getSelectedItem();
-
-
-        Producto producto = new Producto();
-        producto.setNombre(nombreIngresado);
-        producto.setPrecioVenta(Double.parseDouble(precioVentaTexto));
-        producto.setCodigoBarra(codigoBarraIngresado);
-        producto.setCantidadDisponible(Integer.parseInt(cantDisponibleTexto));
-        producto.setCantidadMinima(Integer.parseInt(cantMinimaTexto));
-        producto.setRubroNombre(RubroNombreSeleccionado);
-        producto.setProveedorNombre(ProveedorNombreSeleccionado);
-
-        return producto;
-    }*/
 }

@@ -19,6 +19,8 @@ import com.mspdevs.mspfxmaven.model.Proveedor;
 import com.mspdevs.mspfxmaven.utils.Alerta;
 import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -144,6 +146,9 @@ public class VentanaComprasController implements Initializable {
 
 
     private String proveedorSeleccionado;
+
+
+    private BooleanProperty nuevoProveedorAgregado = new SimpleBooleanProperty(false);
 
 
     @FXML
@@ -488,10 +493,16 @@ public class VentanaComprasController implements Initializable {
         newStage.initModality(Modality.APPLICATION_MODAL);
         newStage.showAndWait();
 
+
+        /*
         // Verificar si el ComboBox tiene elementos antes de limpiarlo
         if (!proveedorBox.getItems().isEmpty()) {
             // Limpia el ComboBox antes de cargar la nueva lista
-            proveedorBox.getItems().clear();
+            proveedorBox.getSelectionModel().select(null);
+        }*/
+        // Verifica si hay un proveedor seleccionado antes de borrar los elementos
+        if (!proveedorBox.getSelectionModel().isEmpty()) {
+            proveedorBox.getSelectionModel().clearSelection();
         }
         // Luego de agregar el proveedor, actualiza el ComboBox
         actualizarComboBoxProveedores();
@@ -779,6 +790,14 @@ public class VentanaComprasController implements Initializable {
                 campoCantidad.getValueFactory().setValue(999);
             }
         });
+
+
+
+
+
+
+
+
 	}
 
     // Esta función verifica si todos los campos requeridos tienen datos y habilita los botones
@@ -1099,30 +1118,27 @@ public class VentanaComprasController implements Initializable {
     private void actualizarComboBoxProveedores() {
         ProveedorDAOImpl proveedorDAO = new ProveedorDAOImpl();
 
-        // Obteniene la lista de proveedores desde la base de datos
         List<Proveedor> proveedores = null;
         try {
             proveedores = proveedorDAO.listarTodos();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        // Cargar los nombres en los ComboBox
+
+        try {
+            if (!proveedorBox.getItems().isEmpty()) {
+                proveedorBox.getItems().clear();
+            }
+        } catch (IndexOutOfBoundsException e) {
+
+        }
+        // Luego, agrega los nombres de proveedores nuevamente
         for (Proveedor proveedor : proveedores) {
             proveedorBox.getItems().add(proveedor.getNombre());
         }
-    }
-
-
-
-
-
-    @FXML
-    void proveedorSeleccionado(ActionEvent event) {
-        proveedorSeleccionado = proveedorBox.getValue();
-    }
-
-    // Agregar un método para obtener el nombre del proveedor seleccionado
-    public String getProveedorSeleccionado() {
-        return proveedorSeleccionado;
+        // Asegúrate de que el ComboBox esté seleccionando el primer elemento
+        if (!proveedorBox.getItems().isEmpty()) {
+            proveedorBox.getSelectionModel().select(0);
+        }
     }
 }

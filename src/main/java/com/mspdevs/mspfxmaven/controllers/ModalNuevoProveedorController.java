@@ -1,8 +1,10 @@
 package com.mspdevs.mspfxmaven.controllers;
 
+import com.mspdevs.mspfxmaven.model.DAO.PersonaDAOImpl;
 import com.mspdevs.mspfxmaven.model.DAO.ProductoDAOImpl;
 import com.mspdevs.mspfxmaven.model.DAO.ProveedorDAOImpl;
 import com.mspdevs.mspfxmaven.model.DAO.RubroDAOImpl;
+import com.mspdevs.mspfxmaven.model.Persona;
 import com.mspdevs.mspfxmaven.model.Producto;
 import com.mspdevs.mspfxmaven.model.Proveedor;
 import com.mspdevs.mspfxmaven.model.Rubro;
@@ -11,11 +13,15 @@ import com.mspdevs.mspfxmaven.utils.FormatoTexto;
 import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
 import com.mspdevs.mspfxmaven.utils.ValidacionDeEntrada;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.Stream;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -23,6 +29,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.controlsfx.control.SearchableComboBox;
 
@@ -60,6 +67,12 @@ public class ModalNuevoProveedorController implements Initializable {
     private TextField campoTelefono;
 
     @FXML
+    private TextField campoEmail;
+
+    @FXML
+    private VBox contenedor;
+
+    @FXML
     void accionBotonAgregar(ActionEvent event) {
         // Obtener los valores de los campos en un objeto Proveedor
         Proveedor proveedor = obtenerValoresDeCampos();
@@ -67,12 +80,13 @@ public class ModalNuevoProveedorController implements Initializable {
         // Verifica si algún campo de texto está vacío
         if (proveedor.getNombre().isEmpty() || proveedor.getApellido().isEmpty() || proveedor.getProvincia().isEmpty() ||
                 proveedor.getLocalidad().isEmpty() || proveedor.getCalle().isEmpty() || proveedor.getCuit().isEmpty() ||
-                proveedor.getDni().isEmpty() || proveedor.getTelefono().isEmpty()) {
+                proveedor.getMail().isEmpty() || proveedor.getDni().isEmpty() || proveedor.getTelefono().isEmpty()) {
             // Mostrar mensaje de error si falta ingresar datos
             msj.mostrarError("Error", "", "Falta ingresar datos.");
         } else {
             // Realiza las validaciones con ValidacionDeEntrada
             if (ValidacionDeEntrada.validarCuil(proveedor.getCuit()) &&
+                    ValidacionDeEntrada.validarEmail(proveedor.getMail()) &&
                     ValidacionDeEntrada.validarDNI(proveedor.getDni()) &&
                     ValidacionDeEntrada.validarTelefono(proveedor.getTelefono())) {
 
@@ -98,6 +112,29 @@ public class ModalNuevoProveedorController implements Initializable {
         }
     }
 
+    @FXML
+    void autoCompletarCampos(ActionEvent event) {
+        PersonaDAOImpl p = new PersonaDAOImpl();
+        ObservableList<Persona> personas = null;
+        try {
+            personas = p.listarTodos();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        for (Persona persona : personas) {
+            if (persona.getDni().equals(campoDni.getText())) {
+                campoNombre.setText(persona.getNombre());
+                campoApellido.setText(persona.getApellido());
+                campoProvincia.setText(persona.getProvincia());
+                campoLocalidad.setText(persona.getLocalidad());
+                campoCalle.setText(persona.getCalle());
+                campoTelefono.setText(persona.getTelefono());
+                campoEmail.setText(persona.getMail());
+                return;
+            }
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Establecer el enfoque en campoNombre después de que la ventana se haya mostrado completamente
@@ -112,6 +149,8 @@ public class ModalNuevoProveedorController implements Initializable {
         campoLocalidad.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoDni.setTextFormatter(ManejoDeEntrada.soloDni());
         campoCuit.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
+        campoEmail.setTextFormatter(ManejoDeEntrada.soloEmail());
+
     }
 
     private void cerrarVentanaModal(ActionEvent event) {
@@ -132,6 +171,13 @@ public class ModalNuevoProveedorController implements Initializable {
         String cuitIngresado = this.campoCuit.getText();
         String dniIngresado = this.campoDni.getText();
         String telefonoIngresado = this.campoTelefono.getText();
+        String emailIngresado = this.campoEmail.getText();
+        if (emailIngresado != null && !emailIngresado.isEmpty()) {
+            emailIngresado.toLowerCase();
+            // Realiza las operaciones con lowerCaseText
+        } else {
+            emailIngresado = "";
+        }
 
         Proveedor proveedor = new Proveedor();
         proveedor.setNombre(nombreIngresado);
@@ -142,6 +188,7 @@ public class ModalNuevoProveedorController implements Initializable {
         proveedor.setCuit(cuitIngresado);
         proveedor.setDni(dniIngresado);
         proveedor.setTelefono(telefonoIngresado);
+        proveedor.setMail(emailIngresado);
 
         return proveedor;
     }

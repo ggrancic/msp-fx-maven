@@ -24,6 +24,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
@@ -32,6 +33,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import com.mspdevs.mspfxmaven.Main;
 
 
 
@@ -77,6 +79,7 @@ public class VentanaPrincipalController implements Initializable {
     private Button btnVentas;
 
     private volatile boolean stop = false;
+
 
     @FXML
     void abrirVentanaCliente(MouseEvent event) throws IOException {
@@ -159,9 +162,44 @@ public class VentanaPrincipalController implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mspdevs/mspfxmaven/views/LoginMSP.fxml"));
             Parent root = loader.load();
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root,800, 600);
             Stage stage = new Stage();
+            stage.setResizable(false);
+            stage.setTitle("Market Sales Pro - Version 1.1");
+            Image icon = new Image(getClass().getResourceAsStream("/com/mspdevs/mspfxmaven/imgs/carrito-de-compras.png"));
+            stage.getIcons().add(icon);
             stage.setScene(scene);
+            // Agrega un manejador al evento de cierre de la ventana
+            stage.setOnCloseRequest(e -> {
+                e.consume(); // Evita que la ventana se cierre de inmediato
+                // Crea un cuadro de diálogo de confirmación
+                boolean confirmado = msj.mostrarConfirmacion("Confirmación", "",
+                        "¿Estás seguro de que deseas cerrar la aplicación?");
+                if (confirmado) {
+                    // Si el usuario elige "Sí", cierra la ventana y, por lo tanto, la aplicación
+                    stage.close();
+                }
+
+                /*
+                // Crea un cuadro de diálogo de confirmación
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Confirmar Cierre");
+                alert.setHeaderText("¿Estás seguro de que deseas cerrar la aplicación?");
+                alert.setContentText("Todos los cambios no guardados se perderán.");
+
+                // Configura los botones en el cuadro de diálogo
+                ButtonType buttonTypeYes = new ButtonType("Sí");
+                ButtonType buttonTypeNo = new ButtonType("No");
+                alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo);
+
+                // Muestra el cuadro de diálogo y espera a que el usuario seleccione una opción
+                alert.showAndWait().ifPresent(response -> {
+                    if (response == buttonTypeYes) {
+                        // Si el usuario elige "Sí", cierra la ventana y, por lo tanto, la aplicación
+                        stage.close();
+                    }
+                });*/
+            });
             stage.show();
 
             // Obtener el Stage actual y cerrarlo
@@ -263,5 +301,59 @@ public class VentanaPrincipalController implements Initializable {
 
     public void mostrarUsuario(String usuario) {
         usuarioLogueado.setText(usuario);
+    }
+
+
+
+
+
+    // Agrega este método para manejar el evento de cierre
+    public void setCerrarEvento(Stage primaryStage) {
+        primaryStage.setOnCloseRequest(e -> {
+            e.consume(); // Evita que la ventana se cierre de inmediato
+            Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmacion.setTitle("Confirmar");
+            confirmacion.setHeaderText("¿Desea salir o cerrar sesión?");
+            ButtonType salirButton = new ButtonType("Salir");
+            ButtonType noButton = new ButtonType("No salir");
+            ButtonType cerrarSesionButton = new ButtonType("Cerrar sesión");
+
+            confirmacion.getButtonTypes().setAll(salirButton, noButton, cerrarSesionButton);
+
+            Stage stage = (Stage) confirmacion.getDialogPane().getScene().getWindow();
+            stage.setAlwaysOnTop(true);
+
+            confirmacion.showAndWait().ifPresent(response -> {
+                if (response == salirButton) {
+                    // Cerrar la aplicación
+                    stop = true; // Detener el hilo de actualización del tiempo
+                    Stage currentStage = (Stage) btnCerrar.getScene().getWindow();
+                    currentStage.close();
+                } else if (response == noButton) {
+                    // No hacer nada, simplemente cerrar la ventana de confirmación
+                } else if (response == cerrarSesionButton) {
+                    // Cerrar sesión y volver a la ventana de inicio de sesión
+                    stop = true; // Detener el hilo de actualización del tiempo
+                    // Lógica para crear el backup de la base de datos
+                    //realizarBackupBaseDeDatos();
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mspdevs/mspfxmaven/views/LoginMSP.fxml"));
+                    Parent root = null;
+                    try {
+                        root = loader.load();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    Scene scene = new Scene(root);
+                    Stage stage1 = new Stage();
+                    stage1.setScene(scene);
+                    stage1.show();
+
+                    // Obtener el Stage actual y cerrarlo
+                    Stage currentStage = (Stage) btnCerrar.getScene().getWindow();
+                    currentStage.close();
+                }
+            });
+        });
+
     }
 }

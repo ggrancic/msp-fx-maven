@@ -19,6 +19,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
@@ -162,7 +163,14 @@ public class LoginMSPController implements Initializable {
         Stage newStage = new Stage();
         newStage.setScene(scene);
         newStage.setMaximized(true);
+        newStage.setTitle("Market Sales Pro - Version 1.1");
+        Image icon = new Image(getClass().getResourceAsStream("/com/mspdevs/mspfxmaven/imgs/carrito-de-compras.png"));
+        newStage.getIcons().add(icon);
         newStage.show();
+
+        VentanaPrincipalController principalController = loader.getController();
+        principalController.setCerrarEvento(newStage); // Configura el evento de cierre
+
     }
 
 

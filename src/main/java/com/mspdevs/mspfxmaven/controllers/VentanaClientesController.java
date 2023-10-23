@@ -17,6 +17,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.application.Platform;
+import org.controlsfx.control.SearchableComboBox;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -63,7 +64,7 @@ public class VentanaClientesController implements Initializable {
     private TextField campoNombre;
 
     @FXML
-    private TextField campoProvincia;
+    private SearchableComboBox<String> comboProvincia;
 
     @FXML
     private TextField campoTelefono;
@@ -308,6 +309,9 @@ public class VentanaClientesController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Carga la lista de provincias desde la clase ProvinciasArgentinas
+        comboProvincia.setItems(ProvinciasArgentinas.getProvincias());
+        comboProvincia.setValue("Chaco");
         // Llamado a completarTabla al inicializar el controlador
         completarTabla();
 
@@ -325,7 +329,7 @@ public class VentanaClientesController implements Initializable {
         campoApellido.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoCalle.setTextFormatter(ManejoDeEntrada.soloLetrasNumEspAcento());
         campoTelefono.setTextFormatter(ManejoDeEntrada.soloTelefono());
-        campoProvincia.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
+        //campoProvincia.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoLocalidad.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoEmail.setTextFormatter(ManejoDeEntrada.soloEmail());
         campoCuil.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
@@ -367,7 +371,7 @@ public class VentanaClientesController implements Initializable {
                 // Llena los campos de entrada con los datos del proveedor seleccionado
                 campoNombre.setText(newValue.getNombre());
                 campoApellido.setText(newValue.getApellido());
-                campoProvincia.setText(newValue.getProvincia());
+                comboProvincia.getSelectionModel().select(newValue.getProvincia());
                 campoLocalidad.setText(newValue.getLocalidad());
                 campoCalle.setText(newValue.getCalle());
                 campoCuil.setText(newValue.getCuil());
@@ -381,7 +385,7 @@ public class VentanaClientesController implements Initializable {
         // Limpiar los campos de entrada y foucs en nombre
         campoNombre.setText("");
         campoApellido.setText("");
-        campoProvincia.setText("");
+        comboProvincia.getSelectionModel().clearSelection();
         campoLocalidad.setText("");
         campoCalle.setText("");
         campoEmail.setText("");
@@ -389,6 +393,7 @@ public class VentanaClientesController implements Initializable {
         campoBuscar.setText("");
         campoCuil.setText("");
         campoNombre.requestFocus();
+        comboProvincia.setValue("Chaco");
     }
 
     @FXML
@@ -413,7 +418,7 @@ public class VentanaClientesController implements Initializable {
     private Cliente obtenerValoresDeCampos() {
         String nombreIngresado = FormatoTexto.formatearTexto(this.campoNombre.getText());
         String apellidoIngresado = FormatoTexto.formatearTexto(this.campoApellido.getText());
-        String provinciaIngresada = FormatoTexto.formatearTexto(this.campoProvincia.getText());
+        String provinciaIngresada = this.comboProvincia.getSelectionModel().getSelectedItem();
         String localidadIngresada = FormatoTexto.formatearTexto(this.campoLocalidad.getText());
         String calleIngresada = FormatoTexto.formatearTexto(this.campoCalle.getText());
         String cuilIngresado = this.campoCuil.getText();
