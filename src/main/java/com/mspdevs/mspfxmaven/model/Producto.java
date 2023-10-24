@@ -1,5 +1,7 @@
 package com.mspdevs.mspfxmaven.model;
 
+import java.util.Objects;
+
 public class Producto {
     private int idProducto;
     private String nombre;
@@ -121,6 +123,21 @@ public class Producto {
     }
     public void setPrecioLista(double precioLista) {
         this.precioLista = precioLista;
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        Producto producto = (Producto) obj;
+        return idProducto == producto.idProducto;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idProducto);
     }
 
 }

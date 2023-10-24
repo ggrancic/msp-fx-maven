@@ -81,6 +81,10 @@ public class VentanaPrincipalController implements Initializable {
 
     private volatile boolean stop = false;
 
+    private String idDeEmpleado = "";
+
+
+
 
     @FXML
     void abrirVentanaCliente(MouseEvent event) throws IOException {
@@ -120,8 +124,18 @@ public class VentanaPrincipalController implements Initializable {
     
     @FXML
     void abrirVentanaVentas(ActionEvent event) throws IOException {
-    	GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaVentas.fxml"));
-    	bpane.setCenter(centro);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaVentasAlternativa.fxml"));
+        Parent root = loader.load();
+        VentanaVentasAlternativaController ventasAlternativaController = loader.getController();
+
+        String nombreUsuario = usuarioLogueado.getText();
+        // Configura el usuario en el controlador de ventas
+        ventasAlternativaController.setUsuario(idDeEmpleado);
+
+        bpane.setCenter(root);
+        /*
+    	GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaVentasAlternativa.fxml"));
+    	bpane.setCenter(centro);*/
     }
     
     @Override
@@ -324,8 +338,9 @@ public class VentanaPrincipalController implements Initializable {
         }
     }
 
-    public void mostrarUsuario(String usuario) {
+    public void mostrarUsuario(String usuario, int id_empleado) {
         usuarioLogueado.setText(usuario);
+        idDeEmpleado = String.valueOf(id_empleado);
     }
 
     // Agrega este método para manejar el evento de cierre

@@ -346,7 +346,8 @@ public class VentanaProductosController {
                 try {
                     ProductoDAOImpl dao = new ProductoDAOImpl();
                     dao.modificar(pro);
-                    completarTablaProductos();
+                    //completarTablaProductos();
+                    tablaProducto.refresh();
                     vaciarCampos();
                     campoNombre.requestFocus();
                     manejador.configurarBotones(false);
@@ -423,10 +424,6 @@ public class VentanaProductosController {
 
     @FXML
     void initialize() throws Exception {
-        colId.setSortType(TableColumn.SortType.DESCENDING);
-        tablaProducto.getSortOrder().add(colId);
-        tablaProducto.sort();
-
         completarTablaProductos();
 
         RubroDAOImpl rubroDAO = new RubroDAOImpl();
@@ -467,10 +464,6 @@ public class VentanaProductosController {
         ProductoDAOImpl productoDAO = new ProductoDAOImpl();
         ObservableList<Producto> productos = null;
 
-        colId.setSortType(TableColumn.SortType.DESCENDING);
-        tablaProducto.getSortOrder().add(colId);
-        tablaProducto.sort();
-
         try {
             productos = productoDAO.listarTodos();
         } catch (Exception e) {
@@ -508,6 +501,10 @@ public class VentanaProductosController {
                 proveedorBox.getSelectionModel().select(newValue.getProveedorNombre());
             }
         });
+
+        colId.setSortType(TableColumn.SortType.ASCENDING);
+        tablaProducto.getSortOrder().add(colId);
+        tablaProducto.sort();
     }
 
     public void vaciarCampos() {

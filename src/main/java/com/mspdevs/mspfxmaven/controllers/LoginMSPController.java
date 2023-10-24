@@ -157,7 +157,7 @@ public class LoginMSPController implements Initializable {
         Parent root = loader.load();
 
         VentanaPrincipalController ventanaPrincipalController1 = loader.getController();
-        ventanaPrincipalController1.mostrarUsuario(empleado.getNombre() + " " + empleado.getApellido());
+        ventanaPrincipalController1.mostrarUsuario(empleado.getNombre() + " " + empleado.getApellido(), empleado.getId_empleado());
 
         Scene scene = new Scene(root);
         Stage newStage = new Stage();

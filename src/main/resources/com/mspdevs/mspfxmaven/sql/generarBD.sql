@@ -29,7 +29,7 @@ CREATE TABLE `clientes` (
   PRIMARY KEY (`id_cliente`),
   KEY `fk_clientes_personas1_idx` (`idpersona`),
   CONSTRAINT `fk_clientes_personas1` FOREIGN KEY (`idpersona`) REFERENCES `personas` (`id_persona`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,7 +38,7 @@ CREATE TABLE `clientes` (
 
 LOCK TABLES `clientes` WRITE;
 /*!40000 ALTER TABLE `clientes` DISABLE KEYS */;
-INSERT INTO `clientes` VALUES (1,5,'00000000000'),(2,6,'20407372430'),(3,2,'20407372434'),(4,24,'34345534534'),(5,25,'34554334534'),(6,2,'20407372434');
+INSERT INTO `clientes` VALUES (1,26,'99999999999'),(2,27,'24535354334');
 /*!40000 ALTER TABLE `clientes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -60,7 +60,7 @@ CREATE TABLE `detalle_compra` (
   KEY `fk_DETALLE_COMPRA_PRODUCTOS1_idx` (`id_producto`),
   CONSTRAINT `fk_DETALLE_COMPRA_COMPRAS1` FOREIGN KEY (`id_factura_compras`) REFERENCES `factura_compras` (`id_factura_compras`) ON DELETE CASCADE,
   CONSTRAINT `fk_DETALLE_COMPRA_PRODUCTOS1` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,7 +69,6 @@ CREATE TABLE `detalle_compra` (
 
 LOCK TABLES `detalle_compra` WRITE;
 /*!40000 ALTER TABLE `detalle_compra` DISABLE KEYS */;
-INSERT INTO `detalle_compra` VALUES (1,15,22500.00,77,6),(2,10,15000.00,78,6),(3,10,2000.00,78,3),(4,8,1200.00,79,9),(5,5,1000.00,81,3),(6,1,200.00,83,3),(7,1,1500.00,83,6),(8,1,200.00,84,3),(9,1,1500.00,84,6),(10,2,3000.00,85,6),(11,2,400.00,86,3),(12,12,2400.00,87,3),(13,2,400.00,88,3),(14,3,600.00,89,3),(15,1,1500.00,90,6),(16,2,400.00,91,3),(17,5,750.00,92,3),(18,5,750.00,93,3),(19,2,300.00,94,3),(20,3,450.00,94,9),(21,5,150.00,95,3),(22,5,25.00,96,15),(23,1,1600.00,99,1);
 /*!40000 ALTER TABLE `detalle_compra` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -90,7 +89,7 @@ CREATE TABLE `detalle_venta` (
   KEY `fk_VENTA_PRODUCTO_VENTAS1_idx` (`id_factura_ventas`),
   CONSTRAINT `fk_VENTA_PRODUCTO_PRODUCTO1` FOREIGN KEY (`id_producto`) REFERENCES `productos` (`id_producto`),
   CONSTRAINT `fk_VENTA_PRODUCTO_VENTAS1` FOREIGN KEY (`id_factura_ventas`) REFERENCES `factura_ventas` (`id_factura_ventas`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -99,7 +98,7 @@ CREATE TABLE `detalle_venta` (
 
 LOCK TABLES `detalle_venta` WRITE;
 /*!40000 ALTER TABLE `detalle_venta` DISABLE KEYS */;
-INSERT INTO `detalle_venta` VALUES (1,2,1,12),(2,5,1,13),(3,12,1,14);
+INSERT INTO `detalle_venta` VALUES (1,1,1,15),(2,1,2,15),(3,3,3,15),(4,5,1,16),(5,5,1,17),(6,1,1,18),(7,1,2,18),(8,1,3,18),(9,4,1,19),(10,5,7,20),(11,1,1,21),(12,1,2,21),(13,1,5,21),(14,1,1,22),(15,1,1,23),(16,1,1,24),(17,1,1,25),(18,1,1,26),(19,1,1,27),(20,1,1,28),(21,1,1,29),(22,1,5,30),(23,1,1,31),(24,1,8,31),(25,1,30,31),(26,1,15,31),(27,5,1,32),(28,1,3,32),(29,1,1,33),(30,1,1,34),(31,1,1,35),(32,1,1,36),(33,1,2,37),(34,4,1,37),(35,1,5,38),(36,1,1,39),(37,4,17,39);
 /*!40000 ALTER TABLE `detalle_venta` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -211,10 +210,11 @@ CREATE TABLE `factura_ventas` (
   `iva` decimal(10,2) DEFAULT NULL,
   `total` decimal(10,2) DEFAULT NULL,
   `cliente` int NOT NULL,
+  `empleado` int DEFAULT NULL,
   PRIMARY KEY (`id_factura_ventas`),
   KEY `fk_factura_ventas_personas1_idx` (`cliente`),
   CONSTRAINT `fk_factura_ventas_personas1` FOREIGN KEY (`cliente`) REFERENCES `personas` (`id_persona`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -223,7 +223,7 @@ CREATE TABLE `factura_ventas` (
 
 LOCK TABLES `factura_ventas` WRITE;
 /*!40000 ALTER TABLE `factura_ventas` DISABLE KEYS */;
-INSERT INTO `factura_ventas` VALUES (1,'345435354353','B','2023-10-22',2000.00,0.00,2000.00,1),(2,'423442423423','A','2023-10-22',3305.79,694.21,4000.00,2),(3,'545435353434','B','2023-10-22',24000.00,0.00,24000.00,1),(4,'545355353455','B','2023-10-22',562.50,0.00,562.50,1),(5,'636345645654','B','2023-10-22',2000.00,0.00,2000.00,1),(6,'543543535345','B','2023-10-22',2080.00,0.00,2080.00,1),(7,'234324424324','B','2023-10-22',2080.00,0.00,2080.00,1),(8,'345345435353','B','2023-10-22',2080.00,0.00,2080.00,1),(9,'234234234242','B','2023-10-22',4160.00,0.00,4160.00,1),(10,'454353543534','B','2023-10-22',4160.00,0.00,4160.00,1),(11,'534354534354','B','2023-10-22',4160.00,0.00,4160.00,1),(12,'435353453453','B','2023-10-22',4160.00,0.00,4160.00,1),(13,'435543345343','B','2023-10-23',10400.00,0.00,10400.00,4),(14,'345345433545','B','2023-10-23',24960.00,0.00,24960.00,1);
+INSERT INTO `factura_ventas` VALUES (15,'000000000001','B','2023-10-23',3042.50,0.00,3042.50,1,NULL),(16,'000000000002','B','2023-10-23',10400.00,0.00,10400.00,1,NULL),(17,'000000000003','B','2023-10-23',10400.00,0.00,10400.00,1,NULL),(18,'000000000004','B','2023-10-23',2667.50,0.00,2667.50,1,NULL),(19,'000000000005','B','2023-10-23',8320.00,0.00,8320.00,1,NULL),(20,'000000000006','A','2023-10-23',2066.12,0.00,2500.00,2,NULL),(21,'000000000007','B','2023-10-24',2780.00,0.00,2780.00,1,NULL),(22,'000000000008','B','2023-10-24',2080.00,0.00,2080.00,1,NULL),(23,'000000000009','B','2023-10-24',2080.00,0.00,2080.00,1,NULL),(24,'000000000010','A','2023-10-24',1719.01,0.00,2080.00,2,NULL),(25,'000000000011','B','2023-10-24',2080.00,0.00,2080.00,1,NULL),(26,'000000000012','B','2023-10-24',2080.00,0.00,2080.00,1,NULL),(27,'000000000013','B','2023-10-24',2080.00,0.00,2080.00,1,NULL),(28,'000000000014','B','2023-10-24',2080.00,0.00,2080.00,1,NULL),(29,'000000000015','B','2023-10-24',2080.00,0.00,2080.00,1,NULL),(30,'000000000016','B','2023-10-24',300.00,0.00,300.00,1,NULL),(31,'000000000017','B','2023-10-24',2760.25,0.00,2760.25,1,NULL),(32,'000000000018','B','2023-10-24',10852.50,0.00,10852.50,1,NULL),(33,'000000000019','B','2023-10-24',2133.00,0.00,2133.00,1,NULL),(34,'000000000020','B','2023-10-24',2133.00,0.00,2133.00,1,NULL),(35,'000000000021','B','2023-10-24',2133.00,0.00,2133.00,1,0),(36,'000000000022','B','2023-10-24',2133.00,0.00,2133.00,1,2),(37,'000000000023','B','2023-10-24',8932.00,0.00,8932.00,1,1),(38,'000000000024','B','2023-10-24',300.00,0.00,300.00,1,2),(39,'000000000025','B','2023-10-24',2133.00,0.00,2133.00,1,2);
 /*!40000 ALTER TABLE `factura_ventas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -245,7 +245,7 @@ CREATE TABLE `personas` (
   `mail` varchar(255) DEFAULT NULL,
   `telefono` varchar(11) DEFAULT NULL,
   PRIMARY KEY (`id_persona`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -254,7 +254,7 @@ CREATE TABLE `personas` (
 
 LOCK TABLES `personas` WRITE;
 /*!40000 ALTER TABLE `personas` DISABLE KEYS */;
-INSERT INTO `personas` VALUES (1,'Gianluca','Grancic Lapasini','Chaco','Saenz Peña','Avellaneda 933','39752040','grancicg@gmail.com','3644457375'),(2,'Daniel','Urban','Chubut','Saenz Peña','Sarmiento','40737243','daniel@gmail.com','3624569428'),(3,'Arcor','Arcoroso','Chaco','Sp','Sp','4099910','arcormayorista@gmail.com','3644101010'),(4,'Random','Randomiz','Chaco','Sp','Sp','40011345','random@gmail.com','3644001122'),(5,'Consumidor','Final','Chaco','Sp','Sp','00000000','consumidorfinal@gmail.com','3644456204'),(6,'Pedro','Perez','Chaco','Sp','Sp','40737243','pedro@gmail.com','3644456204'),(7,'Sin Nombre','Texto','Chaco','Sp','Sp','56435345','sin@gmail.com','5232523452'),(8,'Yaaki','Yuuki','Corrientes','Corrientezzz','Corrientezzz','53453563',NULL,'4234232342'),(9,'Test','Testtt','Chaco','Sp','Sp','45534535',NULL,'5423535435'),(12,'Juancito','Juancito','Chaco','Sp','Ola','53435353',NULL,'5325435345'),(13,'Juan','Juan','Chaco','Sp','345','53455435',NULL,'3545345335'),(14,'Chaco','Sp','Sp','Sp','Sp','54245354',NULL,'3453453543'),(15,'Yo','Yo','Córdoba','Fdfd','5','53534534','da@gmail.com','5345354334'),(16,'Freddie','Mercury','Chaco','Sp','Sp','54535345',NULL,'5345353535'),(18,'Pap','Apapapa','Chaco','Sp','423423','45435355','','5232345353'),(19,'Pruebas','Pruebas','Chaco','Sp','414324','14234234','55@gail.com','2452352234'),(20,'Testttt','Asd','Cccc','Ccc','53453535345435','54334563','a@gmail.com','3453454353'),(21,'Testttto','Asdasd','Ccc','Gsdsfs','Fdsfd','55443565','d@gmail.com','5245435544'),(22,'Holahola','Gregfdg','Chaco','Sp','423534','53645676','DA@GMAIL.COM','5234543253'),(23,'Olamundoooo','Mundo','Chaco','Sp','2534435','45345435','da@gmail.com','3453453434'),(24,'Pepe','Gonzalez','Chaco','Sp','24534435','53454334','pepe@gmail.com','5345343453'),(25,'Pepito','Gonzo','Chaco','Sp','53454354','55435334','pep@gmail.com','5324255254');
+INSERT INTO `personas` VALUES (1,'Gianluca','Grancic Lapasini','Chaco','Saenz Peña','Avellaneda 933','39752040','grancicg@gmail.com','3644457375'),(2,'Daniel','Urban','Chubut','Saenz Peña','Sarmiento','40737243','daniel@gmail.com','3624569428'),(3,'Arcor','Arcoroso','Chaco','Sp','Sp','4099910','arcormayorista@gmail.com','3644101010'),(4,'Random','Randomiz','Chaco','Sp','Sp','40011345','random@gmail.com','3644001122'),(5,'Consumidor','Final','Chaco','Sp','Sp','00000000','consumidorfinal@gmail.com','3644456204'),(6,'Pedro','Perez','Chaco','Sp','Sp','40737243','pedro@gmail.com','3644456204'),(7,'Sin Nombre','Texto','Chaco','Sp','Sp','56435345','sin@gmail.com','5232523452'),(8,'Yaaki','Yuuki','Corrientes','Corrientezzz','Corrientezzz','53453563',NULL,'4234232342'),(9,'Test','Testtt','Chaco','Sp','Sp','45534535',NULL,'5423535435'),(12,'Juancito','Juancito','Chaco','Sp','Ola','53435353',NULL,'5325435345'),(13,'Juan','Juan','Chaco','Sp','345','53455435',NULL,'3545345335'),(14,'Chaco','Sp','Sp','Sp','Sp','54245354',NULL,'3453453543'),(15,'Yo','Yo','Córdoba','Fdfd','5','53534534','da@gmail.com','5345354334'),(16,'Freddie','Mercury','Chaco','Sp','Sp','54535345',NULL,'5345353535'),(18,'Pap','Apapapa','Chaco','Sp','423423','45435355','','5232345353'),(19,'Pruebas','Pruebas','Chaco','Sp','414324','14234234','55@gail.com','2452352234'),(20,'Testttt','Asd','Cccc','Ccc','53453535345435','54334563','a@gmail.com','3453454353'),(21,'Testttto','Asdasd','Ccc','Gsdsfs','Fdsfd','55443565','d@gmail.com','5245435544'),(22,'Holahola','Gregfdg','Chaco','Sp','423534','53645676','DA@GMAIL.COM','5234543253'),(23,'Olamundoooo','Mundo','Chaco','Sp','2534435','45345435','da@gmail.com','3453453434'),(24,'Pepe','Gonzalez','Chaco','Sp','24534435','53454334','pepe@gmail.com','5345343453'),(25,'Pepito','Gonzo','Chaco','Sp','53454354','55435334','pep@gmail.com','5324255254'),(26,'Consumidor','Final','Chaco','Sp','Sp','99999999','consumidorfinal@gmail.com','5453453535'),(27,'Alejandro','Perez','Chaco','Sp','Sarmiento 2000','53535433','aleperez@gmail.com','5345435453');
 /*!40000 ALTER TABLE `personas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -280,7 +280,7 @@ CREATE TABLE `productos` (
   KEY `fk_productos_proveedores1_idx` (`id_proveedor`),
   CONSTRAINT `fk_productos_proveedores1` FOREIGN KEY (`id_proveedor`) REFERENCES `proveedores` (`id_proveedor`),
   CONSTRAINT `fk_PRODUCTOS_RUBROS1` FOREIGN KEY (`id_rubro`) REFERENCES `rubros` (`id_rubro`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -289,7 +289,7 @@ CREATE TABLE `productos` (
 
 LOCK TABLES `productos` WRITE;
 /*!40000 ALTER TABLE `productos` DISABLE KEYS */;
-INSERT INTO `productos` VALUES (1,'1231423442342','3lts Manaos',2080.00,961,5,1,1,1600.00),(2,'4235345435354','Manaos 2lts',400.00,40,5,1,2,500.00),(3,'3346345345345','Merengadas',187.50,720,20,3,1,150.00),(5,'5345345434534','Pepsi 1lt',300.00,50,2,1,2,150.00),(6,'3453454354334','Lays 100grs',1875.00,77,5,3,1,1500.00),(7,'5345345435345','Papitas',500.00,59,5,2,1,NULL),(8,'5254354345354','Pepitos',588.00,5,1,1,1,NULL),(9,'5524355345353','Facturas',187.50,31,5,3,1,150.00),(15,'3453535345353','Dulces Grandes',39.25,5,1,1,2,25.00),(16,'5245342534533','Dulces Parte 2g',0.00,0,3,2,2,NULL),(17,'5345334534543','Chaco',0.00,0,1,1,1,NULL),(18,'5435353454543','Chaco 3',0.00,0,5,1,1,NULL),(19,'9879897978797','Chaco 5',0.00,0,1,1,1,NULL),(20,'5345345345535','Sp5',0.00,0,1,1,1,NULL),(21,'6757575757567','Sp90',0.00,0,1,1,1,NULL),(22,'2412122323233','Sp100',0.00,0,6,2,1,NULL),(23,'5435353534545','Merengadas50',0.00,0,1,2,1,NULL),(24,'3454335353455','Chocotorta',0.00,0,10,2,1,NULL),(25,'5453453434534','345345',0.00,0,1,1,1,NULL),(26,'5453534535353','Werwrewr',0.00,0,1,1,1,NULL),(27,'1312444234234','3534543534',0.00,0,5,1,1,NULL),(28,'8575676577657','24a',0.00,0,6,2,1,NULL),(29,'4314123423242','A',0.00,0,1,1,1,NULL),(30,'5352423523543','Pepassss',0.00,0,45,1,1,NULL),(31,'3453453455345','131231',0.00,0,5,1,1,NULL);
+INSERT INTO `productos` VALUES (1,'1231423442342','3lts Manaos',2133.00,921,5,1,1,1600.00),(2,'4235345435354','Manaos 2lts',400.00,36,5,1,2,500.00),(3,'3346345345345','Merengadas',187.50,715,20,3,1,150.00),(5,'5345345434534','Pepsi 1lt',300.00,47,2,1,2,150.00),(6,'3453454354334','Lays 100grs',1875.00,77,5,3,1,1500.00),(7,'5345345435345','Papitas',500.00,54,5,2,1,NULL),(8,'5254354345354','Pepitos',588.00,4,1,1,1,NULL),(9,'5524355345353','Facturas',187.50,31,5,3,1,150.00),(15,'3453535345353','Dulces Grandes',39.25,4,1,1,2,25.00),(16,'5245342534533','Dulces Parte 2g',0.00,0,3,2,2,NULL),(17,'5345334534543','Chaco',0.00,-4,1,1,1,NULL),(18,'5435353454543','Chaco 3',0.00,0,5,1,1,NULL),(19,'9879897978797','Chaco 5',0.00,0,1,1,1,NULL),(20,'5345345345535','Sp5',0.00,0,1,1,1,NULL),(21,'6757575757567','Sp90',0.00,0,1,1,1,NULL),(22,'2412122323233','Sp100',0.00,0,6,2,1,NULL),(23,'5435353534545','Merengadas50',0.00,0,1,2,1,NULL),(24,'3454335353455','Chocotorta',0.00,0,10,2,1,NULL),(25,'5453453434534','345345',0.00,0,1,1,1,NULL),(26,'5453534535353','Werwrewr',0.00,0,1,1,1,NULL),(27,'1312444234234','3534543534',0.00,0,5,1,1,NULL),(28,'8575676577657','24a',0.00,0,6,2,1,NULL),(29,'4314123423242','A',0.00,0,1,1,1,NULL),(30,'5352423523543','Pepassss',0.00,-1,45,1,1,NULL),(31,'3453453455345','131231',0.00,0,5,1,1,NULL),(32,'1523532454325','Papitas Fritas',500.00,25,5,1,1,NULL);
 /*!40000 ALTER TABLE `productos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -353,4 +353,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-23 13:11:28
+-- Dump completed on 2023-10-24 19:19:43

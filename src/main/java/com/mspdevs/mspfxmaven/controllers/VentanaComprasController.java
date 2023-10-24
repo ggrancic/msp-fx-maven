@@ -1108,12 +1108,9 @@ public class VentanaComprasController implements Initializable {
             // Actualiza el campo total
             campoTotal.setText(formatoDosDecimales.format(total));
         }
-
         // Habilita o deshabilita el botón de guardar según el valor de totalPrecioLista
         btnGuardar.setDisable(total == 0.0);
     }
-
-
 
     private void actualizarComboBoxProveedores() {
         ProveedorDAOImpl proveedorDAO = new ProveedorDAOImpl();

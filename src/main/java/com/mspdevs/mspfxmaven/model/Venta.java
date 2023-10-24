@@ -13,6 +13,8 @@ public class Venta {
     int idClienteFK;
     private String clienteNombre;
 
+    int idEmpleadoFK;
+
     public Venta(Venta venta, Cliente cliente) {
         this.id_factura_ventas = venta.id_factura_ventas;
         this.numeroFactura = numeroFactura;
@@ -95,5 +97,13 @@ public class Venta {
     }
     public void setClienteNombre(String clienteNombre) {
         this.clienteNombre = clienteNombre;
+    }
+
+
+    public int getIdEmpleadoFK() {
+        return idEmpleadoFK;
+    }
+    public void setIdEmpleadoFK(int idEmpleadoFK) {
+        this.idEmpleadoFK = idEmpleadoFK;
     }
 }
