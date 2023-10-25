@@ -129,7 +129,10 @@ public class ModalNuevoProveedorController implements Initializable {
 				campoCalle.setText(persona.getCalle());
 				campoTelefono.setText(persona.getTelefono());
 				campoEmail.setText(persona.getMail());
+				campoCuit.requestFocus();
 				return;
+			} else {
+				campoCuit.requestFocus();
 			}
 		}
     }
