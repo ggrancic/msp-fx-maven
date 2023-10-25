@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<GridPane stylesheets="@../styles/style.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.VentanaReportesBotonesController">
+    <columnConstraints>
+        <ColumnConstraints halignment="CENTER" hgrow="NEVER" />
+        <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints vgrow="SOMETIMES" />
+    </rowConstraints>
+    <children>
+        <BorderPane fx:id="bpaneReportes" GridPane.columnIndex="1">
+            <GridPane.margin>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </GridPane.margin>
+            <styleClass>
+                <String fx:value="table-bg" />
+                <String fx:value="shadow" />
+            </styleClass>
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+            <center>
+                <HBox alignment="CENTER" spacing="20.0" style="-fx-opacity: 0.5;" BorderPane.alignment="CENTER">
+                    <children>
+                        <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../imgs/analitica.png" />
+                            </image>
+                        </ImageView>
+                        <Label alignment="CENTER" text="Gestión de Reportes">
+                            <font>
+                                <Font size="36.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </HBox>
+            </center>
+        </BorderPane>
+        <VBox alignment="TOP_CENTER" minWidth="350.0" spacing="40.0" styleClass="login-left-pane">
+            <children>
+                <VBox alignment="CENTER">
+                    <children>
+                        <ImageView fitHeight="128.0" fitWidth="128.0" pickOnBounds="true" preserveRatio="true" styleClass="shadow-abajo">
+                            <image>
+                                <Image url="@../imgs/reporte-blanco-128.png" />
+                            </image>
+                        </ImageView>
+                        <Label alignment="CENTER" contentDisplay="CENTER" styleClass="shadow-abajo-2" text="Reportes" textFill="WHITE">
+                            <font>
+                                <Font name="SansSerif Bold" size="20.0" />
+                            </font>
+                            <padding>
+                                <Insets top="10.0" />
+                            </padding>
+                        </Label>
+                    </children>
+                </VBox>
+                <VBox>
+                    <children>
+                        <HBox fx:id="contenedorRC" alignment="CENTER" onMouseClicked="#accionRC" spacing="40.0" styleClass="contenedorRC" stylesheets="@../styles/style.css">
+                            <children>
+                                <ImageView fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../imgs/compraswhite128.png" />
+                                    </image>
+                                </ImageView>
+                                <Label text="Reportes de Compras" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <VBox.margin>
+                                <Insets />
+                            </VBox.margin>
+                            <padding>
+                                <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
+                            </padding>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" layoutX="30.0" layoutY="10.0" onMouseClicked="#accionRV" spacing="35.0" styleClass="contenedorRC" stylesheets="@../styles/style.css">
+                            <children>
+                                <ImageView fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../imgs/punto-de-venta-128-blanco.png" />
+                                    </image>
+                                </ImageView>
+                                <Label text="Reportes de Ventas" textFill="WHITE">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets bottom="20.0" left="35.0" right="20.0" top="20.0" />
+                            </padding>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+            <padding>
+                <Insets top="10.0" />
+            </padding>
+        </VBox>
+    </children>
+</GridPane>

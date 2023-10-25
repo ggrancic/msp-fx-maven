@@ -115,3 +115,13 @@
     -fx-background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semi-transparente */
     -fx-background-radius: 0; /* Sin bordes redondeados */
 }
+
+.btnRV:hover {
+
+	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.75), 10.0, 0.0, 1.0,  1.0);
+
+}
+
+.contenedorRC:hover {
+	-fx-background-color: rgba(0,0,0,0.2);
+}

@@ -71,17 +71,17 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Button>
-                  <Button contentDisplay="TOP" mnemonicParsing="false" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Reportes">
-                     <graphic>
-                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../imgs/informe-seo.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
+                  <Button fx:id="btnReportes" contentDisplay="TOP" mnemonicParsing="false" onAction="#abrirReportes" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Reportes">
+                      <graphic>
+                          <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                  <Image url="@../imgs/informe-seo.png" />
+                              </image>
+                          </ImageView>
+                      </graphic>
+                      <font>
+                          <Font name="System Bold" size="14.0" />
+                      </font>
                   </Button>
                   <Button fx:id="btnProveedores" contentDisplay="TOP" layoutX="346.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#abrirVentanaProveedores" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Proveedores">
                      <graphic>

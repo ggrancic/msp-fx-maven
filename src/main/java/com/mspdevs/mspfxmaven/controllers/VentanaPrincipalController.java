@@ -137,6 +137,12 @@ public class VentanaPrincipalController implements Initializable {
     	GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaVentasAlternativa.fxml"));
     	bpane.setCenter(centro);*/
     }
+
+    @FXML
+    void abrirReportes(ActionEvent event) throws IOException {
+        GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaReportesBotones.fxml"));
+        bpane.setCenter(centro);
+    }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
