@@ -24,6 +24,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
@@ -74,10 +75,19 @@ public class VentanaPrincipalController implements Initializable {
     private Button btnCompra;
     
     @FXML
+    private Button btnCompras;
+    
+    @FXML
     private Button btnVentas;
     
     @FXML
     private Button btnReportes;
+    
+    @FXML
+    private Button btnUsuarios;
+    
+    @FXML
+    private ToolBar botonera;
 
     private volatile boolean stop = false;
 
@@ -272,5 +282,15 @@ public class VentanaPrincipalController implements Initializable {
 
     public void mostrarUsuario(String usuario) {
         usuarioLogueado.setText(usuario);
+    }
+    
+    void habilitarSoloVentas() {
+    	botonera.getItems().remove(btnClientes);
+    	botonera.getItems().remove(btnCompras);
+    	botonera.getItems().remove(btnInventario);
+    	botonera.getItems().remove(btnReportes);
+    	botonera.getItems().remove(btnProveedores);
+    	botonera.getItems().remove(btnUsuarios);
+    	botonera.getItems().remove(btnRubros);    	
     }
 }

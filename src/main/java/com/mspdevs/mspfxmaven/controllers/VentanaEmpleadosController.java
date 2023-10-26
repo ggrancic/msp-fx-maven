@@ -467,6 +467,7 @@ public class VentanaEmpleadosController implements Initializable {
         empleado.setDni(dniIngresado);
         empleado.setMail(emailIngresado);
         empleado.setTelefono(telefonoIngresado);
+        empleado.setNombre_usuario(dniIngresado);
         empleado.setClave(dniIngresado);
         empleado.setEsAdmin(rolIngresado);
 
