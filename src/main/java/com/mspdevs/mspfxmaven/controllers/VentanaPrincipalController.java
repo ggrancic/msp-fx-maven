@@ -124,7 +124,7 @@ public class VentanaPrincipalController implements Initializable {
     
     @FXML
     void abrirVentanaVentas(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaVentasAlternativa.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaAlternativaVentas.fxml"));
         Parent root = loader.load();
         VentanaVentasAlternativaController ventasAlternativaController = loader.getController();
 

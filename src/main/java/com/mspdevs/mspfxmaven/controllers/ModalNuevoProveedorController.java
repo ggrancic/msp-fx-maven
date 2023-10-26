@@ -8,10 +8,7 @@ import com.mspdevs.mspfxmaven.model.Persona;
 import com.mspdevs.mspfxmaven.model.Producto;
 import com.mspdevs.mspfxmaven.model.Proveedor;
 import com.mspdevs.mspfxmaven.model.Rubro;
-import com.mspdevs.mspfxmaven.utils.Alerta;
-import com.mspdevs.mspfxmaven.utils.FormatoTexto;
-import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
-import com.mspdevs.mspfxmaven.utils.ValidacionDeEntrada;
+import com.mspdevs.mspfxmaven.utils.*;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
@@ -61,7 +58,7 @@ public class ModalNuevoProveedorController implements Initializable {
     private TextField campoNombre;
 
     @FXML
-    private TextField campoProvincia;
+    private SearchableComboBox<String> campoProvincia;
 
     @FXML
     private TextField campoTelefono;
@@ -80,13 +77,12 @@ public class ModalNuevoProveedorController implements Initializable {
         // Verifica si algún campo de texto está vacío
         if (proveedor.getNombre().isEmpty() || proveedor.getApellido().isEmpty() || proveedor.getProvincia().isEmpty() ||
                 proveedor.getLocalidad().isEmpty() || proveedor.getCalle().isEmpty() || proveedor.getCuit().isEmpty() ||
-                proveedor.getMail().isEmpty() || proveedor.getDni().isEmpty() || proveedor.getTelefono().isEmpty()) {
+                proveedor.getDni().isEmpty() || proveedor.getTelefono().isEmpty()) {
             // Mostrar mensaje de error si falta ingresar datos
             msj.mostrarError("Error", "", "Falta ingresar datos.");
         } else {
             // Realiza las validaciones con ValidacionDeEntrada
             if (ValidacionDeEntrada.validarCuil(proveedor.getCuit()) &&
-                    ValidacionDeEntrada.validarEmail(proveedor.getMail()) &&
                     ValidacionDeEntrada.validarDNI(proveedor.getDni()) &&
                     ValidacionDeEntrada.validarTelefono(proveedor.getTelefono())) {
 
@@ -106,7 +102,7 @@ public class ModalNuevoProveedorController implements Initializable {
     void accionBotonCancelar(ActionEvent event) {
         // Crea un cuadro de diálogo de confirmación
         boolean confirmado = msj.mostrarConfirmacion("Confirmación", "",
-                "¿Está seguro de que no quiere agregar un nuevo proveedor?");
+                "¿Está seguro de que no desea agregar un nuevo proveedor?");
         if (confirmado) {
             cerrarVentanaModal(event);
         }
@@ -125,18 +121,24 @@ public class ModalNuevoProveedorController implements Initializable {
             if (persona.getDni().equals(campoDni.getText())) {
                 campoNombre.setText(persona.getNombre());
                 campoApellido.setText(persona.getApellido());
-                campoProvincia.setText(persona.getProvincia());
+                campoProvincia.setValue(persona.getProvincia());
                 campoLocalidad.setText(persona.getLocalidad());
                 campoCalle.setText(persona.getCalle());
                 campoTelefono.setText(persona.getTelefono());
                 campoEmail.setText(persona.getMail());
+                campoCuit.requestFocus();
                 return;
+            } else {
+                campoCuit.requestFocus();
             }
         }
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        campoProvincia.setValue("Chaco");
+        // Carga la lista de provincias desde la clase ProvinciasArgentinas
+        campoProvincia.setItems(ProvinciasArgentinas.getProvincias());
         // Establecer el enfoque en campoNombre después de que la ventana se haya mostrado completamente
         Platform.runLater(() -> campoDni.requestFocus());
 
@@ -145,7 +147,7 @@ public class ModalNuevoProveedorController implements Initializable {
         campoApellido.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoCalle.setTextFormatter(ManejoDeEntrada.soloLetrasNumEspAcento());
         campoTelefono.setTextFormatter(ManejoDeEntrada.soloTelefono());
-        campoProvincia.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
+        //campoProvincia.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoLocalidad.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoDni.setTextFormatter(ManejoDeEntrada.soloDni());
         campoCuit.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
@@ -165,7 +167,7 @@ public class ModalNuevoProveedorController implements Initializable {
     private Proveedor obtenerValoresDeCampos() {
         String nombreIngresado = FormatoTexto.formatearTexto(this.campoNombre.getText());
         String apellidoIngresado = FormatoTexto.formatearTexto(this.campoApellido.getText());
-        String provinciaIngresada = FormatoTexto.formatearTexto(this.campoProvincia.getText());
+        String provinciaIngresada = this.campoProvincia.getSelectionModel().getSelectedItem();
         String localidadIngresada = FormatoTexto.formatearTexto(this.campoLocalidad.getText());
         String calleIngresada = FormatoTexto.formatearTexto(this.campoCalle.getText());
         String cuitIngresado = this.campoCuit.getText();

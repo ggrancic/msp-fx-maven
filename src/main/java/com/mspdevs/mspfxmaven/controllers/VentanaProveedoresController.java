@@ -1,5 +1,6 @@
 package com.mspdevs.mspfxmaven.controllers;
 
+import com.mspdevs.mspfxmaven.model.DAO.PersonaDAOImpl;
 import com.mspdevs.mspfxmaven.model.DAO.ProveedorDAOImpl;
 import com.mspdevs.mspfxmaven.model.Persona;
 import com.mspdevs.mspfxmaven.model.Proveedor;
@@ -44,6 +45,9 @@ public class VentanaProveedoresController implements Initializable  {
     private TextField buscarCampo;
 
     @FXML
+    private TextField campoDni;
+
+    @FXML
     private TextField campoApellido;
 
     @FXML
@@ -62,6 +66,9 @@ public class VentanaProveedoresController implements Initializable  {
     private TextField campoNombre;
 
     @FXML
+    private TextField campoRazonSocial;
+
+    @FXML
     private SearchableComboBox<String> comboProvincia;
 
     @FXML
@@ -72,6 +79,9 @@ public class VentanaProveedoresController implements Initializable  {
 
     @FXML
     private TableColumn<Persona, String> colCalle;
+
+    @FXML
+    private TableColumn<Proveedor, String> colRazonS;
 
     @FXML
     private TableColumn<Proveedor, String> colCuit;
@@ -106,7 +116,7 @@ public class VentanaProveedoresController implements Initializable  {
         Proveedor proveedor = obtenerValoresDeCampos();
 
         // Verifica si algún campo de texto está vacío
-        if (proveedor.getNombre().isEmpty() || proveedor.getApellido().isEmpty() || proveedor.getProvincia().isEmpty() ||
+        if (proveedor.getDni().isEmpty() || proveedor.getNombre().isEmpty() || proveedor.getApellido().isEmpty() || proveedor.getProvincia().isEmpty() ||
                 proveedor.getLocalidad().isEmpty() || proveedor.getCalle().isEmpty() || proveedor.getCuit().isEmpty() ||
                 proveedor.getMail().isEmpty() || proveedor.getTelefono().isEmpty()) {
             // Mostrar mensaje de error si falta ingresar datos
@@ -116,19 +126,12 @@ public class VentanaProveedoresController implements Initializable  {
             if (ValidacionDeEntrada.validarEmail(proveedor.getMail()) &&
                     ValidacionDeEntrada.validarCuil(proveedor.getCuit()) &&
                     ValidacionDeEntrada.validarTelefono(proveedor.getTelefono())) {
-                // Extrae el DNI del CUIT (últimos 7 caracteres)
-                String cuitIngresado = proveedor.getCuit();
-                int inicioDNI = 2;
-                int finDNI = (cuitIngresado.length() == 11) ? 10 : 9; // Si tiene 11 caracteres, toma los dígitos de 2 a 10, de lo contrario, toma los de 2 a 9
-                String dniIngresado = cuitIngresado.substring(inicioDNI, finDNI);
-                proveedor.setDni(dniIngresado);
-
                 try {
                     ProveedorDAOImpl dao = new ProveedorDAOImpl();
                     dao.insertar(proveedor);
                     completarTabla();
                     vaciarCampos();
-                    campoNombre.requestFocus();
+                    campoDni.requestFocus();
                     manejador.configurarBotones(false);
                     msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el proveedor correctamente.");
                 } catch (Exception e) {
@@ -202,7 +205,7 @@ public class VentanaProveedoresController implements Initializable  {
                     dao.eliminar(p);
                     completarTabla();
                     vaciarCampos();
-                    campoNombre.requestFocus();
+                    campoDni.requestFocus();
                     manejador.configurarBotones(false);
                     msj.mostrarAlertaInforme("Operacion exitosa", "", "El proveedor se ha eliminado");
                 } catch (Exception e) {
@@ -217,7 +220,7 @@ public class VentanaProveedoresController implements Initializable  {
         vaciarCampos(); // Limpia los campos de texto
         manejador.configurarBotones(false); // Deshabilita "Modificar" y "Eliminar", y habilita "Agregar"
         tablaProveedores.getSelectionModel().clearSelection(); // Deselecciona la fila en la tabla
-        campoNombre.requestFocus(); // Focus en nombre
+        campoDni.requestFocus(); // Focus en dni
     }
 
     @FXML
@@ -235,7 +238,7 @@ public class VentanaProveedoresController implements Initializable  {
         Proveedor proveedor = obtenerValoresDeCampos();
 
         // Verifica si algún campo de texto está vacío
-        if (proveedor.getNombre().isEmpty() || proveedor.getApellido().isEmpty() || proveedor.getProvincia().isEmpty() ||
+        if (proveedor.getDni().isEmpty() || proveedor.getNombre().isEmpty() || proveedor.getApellido().isEmpty() || proveedor.getProvincia().isEmpty() ||
                 proveedor.getLocalidad().isEmpty() || proveedor.getCalle().isEmpty() || proveedor.getCuit().isEmpty() ||
                 proveedor.getMail().isEmpty() || proveedor.getTelefono().isEmpty()) {
             // Mostrar mensaje de error si falta ingresar datos
@@ -243,14 +246,9 @@ public class VentanaProveedoresController implements Initializable  {
         } else {
             // Realiza las validaciones con ValidacionDeEntrada
             if (ValidacionDeEntrada.validarEmail(proveedor.getMail()) &&
+                    ValidacionDeEntrada.validarDNI(proveedor.getDni()) &&
                     ValidacionDeEntrada.validarCuil(proveedor.getCuit()) &&
                     ValidacionDeEntrada.validarTelefono(proveedor.getTelefono())) {
-                // Extrae el DNI del CUIT (últimos 7 caracteres)
-                String cuitIngresado = proveedor.getCuit();
-                int inicioDNI = 2;
-                int finDNI = (cuitIngresado.length() == 11) ? 10 : 9; // Si tiene 11 caracteres, toma los dígitos de 2 a 10, de lo contrario, toma los de 2 a 9
-                String dniIngresado = cuitIngresado.substring(inicioDNI, finDNI);
-                proveedor.setDni(dniIngresado);
                 // Mostrar una ventana de confirmación
                 boolean confirmacion = msj.mostrarConfirmacion("Confirmar Modificación", "",
                         "¿Está seguro de que desea modificar este proveedor?");
@@ -258,6 +256,7 @@ public class VentanaProveedoresController implements Initializable  {
                     try {// Actualiza los valores del proveedor
                         p.setNombre(proveedor.getNombre());
                         p.setApellido(proveedor.getApellido());
+                        p.setRazonSocial(proveedor.getRazonSocial());
                         p.setProvincia(proveedor.getProvincia());
                         p.setLocalidad(proveedor.getLocalidad());
                         p.setCalle(proveedor.getCalle());
@@ -270,13 +269,40 @@ public class VentanaProveedoresController implements Initializable  {
                         dao.modificar(p);
                         completarTabla();
                         vaciarCampos();
-                        campoNombre.requestFocus();
+                        campoDni.requestFocus();
                         manejador.configurarBotones(false);
                         msj.mostrarAlertaInforme("Operación exitosa", "", "El proveedor se ha modificado");
                     } catch (Exception e) {
                         msj.mostrarError("Error", "", "No se pudo modificar el elemento en la BD");
                     }
                 }
+            }
+        }
+    }
+
+    @FXML
+    void autoCompletarCampos(ActionEvent event) {
+        PersonaDAOImpl p = new PersonaDAOImpl();
+        ObservableList<Persona> personas = null;
+        try {
+            personas = p.listarTodos();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        for (Persona persona : personas) {
+            if (persona.getDni().equals(campoDni.getText())) {
+                campoNombre.setText(persona.getNombre());
+                campoApellido.setText(persona.getApellido());
+                //campoRazonSocial.setText(proveedor);
+                comboProvincia.setValue(persona.getProvincia());
+                campoLocalidad.setText(persona.getLocalidad());
+                campoCalle.setText(persona.getCalle());
+                campoTelefono.setText(persona.getTelefono());
+                campoEmail.setText(persona.getMail());
+                campoCuit.requestFocus();
+                return;
+            } else {
+                campoCuit.requestFocus();
             }
         }
     }
@@ -310,7 +336,7 @@ public class VentanaProveedoresController implements Initializable  {
         todosLosProveedores = tablaProveedores.getItems();
 
         // Establecer el enfoque en campoNombre después de que la ventana se haya mostrado completamente
-        Platform.runLater(() -> campoNombre.requestFocus());
+        Platform.runLater(() -> campoDni.requestFocus());
 
         // Instancia el ManejadorBotones en la inicialización del controlador
         manejador = new ManejoDeBotones(btnModificar, btnEliminar, btnAgregar);
@@ -319,12 +345,14 @@ public class VentanaProveedoresController implements Initializable  {
 
         campoNombre.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoApellido.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
+        campoRazonSocial.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoCalle.setTextFormatter(ManejoDeEntrada.soloLetrasNumEspAcento());
         campoTelefono.setTextFormatter(ManejoDeEntrada.soloTelefono());
         //campoProvincia.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoLocalidad.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoEmail.setTextFormatter(ManejoDeEntrada.soloEmail());
         campoCuit.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
+        campoDni.setTextFormatter(ManejoDeEntrada.soloDni());
     }
     public void completarTabla() {
         // Crear una instancia del DAO de Proveedor
@@ -345,6 +373,7 @@ public class VentanaProveedoresController implements Initializable  {
         this.colCuit.setCellValueFactory(new PropertyValueFactory<>("cuit"));
         this.colNom.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         this.colApel.setCellValueFactory(new PropertyValueFactory<>("apellido"));
+        this.colRazonS.setCellValueFactory(new PropertyValueFactory<>("razonSocial"));
         this.colProv.setCellValueFactory(new PropertyValueFactory<>("provincia"));
         this.colLoca.setCellValueFactory(new PropertyValueFactory<>("localidad"));
         this.colCalle.setCellValueFactory(new PropertyValueFactory<>("calle"));
@@ -361,10 +390,12 @@ public class VentanaProveedoresController implements Initializable  {
                 // Llena los campos de entrada con los datos del proveedor seleccionado
                 campoNombre.setText(newValue.getNombre());
                 campoApellido.setText(newValue.getApellido());
+                campoRazonSocial.setText(newValue.getRazonSocial());
                 comboProvincia.getSelectionModel().select(newValue.getProvincia());
                 campoLocalidad.setText(newValue.getLocalidad());
                 campoCalle.setText(newValue.getCalle());
                 campoCuit.setText(newValue.getCuit());
+                campoDni.setText(newValue.getDni());
                 campoEmail.setText(newValue.getMail());
                 campoTelefono.setText(newValue.getTelefono());
             }
@@ -375,34 +406,29 @@ public class VentanaProveedoresController implements Initializable  {
         // Limpiar los campos de entrada y foucs en nombre
         campoNombre.setText("");
         campoApellido.setText("");
+        campoRazonSocial.setText("");
         comboProvincia.getSelectionModel().clearSelection();
         campoLocalidad.setText("");
         campoCalle.setText("");
         campoEmail.setText("");
         campoTelefono.setText("");
         campoCuit.setText("");
+        campoDni.setText("");
         buscarCampo.setText("");
         campoNombre.requestFocus();
         comboProvincia.setValue("Chaco");
     }
 
-
-
-
-
-
-
-
-
     private Proveedor obtenerValoresDeCampos() {
         String nombreIngresado = FormatoTexto.formatearTexto(this.campoNombre.getText());
         String apellidoIngresado = FormatoTexto.formatearTexto(this.campoApellido.getText());
+        String razonSocialIngresada = FormatoTexto.formatearTexto(this.campoRazonSocial.getText());
         String provinciaIngresada = this.comboProvincia.getSelectionModel().getSelectedItem();
         String localidadIngresada = FormatoTexto.formatearTexto(this.campoLocalidad.getText());
         String calleIngresada = FormatoTexto.formatearTexto(this.campoCalle.getText());
         String cuitIngresado = this.campoCuit.getText();
-        //String dniIngresado = cuitIngresado.substring(2, 10);
-        String emailIngresado = this.campoEmail.getText();
+        String dniIngresado = this.campoDni.getText();
+        String emailIngresado = this.campoEmail.getText().toLowerCase();;
         if (emailIngresado != null && !emailIngresado.isEmpty()) {
             emailIngresado.toLowerCase();
             // Realiza las operaciones con lowerCaseText
@@ -414,11 +440,12 @@ public class VentanaProveedoresController implements Initializable  {
         Proveedor proveedor = new Proveedor();
         proveedor.setNombre(nombreIngresado);
         proveedor.setApellido(apellidoIngresado);
+        proveedor.setRazonSocial(razonSocialIngresada);
         proveedor.setProvincia(provinciaIngresada);
         proveedor.setLocalidad(localidadIngresada);
         proveedor.setCalle(calleIngresada);
         proveedor.setCuit(cuitIngresado);
-        //proveedor.setDni(dniIngresado);
+        proveedor.setDni(dniIngresado);
         proveedor.setMail(emailIngresado);
         proveedor.setTelefono(telefonoIngresado);
 

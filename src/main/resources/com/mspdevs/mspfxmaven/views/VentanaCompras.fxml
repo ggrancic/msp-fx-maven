@@ -42,7 +42,7 @@
             </ImageView>
             <Label alignment="CENTER" contentDisplay="CENTER" styleClass="shadow-abajo-2" text="Gestión de Compras" textFill="WHITE">
                <font>
-                  <Font name="SansSerif Bold" size="16.0" />
+                  <Font name="SansSerif Bold" size="20.0" />
                </font>
             </Label>
          </children>

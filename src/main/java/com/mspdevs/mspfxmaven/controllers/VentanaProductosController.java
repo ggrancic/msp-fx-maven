@@ -348,6 +348,7 @@ public class VentanaProductosController {
                     dao.modificar(pro);
                     //completarTablaProductos();
                     tablaProducto.refresh();
+                    completarTablaProductos();
                     vaciarCampos();
                     campoNombre.requestFocus();
                     manejador.configurarBotones(false);
@@ -459,6 +460,7 @@ public class VentanaProductosController {
         campoCantDisp.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
         campoCantMin.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
     }
+
 
     public void completarTablaProductos() {
         ProductoDAOImpl productoDAO = new ProductoDAOImpl();

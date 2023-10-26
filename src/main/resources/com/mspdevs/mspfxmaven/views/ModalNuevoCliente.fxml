@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import org.controlsfx.control.SearchableComboBox?>
 
 <VBox fx:id="contenedor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="600.0" style="-fx-background-color: lightgray; -fx-border-width: 3px; -fx-border-color: linear-gradient(to top right, rgb(207, 150, 207), rgb(107, 116, 179)) linear-gradient(to top right, rgb(207, 150, 207), rgb(107, 116, 179));" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.ModalNuevoClienteController">
    <children>
@@ -113,7 +114,7 @@
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="campoProvincia" />
+                        <SearchableComboBox fx:id="campoProvincia" prefHeight="25.0" prefWidth="152.0" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" layoutX="10.0" layoutY="69.0" spacing="15.0">

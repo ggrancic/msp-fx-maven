@@ -15,7 +15,7 @@ public class ProveedorDAOImpl extends ConexionMySQL implements ProveedorDAO {
         try {
             this.conectar();
             // Se crea una consulta SQL que combina las tablas "proveedores" y "personas" mediante un INNER JOIN
-            PreparedStatement st = this.con.prepareStatement("SELECT pr.id_proveedor, pr.cuit, p.* FROM proveedores pr JOIN personas p ON pr.id_persona = p.id_persona");
+            PreparedStatement st = this.con.prepareStatement("SELECT pr.id_proveedor, pr.cuit, pr.razon_social, p.* FROM proveedores pr JOIN personas p ON pr.id_persona = p.id_persona");
             // Se inicializa la lista donde se almacenarán los resultados
             lista = FXCollections.observableArrayList();
             ResultSet rs = st.executeQuery(); // Ejecuta la consulta SQL
@@ -24,6 +24,7 @@ public class ProveedorDAOImpl extends ConexionMySQL implements ProveedorDAO {
                 Proveedor proveedor = new Proveedor();
                 proveedor.setIdProveedor(rs.getInt("id_proveedor"));
                 proveedor.setCuit(rs.getString("cuit"));
+                proveedor.setRazonSocial(rs.getString("razon_social"));
                 proveedor.setIdPersona(rs.getInt("id_persona"));
                 proveedor.setNombre(rs.getString("nombre"));
                 proveedor.setApellido(rs.getString("apellido"));
@@ -102,11 +103,12 @@ public class ProveedorDAOImpl extends ConexionMySQL implements ProveedorDAO {
                 stGetId.close();
             }
             // Por ultimo, insertamos los datos en la tabla "Proveedores" usando el ID de la persona (clave foranea)
-            String queryProveedores = "INSERT INTO proveedores (id_persona, id_proveedor, cuit) VALUES (?, ?, ?)";
+            String queryProveedores = "INSERT INTO proveedores (id_persona, id_proveedor, cuit, razon_social) VALUES (?, ?, ?, ?)";
             PreparedStatement stProveedores = this.con.prepareStatement(queryProveedores);
             stProveedores.setInt(1, idPersonaFK);
             stProveedores.setInt(2, proveedor.getIdProveedor());
             stProveedores.setString(3, proveedor.getCuit());
+            stProveedores.setString(4, proveedor.getRazonSocial());
             stProveedores.executeUpdate();
             stProveedores.close();
         } catch (Exception e) {
@@ -193,11 +195,12 @@ public class ProveedorDAOImpl extends ConexionMySQL implements ProveedorDAO {
             // Luego, modificamos el registro correspondiente en la tabla "proveedores"
             PreparedStatement stModificarProveedor = con.prepareStatement(
                     "UPDATE proveedores " +
-                            "SET cuit = ? " +
+                            "SET cuit = ?, razon_social = ? " +
                             "WHERE id_persona = ?"
             );
             stModificarProveedor.setString(1, proveedor.getCuit());
-            stModificarProveedor.setInt(2, idPersona);
+            stModificarProveedor.setString(2, proveedor.getRazonSocial());
+            stModificarProveedor.setInt(3, idPersona);
             stModificarProveedor.executeUpdate();
             stModificarProveedor.close();
             // Confirmamos la transacción (hacemos los cambios permanentes)

@@ -2,8 +2,10 @@ package com.mspdevs.mspfxmaven.controllers;
 
 import com.mspdevs.mspfxmaven.model.Cliente;
 import com.mspdevs.mspfxmaven.model.DAO.EmpleadoDAOImpl;
+import com.mspdevs.mspfxmaven.model.DAO.PersonaDAOImpl;
 import com.mspdevs.mspfxmaven.model.DAO.ProveedorDAOImpl;
 import com.mspdevs.mspfxmaven.model.Empleado;
+import com.mspdevs.mspfxmaven.model.Persona;
 import com.mspdevs.mspfxmaven.model.Proveedor;
 import com.mspdevs.mspfxmaven.utils.*;
 
@@ -118,7 +120,7 @@ public class VentanaEmpleadosController implements Initializable {
         Empleado empleado = obtenerValoresDeCampos();
 
         // Verifica si algún campo de texto está vacío
-        if (empleado.getNombre().isEmpty() || empleado.getApellido().isEmpty() || empleado.getProvincia().isEmpty() ||
+        if (empleado.getDni().isEmpty() || empleado.getNombre().isEmpty() || empleado.getApellido().isEmpty() || empleado.getProvincia().isEmpty() ||
                 empleado.getLocalidad().isEmpty() || empleado.getCalle().isEmpty() ||
                 empleado.getMail().isEmpty() || empleado.getTelefono().isEmpty()) {
             // Mostrar mensaje de error si falta ingresar datos
@@ -197,7 +199,7 @@ public class VentanaEmpleadosController implements Initializable {
                 dao.eliminar(em);
                 completarTabla();
                 vaciarCampos();
-                campoNombre.requestFocus();
+                campoDNI.requestFocus();
                 // Para habilitar "Modificar" y "Eliminar" y deshabilitar "Agregar"
                 manejador.configurarBotones(false);
                 msj.mostrarAlertaInforme("Operacion exitosa", "", "El empleado se ha eliminado");
@@ -220,7 +222,7 @@ public class VentanaEmpleadosController implements Initializable {
         Empleado empleado = obtenerValoresDeCampos();
 
         // Verifica si algún campo de texto está vacío
-        if (empleado.getNombre().isEmpty() || empleado.getApellido().isEmpty() || empleado.getProvincia().isEmpty() ||
+        if (empleado.getDni().isEmpty() || empleado.getNombre().isEmpty() || empleado.getApellido().isEmpty() || empleado.getProvincia().isEmpty() ||
                 empleado.getLocalidad().isEmpty() || empleado.getCalle().isEmpty() ||
                 empleado.getMail().isEmpty() || empleado.getTelefono().isEmpty()) {
             // Mostrar mensaje de error si falta ingresar datos
@@ -245,7 +247,7 @@ public class VentanaEmpleadosController implements Initializable {
                     dao.modificar(empl);
                     completarTabla();
                     vaciarCampos();
-                    campoNombre.requestFocus();
+                    campoDNI.requestFocus();
                     comboAdmin.setPromptText("Selecciona una opción");
                     // Para habilitar "Modificar" y "Eliminar" y deshabilitar "Agregar"
                     manejador.configurarBotones(false);
@@ -325,7 +327,7 @@ public class VentanaEmpleadosController implements Initializable {
         // Para habilitar "Modificar" y "Eliminar" y deshabilitar "Agregar"
         manejador.configurarBotones(false);
         tblEmpleados.getSelectionModel().clearSelection();
-        campoNombre.requestFocus();
+        campoDNI.requestFocus(); // Focus en dni
     }
 
     @FXML
@@ -432,7 +434,7 @@ public class VentanaEmpleadosController implements Initializable {
         todosLosEmpleados = tblEmpleados.getItems();
 
         // Establecer el enfoque en campoNombre después de que la ventana se haya mostrado completamente
-        Platform.runLater(() -> campoNombre.requestFocus());
+        Platform.runLater(() -> campoDNI.requestFocus());
 
         // Instancia el ManejadorBotones en la inicialización del controlador
         manejador = new ManejoDeBotones(btnModificar, btnEliminar, btnAgregar);
@@ -449,6 +451,31 @@ public class VentanaEmpleadosController implements Initializable {
         campoDNI.setTextFormatter(ManejoDeEntrada.soloDni());
     }
 
+    @FXML
+    void autoCompletarCampos(ActionEvent event) {
+        PersonaDAOImpl p = new PersonaDAOImpl();
+        ObservableList<Persona> personas = null;
+        try {
+            personas = p.listarTodos();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        for (Persona persona : personas) {
+            if (persona.getDni().equals(campoDNI.getText())) {
+                campoNombre.setText(persona.getNombre());
+                campoApellido.setText(persona.getApellido());
+                comboProvincia.setValue(persona.getProvincia());
+                campoLocalidad.setText(persona.getLocalidad());
+                campoCalle.setText(persona.getCalle());
+                campoTelefono.setText(persona.getTelefono());
+                campoEmail.setText(persona.getMail());
+                campoNombre.requestFocus();
+                return;
+            } else {
+                campoNombre.requestFocus();
+            }
+        }
+    }
 
 
 

@@ -4,10 +4,7 @@ package com.mspdevs.mspfxmaven.controllers;
 
 import com.mspdevs.mspfxmaven.model.*;
 import com.mspdevs.mspfxmaven.model.DAO.*;
-import com.mspdevs.mspfxmaven.utils.Alerta;
-import com.mspdevs.mspfxmaven.utils.FormatoTexto;
-import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
-import com.mspdevs.mspfxmaven.utils.ValidacionDeEntrada;
+import com.mspdevs.mspfxmaven.utils.*;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
@@ -60,7 +57,7 @@ public class ModalNuevoClienteController implements Initializable {
     private TextField campoNombre;
 
     @FXML
-    private TextField campoProvincia;
+    private SearchableComboBox<String> campoProvincia;
 
     @FXML
     private TextField campoTelefono;
@@ -121,7 +118,7 @@ public class ModalNuevoClienteController implements Initializable {
             if (persona.getDni().equals(campoDni.getText())) {
                 campoNombre.setText(persona.getNombre());
                 campoApellido.setText(persona.getApellido());
-                campoProvincia.setText(persona.getProvincia());
+                campoProvincia.setValue(persona.getProvincia());
                 campoLocalidad.setText(persona.getLocalidad());
                 campoCalle.setText(persona.getCalle());
                 campoTelefono.setText(persona.getTelefono());
@@ -133,6 +130,9 @@ public class ModalNuevoClienteController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        campoProvincia.setValue("Chaco");
+        // Carga la lista de provincias desde la clase ProvinciasArgentinas
+        campoProvincia.setItems(ProvinciasArgentinas.getProvincias());
         // Establecer el enfoque en campoNombre después de que la ventana se haya mostrado completamente
         Platform.runLater(() -> campoDni.requestFocus());
 
@@ -141,7 +141,7 @@ public class ModalNuevoClienteController implements Initializable {
         campoApellido.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoCalle.setTextFormatter(ManejoDeEntrada.soloLetrasNumEspAcento());
         campoTelefono.setTextFormatter(ManejoDeEntrada.soloTelefono());
-        campoProvincia.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
+        //campoProvincia.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoLocalidad.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoDni.setTextFormatter(ManejoDeEntrada.soloDni());
         campoCuil.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
@@ -160,7 +160,7 @@ public class ModalNuevoClienteController implements Initializable {
     private Cliente obtenerValoresDeCampos() {
         String nombreIngresado = FormatoTexto.formatearTexto(this.campoNombre.getText());
         String apellidoIngresado = FormatoTexto.formatearTexto(this.campoApellido.getText());
-        String provinciaIngresada = FormatoTexto.formatearTexto(this.campoProvincia.getText());
+        String provinciaIngresada = this.campoProvincia.getSelectionModel().getSelectedItem();
         String localidadIngresada = FormatoTexto.formatearTexto(this.campoLocalidad.getText());
         String calleIngresada = FormatoTexto.formatearTexto(this.campoCalle.getText());
         String cuitIngresado = this.campoCuil.getText();

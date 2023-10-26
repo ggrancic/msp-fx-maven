@@ -2,6 +2,7 @@ package com.mspdevs.mspfxmaven.controllers;
 
 import com.mspdevs.mspfxmaven.model.Cliente;
 import com.mspdevs.mspfxmaven.model.DAO.ClienteDAOImpl;
+import com.mspdevs.mspfxmaven.model.DAO.PersonaDAOImpl;
 import com.mspdevs.mspfxmaven.model.DAO.ProveedorDAOImpl;
 import com.mspdevs.mspfxmaven.model.Persona;
 import com.mspdevs.mspfxmaven.model.Proveedor;
@@ -58,6 +59,9 @@ public class VentanaClientesController implements Initializable {
     private TextField campoCuil;
 
     @FXML
+    private TextField campoDni;
+
+    @FXML
     private TextField campoLocalidad;
 
     @FXML
@@ -105,7 +109,7 @@ public class VentanaClientesController implements Initializable {
         Cliente cliente = obtenerValoresDeCampos();
 
         // Verifica si algún campo de texto está vacío
-        if (cliente.getNombre().isEmpty() || cliente.getApellido().isEmpty() || cliente.getProvincia().isEmpty() ||
+        if (cliente.getDni().isEmpty() || cliente.getNombre().isEmpty() || cliente.getApellido().isEmpty() || cliente.getProvincia().isEmpty() ||
                 cliente.getLocalidad().isEmpty() || cliente.getCalle().isEmpty() || cliente.getCuil().isEmpty() ||
                 cliente.getMail().isEmpty() || cliente.getTelefono().isEmpty()) {
             // Mostrar mensaje de error si falta ingresar datos
@@ -115,13 +119,6 @@ public class VentanaClientesController implements Initializable {
             if (ValidacionDeEntrada.validarEmail(cliente.getMail()) &&
                     ValidacionDeEntrada.validarCuil(cliente.getCuil()) &&
                     ValidacionDeEntrada.validarTelefono(cliente.getTelefono())) {
-                // Extrae el DNI del CUIT (últimos 7 caracteres)
-                String cuilIngresado = cliente.getCuil();
-                int inicioDNI = 2;
-                int finDNI = (cuilIngresado.length() == 11) ? 10 : 9; // Si tiene 11 caracteres, toma los dígitos de 2 a 10, de lo contrario, toma los de 2 a 9
-                String dniIngresado = cuilIngresado.substring(inicioDNI, finDNI);
-                cliente.setDni(dniIngresado);
-
                 try {
                     ClienteDAOImpl dao = new ClienteDAOImpl();
                     dao.insertar(cliente);
@@ -190,7 +187,7 @@ public class VentanaClientesController implements Initializable {
                 dao.eliminar(c);
                 completarTabla();
                 vaciarCampos();
-                campoNombre.requestFocus();
+                campoDni.requestFocus();
                 // Para habilitar "Modificar" y "Eliminar" y deshabilitar "Agregar"
                 manejador.configurarBotones(true);
                 msj.mostrarAlertaInforme("Operacion exitosa", "", "El cliente se ha eliminado");
@@ -207,7 +204,7 @@ public class VentanaClientesController implements Initializable {
         manejador.configurarBotones(false);
         // Deselecciona la fila en la tabla
         tablaClientes.getSelectionModel().clearSelection();
-        campoNombre.requestFocus();
+        campoDni.requestFocus(); // Focus en dni
     }
 
     @FXML
@@ -218,7 +215,7 @@ public class VentanaClientesController implements Initializable {
         Cliente cliente = obtenerValoresDeCampos();
 
         // Verifica si algún campo de texto está vacío
-        if (cliente.getNombre().isEmpty() || cliente.getApellido().isEmpty() || cliente.getProvincia().isEmpty() ||
+        if (cliente.getDni().isEmpty() || cliente.getNombre().isEmpty() || cliente.getApellido().isEmpty() || cliente.getProvincia().isEmpty() ||
                 cliente.getLocalidad().isEmpty() || cliente.getCalle().isEmpty() || cliente.getCuil().isEmpty() ||
                 cliente.getMail().isEmpty() || cliente.getTelefono().isEmpty()) {
             // Mostrar mensaje de error si falta ingresar datos
@@ -227,14 +224,9 @@ public class VentanaClientesController implements Initializable {
             // Realiza las validaciones con ValidacionDeEntrada
             // Realiza las validaciones con ValidacionDeEntrada
             if (ValidacionDeEntrada.validarEmail(cliente.getMail()) &&
+                    ValidacionDeEntrada.validarDNI(cliente.getDni()) &&
                     ValidacionDeEntrada.validarCuil(cliente.getCuil()) &&
                     ValidacionDeEntrada.validarTelefono(cliente.getTelefono())) {
-                // Extrae el DNI del CUIT (últimos 7 caracteres)
-                String cuilIngresado = cliente.getCuil();
-                int inicioDNI = 2;
-                int finDNI = (cuilIngresado.length() == 11) ? 10 : 9; // Si tiene 11 caracteres, toma los dígitos de 2 a 10, de lo contrario, toma los de 2 a 9
-                String dniIngresado = cuilIngresado.substring(inicioDNI, finDNI);
-                cliente.setDni(dniIngresado);
                 try {
                     // Actualiza los valores del proveedor
                     c.setNombre(cliente.getNombre());
@@ -251,7 +243,7 @@ public class VentanaClientesController implements Initializable {
                     dao.modificar(c);
                     completarTabla();
                     vaciarCampos();
-                    campoNombre.requestFocus();
+                    campoDni.requestFocus();
                     // Para habilitar "Modificar" y "Eliminar" y deshabilitar "Agregar"
                     manejador.configurarBotones(false);
                     msj.mostrarAlertaInforme("Operación exitosa", "", "El cliente se ha modificado");
@@ -318,7 +310,7 @@ public class VentanaClientesController implements Initializable {
         todosLosClientes = tablaClientes.getItems();
 
         // Establecer el enfoque en campoNombre después de que la ventana se haya mostrado completamente
-        Platform.runLater(() -> campoNombre.requestFocus());
+        Platform.runLater(() -> campoDni.requestFocus());
 
         // Instancia el ManejadorBotones en la inicialización del controlador
         manejador = new ManejoDeBotones(btnModificar, btnEliminar, btnAgregar);
@@ -377,12 +369,14 @@ public class VentanaClientesController implements Initializable {
                 campoCuil.setText(newValue.getCuil());
                 campoEmail.setText(newValue.getMail());
                 campoTelefono.setText(newValue.getTelefono());
+                campoDni.setText(newValue.getDni());
             }
         });
     }
 
     public void vaciarCampos() {
         // Limpiar los campos de entrada y foucs en nombre
+        campoDni.setText("");
         campoNombre.setText("");
         campoApellido.setText("");
         comboProvincia.getSelectionModel().clearSelection();
@@ -413,6 +407,32 @@ public class VentanaClientesController implements Initializable {
         }
     }
 
+    @FXML
+    void autoCompletarCampos(ActionEvent event) {
+        PersonaDAOImpl p = new PersonaDAOImpl();
+        ObservableList<Persona> personas = null;
+        try {
+            personas = p.listarTodos();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        for (Persona persona : personas) {
+            if (persona.getDni().equals(campoDni.getText())) {
+                campoNombre.setText(persona.getNombre());
+                campoApellido.setText(persona.getApellido());
+                comboProvincia.setValue(persona.getProvincia());
+                campoLocalidad.setText(persona.getLocalidad());
+                campoCalle.setText(persona.getCalle());
+                campoTelefono.setText(persona.getTelefono());
+                campoEmail.setText(persona.getMail());
+                campoNombre.requestFocus();
+                return;
+            } else {
+                campoNombre.requestFocus();
+            }
+        }
+    }
+
 
 
     private Cliente obtenerValoresDeCampos() {
@@ -422,7 +442,7 @@ public class VentanaClientesController implements Initializable {
         String localidadIngresada = FormatoTexto.formatearTexto(this.campoLocalidad.getText());
         String calleIngresada = FormatoTexto.formatearTexto(this.campoCalle.getText());
         String cuilIngresado = this.campoCuil.getText();
-        //String dniIngresado = cuitIngresado.substring(2, 10);
+        String dniIngresado = campoDni.getText();
         String emailIngresado = this.campoEmail.getText().toLowerCase();
         String telefonoIngresado = this.campoTelefono.getText();
 
@@ -433,7 +453,7 @@ public class VentanaClientesController implements Initializable {
         cliente.setLocalidad(localidadIngresada);
         cliente.setCalle(calleIngresada);
         cliente.setCuil(cuilIngresado);
-        //proveedor.setDni(dniIngresado);
+        cliente.setDni(dniIngresado);
         cliente.setMail(emailIngresado);
         cliente.setTelefono(telefonoIngresado);
 

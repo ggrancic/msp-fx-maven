@@ -187,7 +187,7 @@ public class VentanaRubrosController implements Initializable {
         double colIdCustomWidth = tablaRubros.getWidth() * 0.01;
         colId.setMinWidth(colIdCustomWidth);
 
-        double colNomCustomWidth = tablaRubros.getWidth() * 0.7;
+        double colNomCustomWidth = tablaRubros.getWidth() * 0.45;
         colNom.setMinWidth(colNomCustomWidth);
 
         completarTabla();
