@@ -18,7 +18,7 @@ public class ProductoDAOImpl extends ConexionMySQL implements ProductoDAO {
         try {
             this.conectar();
             PreparedStatement st = this.con.prepareStatement(
-                    "SELECT p.*, r.*, pr.*, pe.nombre AS proveedor_nombre " +
+                    "SELECT p.*, r.*, pr.*, pe.razon_social AS proveedor_nombre " +
                             "FROM productos p " +
                             "JOIN rubros r ON p.id_rubro = r.id_rubro " +
                             "JOIN proveedores pr ON p.id_proveedor = pr.id_proveedor " +
@@ -43,7 +43,7 @@ public class ProductoDAOImpl extends ConexionMySQL implements ProductoDAO {
 
                 Proveedor proveedor = new Proveedor();
                 proveedor.setIdProveedor(rs.getInt("pr.id_proveedor"));
-                proveedor.setNombre(rs.getString("proveedor_nombre")); // Obtiene el nombre del proveedor
+                proveedor.setRazonSocial(rs.getString("proveedor_nombre")); // Obtiene el nombre del proveedor
 
                 Producto todo = new Producto(producto, rubro, proveedor);
                 listaTodoEnUno.add(todo);

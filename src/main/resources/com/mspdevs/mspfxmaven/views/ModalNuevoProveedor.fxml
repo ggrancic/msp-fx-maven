@@ -3,11 +3,16 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.SearchableComboBox?>
@@ -26,6 +31,39 @@
             </Label>
          </children>
       </HBox>
+      <GridPane>
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label text="Seleccione">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <RadioButton fx:id="personaRB" mnemonicParsing="false" text="Persona" GridPane.columnIndex="1">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <toggleGroup>
+                  <ToggleGroup fx:id="seleccionarTipo" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="empresaRB" mnemonicParsing="false" text="Empresa" toggleGroup="$seleccionarTipo" GridPane.columnIndex="2">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </RadioButton>
+         </children>
+         <padding>
+            <Insets left="150.0" right="150.0" top="5.0" />
+         </padding>
+      </GridPane>
       <SplitPane dividerPositions="0.5" style="-fx-background-color: lightgray;" stylesheets="@../styles/style.css">
          <items>
             <VBox spacing="15.0">
@@ -70,14 +108,14 @@
                         <TextField fx:id="campoApellido" />
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER" layoutX="10.0" layoutY="150.0" spacing="40.0">
+                  <HBox alignment="CENTER" layoutX="10.0" layoutY="150.0" spacing="15.0">
                      <children>
-                        <Label text="EMAIL">
+                        <Label text="RAZÓN S.">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="campoEmail" />
+                        <TextField fx:id="campoRazonSocial" />
                      </children>
                   </HBox>
                </children>
@@ -89,6 +127,16 @@
                <children>
                   <HBox alignment="CENTER" spacing="50.0">
                      <children>
+                        <Label text="EMAIL">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="campoEmail" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" layoutX="10.0" layoutY="30.0" spacing="50.0">
+                     <children>
                         <Label text="CALLE">
                            <font>
                               <Font size="14.0" />
@@ -97,9 +145,9 @@
                         <TextField fx:id="campoCalle" />
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER" layoutX="10.0" layoutY="30.0" spacing="20.0">
+                  <HBox alignment="CENTER" spacing="20.0">
                      <children>
-                        <Label text="TELEFONO">
+                        <Label text="TELÉFONO">
                            <font>
                               <Font size="14.0" />
                            </font>
@@ -107,7 +155,7 @@
                         <TextField fx:id="campoTelefono" />
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER" spacing="20.0">
+                  <HBox alignment="CENTER" layoutX="10.0" layoutY="69.0" spacing="15.0">
                      <children>
                         <Label text="PROVINCIA">
                            <font>
@@ -117,7 +165,7 @@
                         <SearchableComboBox fx:id="campoProvincia" prefHeight="25.0" prefWidth="151.0" />
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER" layoutX="10.0" layoutY="69.0" spacing="15.0">
+                  <HBox alignment="CENTER" spacing="15.0">
                      <children>
                         <Label text="LOCALIDAD">
                            <font>
@@ -125,16 +173,6 @@
                            </font>
                         </Label>
                         <TextField fx:id="campoLocalidad" />
-                     </children>
-                  </HBox>
-                  <HBox alignment="CENTER" spacing="40.0">
-                     <children>
-                        <Label text="EMAIL   ">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Label>
-                        <TextField fx:id="campoEmail1" />
                      </children>
                   </HBox>
                </children>

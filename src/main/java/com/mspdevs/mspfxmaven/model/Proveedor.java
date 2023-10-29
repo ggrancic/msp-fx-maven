@@ -2,8 +2,6 @@ package com.mspdevs.mspfxmaven.model;
 
 public class Proveedor extends Persona{
     private int idProveedor;
-    private String cuit;
-    private String razonSocial;
     private Persona persona; // Agregar un campo para la persona relacionada
     public Proveedor(int idProveedor, String nombre) {
         super();
@@ -24,18 +22,6 @@ public class Proveedor extends Persona{
     }
     public void setIdProveedor(int idProveedor) {
         this.idProveedor = idProveedor;
-    }
-    public String getCuit() {
-        return cuit;
-    }
-    public void setCuit(String cuit) {
-        this.cuit = cuit;
-    }
-    public String getRazonSocial() {
-        return razonSocial;
-    }
-    public void setRazonSocial(String razonSocial) {
-        this.razonSocial = razonSocial;
     }
     public Persona getPersona() { return persona; }
     public void setPersona(Persona persona) { this.persona = persona; }

@@ -5,9 +5,11 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -127,7 +129,7 @@
                                     <TableColumn fx:id="colCalle" editable="false" prefWidth="83.0" text="Calle" />
                                     <TableColumn fx:id="colDni" editable="false" prefWidth="103.0" text="DNI" />
                                     <TableColumn fx:id="colEmail" editable="false" prefWidth="90.0" text="Email" />
-                                    <TableColumn fx:id="colTele" editable="false" prefWidth="90.0" text="Telefono" />
+                                    <TableColumn fx:id="colTele" editable="false" prefWidth="90.0" text="Teléfono" />
                                     <TableColumn fx:id="colCuit" prefWidth="75.0" text="CUIT" />
                                  </columns>
                                  <columnResizePolicy>
@@ -137,6 +139,37 @@
                            </children>
                         </GridPane>
                      </children>
+                  </GridPane>
+                  <GridPane hgap="5.0" vgap="8.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Label text="Seleccione uno">
+                           <font>
+                              <Font size="14.0" />
+                           </font></Label>
+                        <RadioButton fx:id="personaRB" mnemonicParsing="false" text="Persona" GridPane.columnIndex="1">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="seleccionarTipo" />
+                           </toggleGroup>
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </RadioButton>
+                        <RadioButton fx:id="empresaRB" mnemonicParsing="false" text="Empresa" toggleGroup="$seleccionarTipo" GridPane.columnIndex="2">
+                           <font>
+                              <Font size="14.0" />
+                           </font></RadioButton>
+                     </children>
+                     <padding>
+                        <Insets left="300.0" right="300.0" />
+                     </padding>
                   </GridPane>
                   <GridPane alignment="CENTER" hgap="30.0" minHeight="150.0" minWidth="300.0" vgap="8.0">
                      <columnConstraints>
@@ -166,7 +199,7 @@
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                              <TextField fx:id="campoDni" onAction="#autoCompletarCampos" GridPane.columnIndex="1" />
+                              <TextField fx:id="campoDni" GridPane.columnIndex="1" />
                            </children>
                         </GridPane>
                         <GridPane layoutX="372.0" layoutY="86.0" GridPane.rowIndex="1">

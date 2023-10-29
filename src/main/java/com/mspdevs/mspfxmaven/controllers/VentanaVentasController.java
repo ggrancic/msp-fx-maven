@@ -223,7 +223,6 @@ public class VentanaVentasController implements Initializable{
             actualizarResumen();
             System.out.println("Cantidad de productos seleccionados: " + todosLosProductos.size());
         }
-
     }
 
     @FXML
@@ -256,14 +255,8 @@ public class VentanaVentasController implements Initializable{
         String tipo = tipoFacturaBox.getValue();
         String clienteSeleccionado = clienteBox.getSelectionModel().getSelectedItem();
 
-        // Dividir el clienteSeleccionado en nombre y apellido
-        String[] partes = clienteSeleccionado.split(" "); // Suponiendo que los nombres y apellidos están separados por un espacio
-
-        String nombre = partes[0]; // El primer elemento en partes es el nombre
-        String apellido = partes[1]; // El segundo elemento en partes es el apellido
-
         ClienteDAOImpl clienteDAO = new ClienteDAOImpl();
-        int ClienteId = clienteDAO.obtenerPorNombreYApellido(nombre, apellido);
+        int ClienteId = clienteDAO.obtenerPorRazonSocial(clienteSeleccionado);
 
         // Asegurarse de que todos los campos requeridos se hayan completado
         if (numeroFactura.isEmpty() || tipo == null) {
@@ -301,16 +294,10 @@ public class VentanaVentasController implements Initializable{
         venta.setTipo(tipo);
         venta.setIdClienteFK(ClienteId);
 
-        String nuevoClienteSeleccionado = clienteBox.getSelectionModel().getSelectedItem();
-
-        // Dividir el clienteSeleccionado en nombre y apellido
-        String[] partesNuevas = nuevoClienteSeleccionado.split(" "); // Suponiendo que los nombres y apellidos están separados por un espacio
-
-        String nombreNuevo = partesNuevas[0]; // El primer elemento en partes es el nombre
-        String apellidoNuevo = partesNuevas[1]; // El segundo elemento en partes es el apellido
+        String nuevaRazonSocialSeleccionada = clienteBox.getSelectionModel().getSelectedItem();
 
         // Obtiene el ID del nuevo proveedor basado en su nombre
-        int nuevoClienteId = clienteDAO.obtenerPorNombreYApellido(nombreNuevo, apellidoNuevo);
+        int nuevoClienteId = clienteDAO.obtenerPorRazonSocial(nuevaRazonSocialSeleccionada);
 
         System.out.println("id del cliente: " + nuevoClienteId);
 
@@ -534,11 +521,6 @@ public class VentanaVentasController implements Initializable{
             }
         });
 
-
-
-
-
-
         completarTablaProductos();
         colTotal.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Producto, Double>, ObservableValue<Double>>() {
             @Override
@@ -551,8 +533,6 @@ public class VentanaVentasController implements Initializable{
             }
         });
         colTotal.setCellFactory(col -> new PrecioVentaCell());
-
-
 
         habilitarCampos(false);
 
@@ -687,8 +667,6 @@ public class VentanaVentasController implements Initializable{
         boton.setDisable(!camposValidos);
     }
 
-
-
     private boolean mostrarDetallesProductoPorNombre(String nombreProducto) {
         // Llama a tu método de DAO para obtener los detalles del producto por su nombre
         ProductoDAOImpl productoDAO = new ProductoDAOImpl();
@@ -755,7 +733,6 @@ public class VentanaVentasController implements Initializable{
             e.printStackTrace();
             // Manejo de errores si es necesario
         }
-
         return nombres;
     }
 
@@ -773,7 +750,6 @@ public class VentanaVentasController implements Initializable{
             e.printStackTrace();
             // Manejo de errores si es necesario
         }
-
         return codigosBarras;
     }
 
@@ -788,7 +764,6 @@ public class VentanaVentasController implements Initializable{
         subtotalTotal = 0.0;
         ivaTotal = 0.0;
         totalPrecioLista = 0.0;
-
         // Limpia la TableView
         tblDetalle.getItems().clear();
     }
@@ -818,8 +793,6 @@ public class VentanaVentasController implements Initializable{
         this.colNom.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         this.colPU.setCellValueFactory(new PropertyValueFactory<>("precioVenta"));
         this.colCantidad.setCellValueFactory(new PropertyValueFactory<>("cantidadDisponible"));
-        //this.colTotal.setCellValueFactory(new PropertyValueFactory<>("totalVendido"));
-
         this.colPU.setCellFactory(col -> new PrecioVentaCell());
     }
 

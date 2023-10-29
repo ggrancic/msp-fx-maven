@@ -70,7 +70,7 @@ public class VentanaRubrosController implements Initializable {
                 campoNombre.requestFocus();
                 msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el rubro correctamente.");
             } catch (Exception e) {
-                msj.mostrarError("Error", "", "No se pudo agregar el rubro.");
+                msj.mostrarError("Error", "", "El rubro ya existe.");
             }
         }
     }
@@ -81,16 +81,20 @@ public class VentanaRubrosController implements Initializable {
         if (r == null) {
             msj.mostrarError("Error", "", "Debe seleccionar un elemento de la lista");
         } else {
-            try {
-                RubroDAOImpl dao = new RubroDAOImpl();
-                dao.eliminar(r);
-                completarTabla();
-                vaciarCampos();
-                campoNombre.requestFocus();
-                manejador.configurarBotones(false);
-                msj.mostrarAlertaInforme("Operacion exitosa", "", "El rubro se ha eliminado");
-            } catch (Exception e) {
-                msj.mostrarError("Error", "", "No se pudo eliminar el elemento de la BD");
+            boolean confirmacion = msj.mostrarConfirmacion("Confirmar Eliminación", "",
+                    "¿Está seguro de que desea eliminar este rubro?");
+            if (confirmacion) { // Si se confirma la eliminación
+                try {
+                    RubroDAOImpl dao = new RubroDAOImpl();
+                    dao.eliminar(r);
+                    completarTabla();
+                    vaciarCampos();
+                    campoNombre.requestFocus();
+                    manejador.configurarBotones(false);
+                    msj.mostrarAlertaInforme("Operacion exitosa", "", "El rubro se ha eliminado");
+                } catch (Exception e) {
+                    msj.mostrarError("Error", "", "No se pudo eliminar el rubro");
+                }
             }
         }
     }
@@ -114,18 +118,22 @@ public class VentanaRubrosController implements Initializable {
         }
         
         r.setNombre(nombreIngresado);
+         boolean confirmacion = msj.mostrarConfirmacion("Confirmar Modificación", "",
+                 "¿Está seguro de que desea modificar este rubro?");
+         if (confirmacion) { // Si se confirma la eliminación
 
-        try {
-            RubroDAOImpl dao = new RubroDAOImpl();
-            dao.modificar(r);
-            completarTabla();
-            vaciarCampos();
-            campoNombre.requestFocus();
-            manejador.configurarBotones(false);
-            msj.mostrarAlertaInforme("Operación exitosa", "", "El rubro se ha modificado");
-        } catch (Exception e) {
-            msj.mostrarError("Error", "", "No se pudo modificar el elemento en la BD");
-        }
+             try {
+                 RubroDAOImpl dao = new RubroDAOImpl();
+                 dao.modificar(r);
+                 completarTabla();
+                 vaciarCampos();
+                 campoNombre.requestFocus();
+                 manejador.configurarBotones(false);
+                 msj.mostrarAlertaInforme("Operación exitosa", "", "El rubro se ha modificado");
+             } catch (Exception e) {
+                 msj.mostrarError("Error", "", "No se pudo modificar el rubro");
+             }
+         }
     }
 
     @FXML
@@ -154,7 +162,6 @@ public class VentanaRubrosController implements Initializable {
     }
 
     public void completarTabla() {
-
         RubroDAOImpl rubro = new RubroDAOImpl();
         ObservableList<Rubro> rubros = null;
 
@@ -206,5 +213,3 @@ public class VentanaRubrosController implements Initializable {
         campoNombre.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
     }
 }
-
-

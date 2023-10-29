@@ -5,9 +5,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import com.mspdevs.mspfxmaven.utils.Alerta;
@@ -20,18 +18,16 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.control.Button;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import com.mspdevs.mspfxmaven.Main;
@@ -42,10 +38,10 @@ public class VentanaPrincipalController implements Initializable {
     Alerta msj = new Alerta();
 
     private LoginMSPController loginController;
-    
+
     @FXML
     private HBox hbox ;
-    
+
     @FXML
     private BorderPane bpane;
 
@@ -54,13 +50,13 @@ public class VentanaPrincipalController implements Initializable {
 
     @FXML
     private Button btnCerrar;
-    
+
     @FXML
     private Button btnClientes;
-    
+
     @FXML
     private Button btnInventario;
-    
+
     @FXML
     private Button btnProveedores;
 
@@ -72,18 +68,28 @@ public class VentanaPrincipalController implements Initializable {
 
     @FXML
     private Label fecha;
-    
+
     @FXML
     private Button btnCompra;
-    
+
+    @FXML
+    private Button btnCompras;
+
     @FXML
     private Button btnVentas;
+
+    @FXML
+    private Button btnReportes;
+
+    @FXML
+    private Button btnUsuarios;
+
+    @FXML
+    private ToolBar botonera;
 
     private volatile boolean stop = false;
 
     private String idDeEmpleado = "";
-
-
 
 
     @FXML
@@ -349,10 +355,66 @@ public class VentanaPrincipalController implements Initializable {
         idDeEmpleado = String.valueOf(id_empleado);
     }
 
+
+
+
     // Agrega este método para manejar el evento de cierre
     public void setCerrarEvento(Stage primaryStage) {
-        primaryStage.setOnCloseRequest(e -> {
-            e.consume(); // Evita que la ventana se cierre de inmediato
+        /*
+        // Nuevo diseño que permite utilizar la "x"
+        primaryStage.getScene().getWindow().setOnCloseRequest(e -> {
+            e.consume(); // Evita que la ventana principal se cierre de inmediato
+
+            // Crear un nuevo Stage para el diálogo personalizado
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.initOwner(primaryStage);
+
+            // Crear el contenido del diálogo
+            VBox vbox = new VBox();
+            vbox.setAlignment(Pos.CENTER);
+            vbox.setSpacing(10);
+
+            Label label = new Label("¿Desea salir o cerrar sesión?");
+            Button salirButton = new Button("Salir");
+            Button cerrarSesionButton = new Button("Cerrar sesión");
+
+            // Acciones al presionar los botones
+            salirButton.setOnAction(event -> {
+                stop = true; // Detener el hilo de actualización del tiempo
+                primaryStage.close(); // Cierra la ventana principal
+                dialogStage.close(); // Cierra el diálogo
+            });
+
+            cerrarSesionButton.setOnAction(event -> {
+                stop = true; // Detener el hilo de actualización del tiempo
+                // Lógica para crear el backup de la base de datos
+                //realizarBackupBaseDeDatos();
+                irAPantallaLogin(primaryStage);
+                dialogStage.close(); // Cierra el diálogo
+            });
+
+            // Agregar componentes al VBox
+            vbox.getChildren().addAll(label, salirButton, cerrarSesionButton);
+
+            // Crear una escena para el diálogo
+            Scene scene = new Scene(vbox, 300, 150);
+
+            // Configurar el diálogo
+            dialogStage.setScene(scene);
+            dialogStage.setTitle("Confirmar");
+            dialogStage.setResizable(false);
+
+            // Mostrar el diálogo
+            dialogStage.showAndWait();
+        });*/
+
+        // Forma anterior
+
+        primaryStage.getScene().getWindow().setOnCloseRequest(e -> {
+
+            e.consume(); // Evita que la ventana principal se cierre de inmediato
+
             Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
             confirmacion.setTitle("Confirmar");
             confirmacion.setHeaderText("¿Desea salir o cerrar sesión?");
@@ -369,8 +431,7 @@ public class VentanaPrincipalController implements Initializable {
                 if (response == salirButton) {
                     // Cerrar la aplicación
                     stop = true; // Detener el hilo de actualización del tiempo
-                    Stage currentStage = (Stage) btnCerrar.getScene().getWindow();
-                    currentStage.close();
+                    primaryStage.close(); // Cierra la ventana principal
                 } else if (response == noButton) {
                     // No hacer nada, simplemente cerrar la ventana de confirmación
                 } else if (response == cerrarSesionButton) {
@@ -382,5 +443,15 @@ public class VentanaPrincipalController implements Initializable {
                 }
             });
         });
+    }
+
+    void habilitarSoloVentas() {
+        botonera.getItems().remove(btnClientes);
+        botonera.getItems().remove(btnCompra);
+        botonera.getItems().remove(btnInventario);
+        botonera.getItems().remove(btnReportes);
+        botonera.getItems().remove(btnProveedores);
+        botonera.getItems().remove(btnUsuarios);
+        botonera.getItems().remove(btnRubros);
     }
 }

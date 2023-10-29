@@ -47,4 +47,27 @@ public class Alerta {
             return false; // Se presionó el botón "Cancelar" o se cerró la ventana
         }
     }
+
+    public boolean mostrarConfirmacionDosBotones(String titulo, String encabezado, String contenido) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(encabezado);
+        alert.setContentText(contenido);
+
+        // Crear botones personalizados para confirmación
+        ButtonType salirButton = new ButtonType("Salir");
+        ButtonType cerrarSesionButton = new ButtonType("Cerrar Sesión");
+
+        alert.getButtonTypes().setAll(salirButton, cerrarSesionButton);
+
+        // Mostrar la ventana y esperar a que se cierre
+        Optional<ButtonType> resultado = alert.showAndWait();
+
+        // Comprobar qué botón se presionó y devolver un valor booleano
+        if (resultado.isPresent() && resultado.get() == salirButton) {
+            return true; // Se presionó el botón "Salir"
+        } else {
+            return false; // Se presionó el botón "Cerrar Sesión" o se cerró la ventana
+        }
+    }
 }

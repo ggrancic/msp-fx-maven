@@ -12,7 +12,7 @@ public class Producto {
     private int cantidadMinima;
     int idRubroFK;
     int idProveedorFK;
-    private String proveedorNombre;
+    private String proveedorRazonSocial;
     private String rubroNombre;
 
     private int cantidadVendida;
@@ -30,7 +30,7 @@ public class Producto {
         this.cantidadMinima = producto.getCantidadMinima();
         this.idRubroFK = rubro.getIdRubro();
         this.idProveedorFK = proveedor.getIdProveedor();
-        this.proveedorNombre = proveedor.getNombre();
+        this.proveedorRazonSocial = proveedor.getRazonSocial();
         this.rubroNombre = rubro.getNombre();
 
         // Agregado para ventas
@@ -89,11 +89,11 @@ public class Producto {
     public void setIdProveedorFK(int idProveedorFK) {
         this.idProveedorFK = idProveedorFK;
     }
-    public String getProveedorNombre() {
-        return proveedorNombre;
+    public String getProveedorRazonSocial() {
+        return proveedorRazonSocial;
     }
-    public void setProveedorNombre(String proveedorNombre) {
-        this.proveedorNombre = proveedorNombre;
+    public void setProveedorRazonSocial(String proveedorRazonSocial) {
+        this.proveedorRazonSocial = proveedorRazonSocial;
     }
     public String getRubroNombre() {
         return rubroNombre;
@@ -101,9 +101,6 @@ public class Producto {
     public void setRubroNombre(String rubroNombre) {
         this.rubroNombre = rubroNombre;
     }
-
-
-
 
     public int getCantidadVendida() {
         return cantidadVendida;

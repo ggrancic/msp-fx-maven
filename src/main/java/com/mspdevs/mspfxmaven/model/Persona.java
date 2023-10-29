@@ -8,6 +8,9 @@ public class Persona {
     String localidad;
     String calle;
     String dni;
+    String cuil;
+    String cuit;
+    String razonSocial;
     String mail;
     String telefono;
 
@@ -58,13 +61,29 @@ public class Persona {
     public void setCalle(String calle) {
         this.calle = calle;
     }
-
     public String getDni() {
         return dni;
     }
-
     public void setDni(String dni) {
         this.dni = dni;
+    }
+    public String getCuil() {
+        return cuil;
+    }
+    public void setCuil(String cuil) {
+        this.cuil = cuil;
+    }
+    public String getCuit() {
+        return cuit;
+    }
+    public void setCuit(String cuit) {
+        this.cuit = cuit;
+    }
+    public String getRazonSocial() {
+        return razonSocial;
+    }
+    public void setRazonSocial(String razonSocial) {
+        this.razonSocial = razonSocial;
     }
 
     public String getMail() {

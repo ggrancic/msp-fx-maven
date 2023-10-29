@@ -11,10 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.application.Platform;
@@ -62,6 +59,9 @@ public class VentanaClientesController implements Initializable {
     private TextField campoDni;
 
     @FXML
+    private TextField campoRazonSocial;
+
+    @FXML
     private TextField campoLocalidad;
 
     @FXML
@@ -80,7 +80,13 @@ public class VentanaClientesController implements Initializable {
     private TableColumn<Persona, String> colCalle;
 
     @FXML
+    private TableColumn<Persona, String> colRazonSocial;
+
+    @FXML
     private TableColumn<Cliente, String> colCuil;
+
+    @FXML
+    private TableColumn<Cliente, String> colDni;
 
     @FXML
     private TableColumn<Persona, String> colEmail;
@@ -104,74 +110,83 @@ public class VentanaClientesController implements Initializable {
     private TableView<Cliente> tablaClientes;
 
     @FXML
-    void accionBotonAgregar(ActionEvent event) {
-        // Obtener los valores de los campos en un objeto Proveedor
-        Cliente cliente = obtenerValoresDeCampos();
+    private ToggleGroup seleccionarTipo;
 
-        // Verifica si algún campo de texto está vacío
-        if (cliente.getDni().isEmpty() || cliente.getNombre().isEmpty() || cliente.getApellido().isEmpty() || cliente.getProvincia().isEmpty() ||
-                cliente.getLocalidad().isEmpty() || cliente.getCalle().isEmpty() || cliente.getCuil().isEmpty() ||
-                cliente.getMail().isEmpty() || cliente.getTelefono().isEmpty()) {
-            // Mostrar mensaje de error si falta ingresar datos
-            msj.mostrarError("Error", "", "Falta ingresar datos.");
+    @FXML
+    private RadioButton empresaRadio;
+
+    @FXML
+    private RadioButton personaRadio;
+
+    @FXML
+    void accionBotonAgregar(ActionEvent event) {
+        // Comprueba si se ha seleccionado un Toggle
+        if (!personaRadio.isSelected() && !empresaRadio.isSelected()) {
+            msj.mostrarError("Error", "", "Debe seleccionar una opción: Persona o Empresa.");
         } else {
-            // Realiza las validaciones con ValidacionDeEntrada
-            if (ValidacionDeEntrada.validarEmail(cliente.getMail()) &&
-                    ValidacionDeEntrada.validarCuil(cliente.getCuil()) &&
-                    ValidacionDeEntrada.validarTelefono(cliente.getTelefono())) {
-                try {
-                    ClienteDAOImpl dao = new ClienteDAOImpl();
-                    dao.insertar(cliente);
-                    completarTabla();
-                    vaciarCampos();
-                    campoNombre.requestFocus();
-                    manejador.configurarBotones(false);
-                    msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el cliente correctamente.");
-                } catch (Exception e) {
-                    msj.mostrarError("Error", "", "No se pudo agregar el cliente.");
+            // Comprueba si se seleccionó personaRadio
+            if (personaRadio.isSelected()) {
+                // Obtiene los valores de los campos en un objeto Cliente
+                Cliente cliente = obtenerValoresDeCampos();
+
+                // Realiza las validaciones
+                if (cliente.getDni().isEmpty() || cliente.getNombre().isEmpty() || cliente.getApellido().isEmpty() ||
+                        cliente.getProvincia().isEmpty() || cliente.getLocalidad().isEmpty() ||
+                        cliente.getCuil().isEmpty() || cliente.getMail().isEmpty() || cliente.getTelefono().isEmpty()) {
+                    // Muestra mensaje de error si falta ingresar datos
+                    msj.mostrarError("Error", "", "Falta ingresar datos obligatorios.");
+                } else {
+                    // Ajusta la Razón Social si está vacía (nombre + apellido)
+                    if (cliente.getRazonSocial().isEmpty()) {
+                        cliente.setRazonSocial(cliente.getNombre() + " " + cliente.getApellido());
+                    }
+                    // Realiza las validaciones específicas
+                    if (ValidacionDeEntrada.validarEmail(cliente.getMail()) &&
+                            ValidacionDeEntrada.validarDNI(cliente.getDni()) &&
+                            ValidacionDeEntrada.validarCuil(cliente.getCuil()) &&
+                            ValidacionDeEntrada.validarTelefono(cliente.getTelefono())) {
+                        try {
+                            ClienteDAOImpl dao = new ClienteDAOImpl();
+                            dao.insertar(cliente);
+                            completarTabla();
+                            vaciarCampos();
+                            manejador.configurarBotones(false);
+                            msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el cliente correctamente.");
+                        } catch (Exception e) {
+                            msj.mostrarError("Error", "", "No se pudo agregar el cliente.");
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+            // Realiza las validaciones
+            if (empresaRadio.isSelected()) {
+                // Obtener los valores de los campos en un objeto Cliente
+                Cliente cliente = obtenerValoresDeCamposEmpresa();
+
+                if (cliente.getRazonSocial().isEmpty() || cliente.getProvincia().isEmpty() || cliente.getLocalidad().isEmpty() ||
+                        cliente.getCuil().isEmpty() || cliente.getMail().isEmpty() || cliente.getTelefono().isEmpty()) {
+                    // Muestra un mensaje de error si falta ingresar datos
+                    msj.mostrarError("Error", "", "Falta ingresar datos obligatorios.");
+                } else {
+                    if (ValidacionDeEntrada.validarEmail(cliente.getMail()) &&
+                            ValidacionDeEntrada.validarCuil(cliente.getCuil()) &&
+                            ValidacionDeEntrada.validarTelefono(cliente.getTelefono())) {
+                        try {
+                            ClienteDAOImpl dao = new ClienteDAOImpl();
+                            dao.insertar(cliente);
+                            completarTabla();
+                            vaciarCampos();
+                            manejador.configurarBotones(false);
+                            msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el cliente correctamente.");
+                        } catch (Exception e) {
+                            msj.mostrarError("Error", "", "No se pudo agregar el cliente.");
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         }
-        /*
-        // Obtiene los valores ingresados en los campos de texto
-        String nombreIngresado = this.campoNombre.getText();
-        String apellidoIngresado = this.campoApellido.getText();
-        String provinciaIngresada = this.campoProvincia.getText();
-        String localidadIngresada = this.campoLocalidad.getText();
-        String calleIngresada = this.campoCalle.getText();
-        String emailIngresado = this.campoEmail.getText();
-        String telefonoIngresado = this.campoTelefono.getText();
-        String cuilIngresado = this.campoCuil.getText();
-
-        // Verificar si algún campo de texto está vacío
-        if (nombreIngresado.isEmpty() || apellidoIngresado.isEmpty() || provinciaIngresada.isEmpty() || localidadIngresada.isEmpty() || calleIngresada.isEmpty() || emailIngresado.isEmpty() || telefonoIngresado.isEmpty()) {
-            // Muestra un mensaje de error si falta ingresar datos en algún campo
-            msj.mostrarError("Error", "", "Falta ingresar datos.");
-        } else {
-            // Realiza la operación de agregar un proveedor si todos los campos están completos
-            String dniIngresado = cuilIngresado.substring(2, 10);
-            Cliente c = new Cliente();
-            ClienteDAOImpl dao = new ClienteDAOImpl();
-            c.setNombre(nombreIngresado);
-            c.setApellido(apellidoIngresado);
-            c.setProvincia(provinciaIngresada);
-            c.setLocalidad(localidadIngresada);
-            c.setCalle(calleIngresada);
-            c.setMail(emailIngresado);
-            c.setTelefono(telefonoIngresado);
-            c.setCuil(cuilIngresado);
-            c.setDni(dniIngresado);
-            try {
-                dao.insertar(c);
-                completarTabla();
-                vaciarCampos();
-                campoNombre.requestFocus();
-                msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el cliente correctamente.");
-            } catch (Exception e) {
-                e.printStackTrace(); // Imprime el stack trace de la excepción para depuración
-                msj.mostrarError("Error", "", "Ocurrió un error al agregar el cliente.");
-            }
-        }*/
     }
 
     @FXML
@@ -180,19 +195,23 @@ public class VentanaClientesController implements Initializable {
         Cliente c = this.tablaClientes.getSelectionModel().getSelectedItem();
         if (c == null) {
             // Muestra un mensaje de error si no se selecciona ningún elemento en la tabla
-            msj.mostrarError("Error", "", "Debe seleccionar un elemento de la lista");
+            msj.mostrarError("Error", "", "Debe seleccionar un cliente de la lista");
         } else {
-            try {
-                ClienteDAOImpl dao = new ClienteDAOImpl();
-                dao.eliminar(c);
-                completarTabla();
-                vaciarCampos();
-                campoDni.requestFocus();
-                // Para habilitar "Modificar" y "Eliminar" y deshabilitar "Agregar"
-                manejador.configurarBotones(true);
-                msj.mostrarAlertaInforme("Operacion exitosa", "", "El cliente se ha eliminado");
-            } catch (Exception e) {
-                msj.mostrarError("Error", "", "No se pudo eliminar el elemento de la BD");
+            boolean confirmacion = msj.mostrarConfirmacion("Confirmar Eliminación", "",
+                    "¿Está seguro de que desea eliminar este cliente?");
+            if (confirmacion) { // Si se confirma la eliminación
+                try {
+                    ClienteDAOImpl dao = new ClienteDAOImpl();
+                    dao.eliminar(c);
+                    completarTabla();
+                    vaciarCampos();
+                    campoDni.requestFocus();
+                    // Para habilitar "Modificar" y "Eliminar" y deshabilitar "Agregar"
+                    manejador.configurarBotones(false);
+                    msj.mostrarAlertaInforme("Operacion exitosa", "", "El cliente se ha eliminado");
+                } catch (Exception e) {
+                    msj.mostrarError("Error", "", "No se pudo eliminar el cliente");
+                }
             }
         }
     }
@@ -211,96 +230,104 @@ public class VentanaClientesController implements Initializable {
     void accionBotonModificar(ActionEvent event) {
         // Obtiene el proveedor seleccionado en la tabla
         Cliente c = this.tablaClientes.getSelectionModel().getSelectedItem();
-        // Obtiene los valores de los campos
-        Cliente cliente = obtenerValoresDeCampos();
 
-        // Verifica si algún campo de texto está vacío
-        if (cliente.getDni().isEmpty() || cliente.getNombre().isEmpty() || cliente.getApellido().isEmpty() || cliente.getProvincia().isEmpty() ||
-                cliente.getLocalidad().isEmpty() || cliente.getCalle().isEmpty() || cliente.getCuil().isEmpty() ||
-                cliente.getMail().isEmpty() || cliente.getTelefono().isEmpty()) {
-            // Mostrar mensaje de error si falta ingresar datos
-            msj.mostrarError("Error", "", "Falta ingresar datos.");
-        } else {
-            // Realiza las validaciones con ValidacionDeEntrada
-            // Realiza las validaciones con ValidacionDeEntrada
-            if (ValidacionDeEntrada.validarEmail(cliente.getMail()) &&
-                    ValidacionDeEntrada.validarDNI(cliente.getDni()) &&
-                    ValidacionDeEntrada.validarCuil(cliente.getCuil()) &&
-                    ValidacionDeEntrada.validarTelefono(cliente.getTelefono())) {
-                try {
-                    // Actualiza los valores del proveedor
-                    c.setNombre(cliente.getNombre());
-                    c.setApellido(cliente.getApellido());
-                    c.setProvincia(cliente.getProvincia());
-                    c.setLocalidad(cliente.getLocalidad());
-                    c.setCalle(cliente.getCalle());
-                    c.setCuil(cliente.getCuil());
-                    c.setDni(cliente.getDni());
-                    c.setMail(cliente.getMail());
-                    c.setTelefono(cliente.getTelefono());
+        // Comprueba si se seleccionó personaRadio
+        if (personaRadio.isSelected()) {
+            // Obtiene los valores de los campos en un objeto Cliente
+            Cliente cliente = obtenerValoresDeCampos();
 
-                    ClienteDAOImpl dao = new ClienteDAOImpl();
-                    dao.modificar(c);
-                    completarTabla();
-                    vaciarCampos();
-                    campoDni.requestFocus();
-                    // Para habilitar "Modificar" y "Eliminar" y deshabilitar "Agregar"
-                    manejador.configurarBotones(false);
-                    msj.mostrarAlertaInforme("Operación exitosa", "", "El cliente se ha modificado");
-                } catch (Exception e) {
-                    msj.mostrarError("Error", "", "No se pudo agregar el cliente.");
+            // Realiza las validaciones
+            if (cliente.getDni().isEmpty() || cliente.getCuil().isEmpty() || cliente.getNombre().isEmpty() || cliente.getApellido().isEmpty() ||
+                    cliente.getProvincia().isEmpty() || cliente.getLocalidad().isEmpty() ||
+                    cliente.getCuil().isEmpty() || cliente.getMail().isEmpty() || cliente.getTelefono().isEmpty()) {
+                // Muestra mensaje de error si falta ingresar datos
+                msj.mostrarError("Error", "", "Falta ingresar datos obligatorios.");
+            } else {
+                // Ajusta la Razón Social si está vacía (nombre + apellido)
+                if (cliente.getRazonSocial().isEmpty()) {
+                    cliente.setRazonSocial(cliente.getNombre() + " " + cliente.getApellido());
+                }
+                // Realiza las validaciones
+                if (ValidacionDeEntrada.validarEmail(cliente.getMail()) &&
+                        ValidacionDeEntrada.validarDNI(cliente.getDni()) &&
+                        ValidacionDeEntrada.validarCuil(cliente.getCuil()) &&
+                        ValidacionDeEntrada.validarTelefono(cliente.getTelefono())) {
+                    boolean confirmacion = msj.mostrarConfirmacion("Confirmar Modificación", "",
+                            "¿Está seguro de que desea modificar este cliente?");
+                    if (confirmacion) { // Si se confirma la eliminación
+                        try {
+                            // Actualiza los valores del proveedor
+                            c.setNombre(cliente.getNombre());
+                            c.setApellido(cliente.getApellido());
+                            c.setRazonSocial(cliente.getRazonSocial());
+                            c.setProvincia(cliente.getProvincia());
+                            c.setLocalidad(cliente.getLocalidad());
+                            c.setCalle(cliente.getCalle());
+                            c.setCuil(cliente.getCuil());
+                            c.setDni(cliente.getDni());
+                            c.setMail(cliente.getMail());
+                            c.setTelefono(cliente.getTelefono());
+
+                            ClienteDAOImpl dao = new ClienteDAOImpl();
+                            dao.modificar(c);
+                            completarTabla();
+                            vaciarCampos();
+                            manejador.configurarBotones(false);
+                            msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha modificado el cliente correctamente.");
+                        } catch (Exception e) {
+                            msj.mostrarError("Error", "", "No se pudo modificar el cliente.");
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         }
-        /*
-        // Obtiene el proveedor seleccionado en la tabla
-        Cliente c = this.tablaClientes.getSelectionModel().getSelectedItem();
+        // Comprueba si se seleccionó empresaRadio
+        else if (empresaRadio.isSelected()) {
+            // Obtiene los valores de los campos en un objeto Cliente
+            Cliente cliente = obtenerValoresDeCamposEmpresa();
 
-        if (c == null) {
-            // Muestra un mensaje de error si no se selecciona ningún elemento en la tabla
-            msj.mostrarError("Error", "", "Debe seleccionar un cliente de la lista para modificar.");
-            return;
+            // Realiza las validaciones específicas para empresas
+            if (cliente.getRazonSocial().isEmpty() || cliente.getProvincia().isEmpty() || cliente.getLocalidad().isEmpty() ||
+                    cliente.getCuil().isEmpty() || cliente.getMail().isEmpty() || cliente.getTelefono().isEmpty()) {
+                // Muestra un mensaje de error si falta ingresar datos
+                msj.mostrarError("Error", "", "Falta ingresar datos obligatorios.");
+            } else {
+                if (ValidacionDeEntrada.validarEmail(cliente.getMail()) &&
+                        ValidacionDeEntrada.validarCuil(cliente.getCuil()) &&
+                        ValidacionDeEntrada.validarTelefono(cliente.getTelefono())) {
+                    boolean confirmacion = msj.mostrarConfirmacion("Confirmar Modificación", "",
+                            "¿Está seguro de que desea modificar este cliente?");
+                    if (confirmacion) { // Si se confirma la eliminación
+                        try {
+                            // Actualiza los valores del proveedor
+                            c.setRazonSocial(cliente.getRazonSocial());
+                            c.setProvincia(cliente.getProvincia());
+                            c.setLocalidad(cliente.getLocalidad());
+                            c.setCalle(cliente.getCalle());
+                            c.setCuil(cliente.getCuil());
+                            c.setMail(cliente.getMail());
+                            c.setTelefono(cliente.getTelefono());
+                            ClienteDAOImpl dao = new ClienteDAOImpl();
+                            dao.modificar(c);
+                            completarTabla();
+                            vaciarCampos();
+                            manejador.configurarBotones(false);
+                            msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha modificado el cliente correctamente.");
+                        } catch (Exception e) {
+                            msj.mostrarError("Error", "", "No se pudo modificar el cliente.");
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
         }
-        String nombreIngresado = this.campoNombre.getText().trim();
-        String apellidoIngresado = this.campoApellido.getText();
-        String provinciaIngresada = this.campoProvincia.getText();
-        String localidadIngresada = this.campoLocalidad.getText();
-        String calleIngresada = this.campoCalle.getText();
-        String cuilIngresado = this.campoCuil.getText();
-        String dniIngresado = cuilIngresado.substring(2, 10);
-        String emailIngresado = this.campoEmail.getText();
-        String telefonoIngresado = this.campoTelefono.getText();
-
-        if (nombreIngresado.isEmpty()) {
-            msj.mostrarError("Error", "", "Debe ingresar el nombre del proveedor.");
-            return;
-        }
-        // Actualiza el nombre del rubro seleccionado con el contenido del campoNombre
-        c.setNombre(nombreIngresado);
-        c.setApellido(apellidoIngresado);
-        c.setProvincia(provinciaIngresada);
-        c.setLocalidad(localidadIngresada);
-        c.setCalle(calleIngresada);
-        c.setCuil(cuilIngresado);
-        c.setDni(dniIngresado);
-        c.setMail(emailIngresado);
-        c.setTelefono(telefonoIngresado);
-        try {
-            ClienteDAOImpl dao = new ClienteDAOImpl();
-            dao.modificar(c);
-            completarTabla();
-            vaciarCampos();
-            campoNombre.requestFocus();
-            // Para habilitar "Modificar" y "Eliminar" y deshabilitar "Agregar"
-            manejador.configurarBotones(false);
-            msj.mostrarAlertaInforme("Operación exitosa", "", "El cliente se ha modificado");
-        } catch (Exception e) {
-            msj.mostrarError("Error", "", "No se pudo modificar el elemento en la BD");
-        }*/
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Llama al método para deshabilitar todos los campos de texto al inicializar
+        deshabilitarCamposTexto();
         // Carga la lista de provincias desde la clase ProvinciasArgentinas
         comboProvincia.setItems(ProvinciasArgentinas.getProvincias());
         comboProvincia.setValue("Chaco");
@@ -309,33 +336,68 @@ public class VentanaClientesController implements Initializable {
 
         todosLosClientes = tablaClientes.getItems();
 
-        // Establecer el enfoque en campoNombre después de que la ventana se haya mostrado completamente
-        Platform.runLater(() -> campoDni.requestFocus());
-
         // Instancia el ManejadorBotones en la inicialización del controlador
         manejador = new ManejoDeBotones(btnModificar, btnEliminar, btnAgregar);
         // Para deshabilitar "Modificar" y "Eliminar" y habilitar "Agregar"
         manejador.configurarBotones(false);
 
+        campoDni.setTextFormatter(ManejoDeEntrada.soloDni());
         campoNombre.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoApellido.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
+        campoRazonSocial.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoCalle.setTextFormatter(ManejoDeEntrada.soloLetrasNumEspAcento());
         campoTelefono.setTextFormatter(ManejoDeEntrada.soloTelefono());
-        //campoProvincia.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoLocalidad.setTextFormatter(ManejoDeEntrada.soloLetrasEspacioAcento());
         campoEmail.setTextFormatter(ManejoDeEntrada.soloEmail());
         campoCuil.setTextFormatter(ManejoDeEntrada.soloNumerosEnteros());
+
+        // Manejo de eventos para habilitar o deshabilitar campos de texto
+        seleccionarTipo.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == personaRadio) {
+                // Habilita campos relacionados con personas
+                campoDni.setDisable(false);
+                campoCuil.setDisable(false);
+                campoNombre.setDisable(false);
+                campoApellido.setDisable(false);
+                campoRazonSocial.setDisable(false);
+                campoEmail.setDisable(false);
+                campoCalle.setDisable(false);
+                campoTelefono.setDisable(false);
+                comboProvincia.setDisable(false);
+                campoLocalidad.setDisable(false);
+                // Focus en Dni
+                campoDni.requestFocus();
+            } else if (newValue == empresaRadio) {
+                // Habilita campos relacionados con empresas
+                campoDni.setDisable(true);
+                campoCuil.setDisable(false);
+                campoNombre.setDisable(true);
+                campoApellido.setDisable(true);
+                campoRazonSocial.setDisable(false);
+                campoEmail.setDisable(false);
+                campoCalle.setDisable(false);
+                campoTelefono.setDisable(false);
+                comboProvincia.setDisable(false);
+                campoLocalidad.setDisable(false);
+                //Vacio algunos campos
+                campoDni.setText("");
+                campoNombre.setText("");
+                campoApellido.setText("");
+                // Focus en el campo Cuil
+                campoCuil.requestFocus();
+            }
+        });
     }
 
     public void completarTabla() {
         campoNombre.requestFocus();
 
-        // Crear una instancia del DAO de Proveedor
+        // Crea una instancia del DAO de Proveedor
         ClienteDAOImpl cliente = new ClienteDAOImpl();
         ObservableList<Cliente> clientes = null;
 
         try {
-            // se intenta obtener la lista de proveedores desde la base de datos
+            // Se intenta obtener la lista de proveedores desde la base de datos
             clientes = cliente.listarTodos();
         } catch (Exception e) {
             // Maneja cualquier excepción que ocurra durante la obtención de datos
@@ -347,12 +409,14 @@ public class VentanaClientesController implements Initializable {
         this.colId.setCellValueFactory(new PropertyValueFactory<>("idCliente"));
         this.colNom.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         this.colApel.setCellValueFactory(new PropertyValueFactory<>("apellido"));
+        this.colRazonSocial.setCellValueFactory(new PropertyValueFactory<>("razonSocial"));
         this.colProv.setCellValueFactory(new PropertyValueFactory<>("provincia"));
         this.colLoc.setCellValueFactory(new PropertyValueFactory<>("localidad"));
         this.colCalle.setCellValueFactory(new PropertyValueFactory<>("calle"));
         this.colEmail.setCellValueFactory(new PropertyValueFactory<>("mail"));
         this.colTele.setCellValueFactory(new PropertyValueFactory<>("telefono"));
         this.colCuil.setCellValueFactory(new PropertyValueFactory<>("cuil"));
+        this.colDni.setCellValueFactory(new PropertyValueFactory<>("dni"));
         // Establece los datos de la tabla con la lista de proveedores
         this.tablaClientes.setItems(clientes);
 
@@ -363,6 +427,7 @@ public class VentanaClientesController implements Initializable {
                 // Llena los campos de entrada con los datos del proveedor seleccionado
                 campoNombre.setText(newValue.getNombre());
                 campoApellido.setText(newValue.getApellido());
+                campoRazonSocial.setText(newValue.getRazonSocial());
                 comboProvincia.getSelectionModel().select(newValue.getProvincia());
                 campoLocalidad.setText(newValue.getLocalidad());
                 campoCalle.setText(newValue.getCalle());
@@ -370,15 +435,32 @@ public class VentanaClientesController implements Initializable {
                 campoEmail.setText(newValue.getMail());
                 campoTelefono.setText(newValue.getTelefono());
                 campoDni.setText(newValue.getDni());
+
+                // Habilita o deshabilita el Toggle basado en si el cliente tiene DNI
+                if (newValue.getDni() != null && !newValue.getDni().isEmpty()) {
+                    // El cliente tiene un DNI, habilita "Persona" y deshabilita "Empresa"
+                    personaRadio.setDisable(false);
+                    empresaRadio.setDisable(true);
+                    seleccionarTipo.selectToggle(personaRadio);
+                } else {
+                    // El cliente no tiene DNI, habilita "Empresa" y deshabilita "Persona"
+                    empresaRadio.setDisable(false);
+                    personaRadio.setDisable(true);
+                    seleccionarTipo.selectToggle(empresaRadio);
+                }
             }
         });
+        colId.setSortType(TableColumn.SortType.ASCENDING);
+        tablaClientes.getSortOrder().add(colId);
+        tablaClientes.sort();
     }
 
     public void vaciarCampos() {
-        // Limpiar los campos de entrada y foucs en nombre
+        // Limpia los campos de entrada y foucs en nombre
         campoDni.setText("");
         campoNombre.setText("");
         campoApellido.setText("");
+        campoRazonSocial.setText("");
         comboProvincia.getSelectionModel().clearSelection();
         campoLocalidad.setText("");
         campoCalle.setText("");
@@ -386,54 +468,36 @@ public class VentanaClientesController implements Initializable {
         campoTelefono.setText("");
         campoBuscar.setText("");
         campoCuil.setText("");
-        campoNombre.requestFocus();
+        //campoNombre.requestFocus();
         comboProvincia.setValue("Chaco");
+        // Deselecciona los Toggle después del guardado
+        personaRadio.setSelected(false);
+        empresaRadio.setSelected(false);
+        personaRadio.setDisable(false);
+        empresaRadio.setDisable(false);
+        // Deshabilita todos los campos de texto
+        deshabilitarCamposTexto();
     }
 
     @FXML
     void filtrarClientes(KeyEvent event) {
-        // Obtener el texto ingresado en el campo de búsqueda
+        // Obtiene el texto ingresado en el campo de búsqueda
         String filtro = campoBuscar.getText().toLowerCase();
 
         if (filtro.isEmpty()) {
-            // Si el campo de búsqueda está vacío, mostrar todos los empleados originales
+            // Si el campo de búsqueda está vacío, muestra todos los clientes originales
             tablaClientes.setItems(todosLosClientes);
         } else {
-            // Filtrar la lista de todos los empleados originales y mostrar los resultados
-            ObservableList<Cliente> rubrosFiltrados = todosLosClientes.filtered(cliente
-                    -> cliente.getNombre().toLowerCase().startsWith(filtro)
+            // Filtra la lista de todos los clientes originales y mostrar los resultados
+            ObservableList<Cliente> clientesFiltrados = todosLosClientes.filtered(cliente ->
+                    (cliente.getNombre() != null && cliente.getNombre().toLowerCase().contains(filtro)) || // Busca en el nombre
+                            (cliente.getRazonSocial() != null && cliente.getRazonSocial().toLowerCase().contains(filtro)) || // Busca en la razón social
+                            (cliente.getCuil() != null && cliente.getCuil().toLowerCase().contains(filtro)) || // Busca en el cuil
+                            (cliente.getDni() != null && cliente.getDni().toLowerCase().contains(filtro)) // Busca en el dni
             );
-            tablaClientes.setItems(rubrosFiltrados);
+            tablaClientes.setItems(clientesFiltrados);
         }
     }
-
-    @FXML
-    void autoCompletarCampos(ActionEvent event) {
-        PersonaDAOImpl p = new PersonaDAOImpl();
-        ObservableList<Persona> personas = null;
-        try {
-            personas = p.listarTodos();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        for (Persona persona : personas) {
-            if (persona.getDni().equals(campoDni.getText())) {
-                campoNombre.setText(persona.getNombre());
-                campoApellido.setText(persona.getApellido());
-                comboProvincia.setValue(persona.getProvincia());
-                campoLocalidad.setText(persona.getLocalidad());
-                campoCalle.setText(persona.getCalle());
-                campoTelefono.setText(persona.getTelefono());
-                campoEmail.setText(persona.getMail());
-                campoNombre.requestFocus();
-                return;
-            } else {
-                campoNombre.requestFocus();
-            }
-        }
-    }
-
-
 
     private Cliente obtenerValoresDeCampos() {
         String nombreIngresado = FormatoTexto.formatearTexto(this.campoNombre.getText());
@@ -443,6 +507,7 @@ public class VentanaClientesController implements Initializable {
         String calleIngresada = FormatoTexto.formatearTexto(this.campoCalle.getText());
         String cuilIngresado = this.campoCuil.getText();
         String dniIngresado = campoDni.getText();
+        String razonSocialIngresada = campoRazonSocial.getText();
         String emailIngresado = this.campoEmail.getText().toLowerCase();
         String telefonoIngresado = this.campoTelefono.getText();
 
@@ -454,9 +519,53 @@ public class VentanaClientesController implements Initializable {
         cliente.setCalle(calleIngresada);
         cliente.setCuil(cuilIngresado);
         cliente.setDni(dniIngresado);
+        cliente.setRazonSocial(razonSocialIngresada);
         cliente.setMail(emailIngresado);
         cliente.setTelefono(telefonoIngresado);
 
         return cliente;
+    }
+
+    private Cliente obtenerValoresDeCamposEmpresa() {
+        String razonSocialIngresada = FormatoTexto.formatearTexto(campoRazonSocial.getText());
+        String provinciaIngresada = this.comboProvincia.getSelectionModel().getSelectedItem();
+        String localidadIngresada = FormatoTexto.formatearTexto(this.campoLocalidad.getText());
+        String calleIngresada = FormatoTexto.formatearTexto(this.campoCalle.getText());
+        String cuilIngresado = this.campoCuil.getText();
+        String emailIngresado = this.campoEmail.getText().toLowerCase();
+        String telefonoIngresado = this.campoTelefono.getText();
+
+        Cliente cliente = new Cliente();
+        cliente.setProvincia(provinciaIngresada);
+        cliente.setLocalidad(localidadIngresada);
+        cliente.setCalle(calleIngresada);
+        cliente.setCuil(cuilIngresado);
+        cliente.setRazonSocial(razonSocialIngresada);
+        cliente.setMail(emailIngresado);
+        cliente.setTelefono(telefonoIngresado);
+
+        return cliente;
+    }
+
+    @FXML
+    void porEmpresa(ActionEvent event) {
+    }
+
+    @FXML
+    void porPersona(ActionEvent event) {
+    }
+
+    // Método para deshabilitar todos los campos de texto
+    private void deshabilitarCamposTexto() {
+        campoDni.setDisable(true);
+        campoCuil.setDisable(true);
+        campoNombre.setDisable(true);
+        campoApellido.setDisable(true);
+        campoRazonSocial.setDisable(true);
+        campoEmail.setDisable(true);
+        campoCalle.setDisable(true);
+        campoTelefono.setDisable(true);
+        comboProvincia.setDisable(true);
+        campoLocalidad.setDisable(true);
     }
 }

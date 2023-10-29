@@ -151,16 +151,10 @@ public class VentanaVentasAlternativaController implements Initializable {
         }
 
         String tipo = tipoFacturaBox.getValue();
-        String clienteSeleccionado = clienteBox.getSelectionModel().getSelectedItem();
-
-        // Divide el clienteSeleccionado en nombre y apellido
-        String[] partes = clienteSeleccionado.split(" "); // Suponiendo que los nombres y apellidos están separados por un espacio
-
-        String nombre = partes[0]; // El primer elemento en partes es el nombre
-        String apellido = partes[1]; // El segundo elemento en partes es el apellido
+        String razonSocialSeleccionada = clienteBox.getSelectionModel().getSelectedItem();
 
         ClienteDAOImpl clienteDAO = new ClienteDAOImpl();
-        int ClienteId = clienteDAO.obtenerPorNombreYApellido(nombre, apellido);
+        int ClienteId = clienteDAO.obtenerPorRazonSocial(razonSocialSeleccionada);
 
         // Asegura de que todos los campos requeridos se hayan completado
         if (numeroFactura.isEmpty() || tipo == null) {
@@ -198,16 +192,10 @@ public class VentanaVentasAlternativaController implements Initializable {
         venta.setIdClienteFK(ClienteId);
         venta.setIdEmpleadoFK(Integer.parseInt(idEmpleado));
 
-        String nuevoClienteSeleccionado = clienteBox.getSelectionModel().getSelectedItem();
-
-        // Dividir el clienteSeleccionado en nombre y apellido
-        String[] partesNuevas = nuevoClienteSeleccionado.split(" "); // Suponiendo que los nombres y apellidos están separados por un espacio
-
-        String nombreNuevo = partesNuevas[0]; // El primer elemento en partes es el nombre
-        String apellidoNuevo = partesNuevas[1]; // El segundo elemento en partes es el apellido
+        String nuevaRazonSocialSeleccionada = clienteBox.getSelectionModel().getSelectedItem();
 
         // Obtiene el ID del nuevo proveedor basado en su nombre
-        int nuevoClienteId = clienteDAO.obtenerPorNombreYApellido(nombreNuevo, apellidoNuevo);
+        int nuevoClienteId = clienteDAO.obtenerPorRazonSocial(nuevaRazonSocialSeleccionada);
 
         System.out.println("id del cliente: " + nuevoClienteId);
 
@@ -297,10 +285,11 @@ public class VentanaVentasAlternativaController implements Initializable {
         newStage.initModality(Modality.APPLICATION_MODAL);
         newStage.showAndWait();
 
+        /*
         // Verifica si hay un proveedor seleccionado antes de borrar los elementos
         if (!clienteBox.getSelectionModel().isEmpty()) {
             clienteBox.getSelectionModel().clearSelection();
-        }
+        }*/
         // Luego de agregar el proveedor, actualiza el ComboBox
         actualizarComboBoxClientes();
     }
@@ -415,10 +404,11 @@ public class VentanaVentasAlternativaController implements Initializable {
             throw new RuntimeException(e);
         }
 
+
         // Agrega "Consumidor Final" a la lista de clientes si no existe
         Cliente consumidorFinal = null;
         for (Cliente cliente : clientes) {
-            if (cliente.getNombre().equals("Consumidor") && cliente.getApellido().equals("Final")) {
+            if (cliente.getRazonSocial().equals("Consumidor Final")) {
                 consumidorFinal = cliente;
                 break;
             }
@@ -427,7 +417,7 @@ public class VentanaVentasAlternativaController implements Initializable {
         // Crea una lista de nombres de clientes
         List<String> nombresClientes = new ArrayList<>();
         for (Cliente cliente : clientes) {
-            nombresClientes.add(cliente.getNombre() + " " + cliente.getApellido());
+            nombresClientes.add(cliente.getRazonSocial());
         }
 
         // Agrega todos los nombres de clientes a la lista del ComboBox
@@ -450,7 +440,7 @@ public class VentanaVentasAlternativaController implements Initializable {
 
         // Si "Consumidor Final" está en la lista de clientes, seleccionarlo por defecto
         if (consumidorFinal != null) {
-            clienteBox.getSelectionModel().select(consumidorFinal.getNombre() + " " + consumidorFinal.getApellido());
+            clienteBox.getSelectionModel().select(consumidorFinal.getRazonSocial());
             // Establecer "B" como el valor seleccionado en tipoFacturaBox
             tipoFacturaBox.setValue("B");
             // Deshabilitar la selección en tipoFacturaBox
@@ -548,13 +538,14 @@ public class VentanaVentasAlternativaController implements Initializable {
 
                             tblDetalle.getItems().add(productoTabla);
 
+                            /*
                             // Asegúrate de que el índice sea válido
                             int lastIndex = tblDetalle.getItems().size() - 1;
 
                             if (lastIndex >= 0) {
                                 // Desplázate hacia el último elemento
                                 tblDetalle.scrollTo(lastIndex);
-                            }
+                            }*/
 
                             // Reestablece la cantidad en campoCantidad
                             campoCantidad.getValueFactory().setValue(1);
@@ -652,6 +643,13 @@ public class VentanaVentasAlternativaController implements Initializable {
         //this.colTotal.setCellValueFactory(new PropertyValueFactory<>("totalVendido"));
 
         this.colPU.setCellFactory(col -> new PrecioVentaCell());
+
+        int lastIndex = tblDetalle.getItems().size() - 1;
+
+        if (lastIndex >= 0) {
+            // Desplázate hacia el último elemento
+            tblDetalle.scrollTo(lastIndex);
+        }
     }
 
     public class PrecioVentaCell extends TableCell<Producto, Double> {
@@ -740,20 +738,16 @@ public class VentanaVentasAlternativaController implements Initializable {
         }
 
         try {
-            if (!clienteBox.getItems().isEmpty()) {
-                clienteBox.getItems().clear();
-                clienteBox.getSelectionModel().clearSelection();
-            }
-        } catch (IndexOutOfBoundsException e) {
+            // Limpia la lista de clientes
+            clienteBox.getItems().clear();
+        } catch (Exception ex) {
+            // Manejar cualquier excepción que pueda ocurrir al limpiar
+            ex.printStackTrace(); // O usa otro método de manejo de errores
+        }
 
-        }
-        // Luego, agrega los nombres de clientes nuevamente
         for (Cliente cliente : clientes) {
-            clienteBox.getItems().add(cliente.getNombre() + " " + cliente.getApellido());
-        }
-        //
-        if (!clienteBox.getItems().isEmpty()) {
-            clienteBox.getSelectionModel().select(0);
+            clienteBox.getItems().add(cliente.getRazonSocial());
+            clienteBox.setValue("Consumidor Final");
         }
     }
 
