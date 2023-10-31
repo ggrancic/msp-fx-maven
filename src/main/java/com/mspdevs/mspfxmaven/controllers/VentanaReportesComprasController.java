@@ -142,6 +142,8 @@ public class VentanaReportesComprasController implements Initializable {
             Compra compraSeleccionada = tablaCompras.getSelectionModel().getSelectedItem();
             dcc.completarTabla(compraSeleccionada.getId_factura_compras());
             
+            dcc.setLabelNroFactura(compraSeleccionada.getNumeroFactura());
+            
             
             Scene scene = new Scene(root);
             Stage newStage = new Stage();
@@ -220,8 +222,14 @@ public class VentanaReportesComprasController implements Initializable {
     	} else if (campoFechaDeFin.getValue().isBefore(campoFechaDeInicio.getValue())) {
     		msj.mostrarError("Error", "", "La fecha de FIN debe ser posterior a la fecha de INICIO.");
     	} else {
+    		
+    		total = obtenerTotalPaginas();
+    		
+    		if (total > 1) {
+    			btnSiguiente.setDisable(false);
+    		}
+    		
     		btnAnterior.setDisable(true);
-        	btnSiguiente.setDisable(false);
         	
     		DateTimeFormatter formatoMySql = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         	fechaInicio = Date.valueOf(campoFechaDeInicio.getValue());
@@ -229,7 +237,7 @@ public class VentanaReportesComprasController implements Initializable {
         	
         	label20reg.setText("Mostrando resultados DESDE " + fechaInicio + " HASTA " + fechaFin);
         	
-        	total = obtenerTotalPaginas();
+        	
         	
         	tablaCompras.getItems().clear();
         	completarTablaConPaginacion(0, 20, fechaInicio, fechaFin);

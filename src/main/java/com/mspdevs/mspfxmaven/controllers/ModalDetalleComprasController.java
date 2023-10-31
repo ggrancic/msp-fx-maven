@@ -17,6 +17,7 @@ import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -50,6 +51,9 @@ public class ModalDetalleComprasController implements Initializable {
     @FXML
     private Button btnAtras;
     
+    @FXML
+    private Label labelDetalle;
+    
     
     // ----- METODOS -----
     
@@ -74,6 +78,10 @@ public class ModalDetalleComprasController implements Initializable {
 		} else {
 			System.out.println("No se cargaron datos");
 		}
+    }
+    
+    void setLabelNroFactura(String nroFactura) {
+    	labelDetalle.setText("DETALLE DE COMPRA NUMERO " + nroFactura);
     }
     
 	
