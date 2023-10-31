@@ -28,7 +28,7 @@ public class ModalDetalleComprasController implements Initializable {
 	
 	
 	@FXML
-    private TableColumn<?, ?> colCantidad;
+    private TableColumn<DetalleCompra, Integer> colCantidad;
 
     @FXML
     private TableColumn<DetalleCompra, Integer> colId;
@@ -37,10 +37,10 @@ public class ModalDetalleComprasController implements Initializable {
     private TableColumn<DetalleCompra, String> colNom;
 
     @FXML
-    private TableColumn<?, ?> colPL;
+    private TableColumn<DetalleCompra, Double> colPL;
 
     @FXML
-    private TableColumn<?, ?> colPV;
+    private TableColumn<DetalleCompra, Double> colPV;
 
     @FXML
     private TableColumn<DetalleCompra, Double> colTotal;
@@ -73,6 +73,9 @@ public class ModalDetalleComprasController implements Initializable {
 			colId.setCellValueFactory(data-> new SimpleObjectProperty(data.getValue().getId()));
 			colNom.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getProducto().getNombre()));
 			colTotal.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getPrecio()));
+			colPL.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getProducto().getPrecioLista()));
+			colPV.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getProducto().getPrecioVenta()));
+			colCantidad.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getCantidad()));
 			
 			tblDetalle.setItems(listaDetalles);
 		} else {
