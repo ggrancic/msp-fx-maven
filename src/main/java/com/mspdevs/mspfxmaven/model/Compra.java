@@ -10,23 +10,10 @@ public class Compra {
     private double subtotal;
     private double totalSinIva;
     private double total;
-
-    int idProveedorFK;
-    private String proveedorNombre;
-
-    public Compra(Compra compra, Proveedor proveedor) {
-        this.id_factura_compras = id_factura_compras;
-        this.fecha = fecha;
-        this.numeroFactura = numeroFactura;
-        this.tipo = tipo;
-        this.subtotal = subtotal;
-        this.totalSinIva = totalSinIva;
-        this.total = total;
-        this.idProveedorFK = proveedor.getIdProveedor();
-        this.proveedorNombre = proveedor.getNombre();
-    }
-
+    private Proveedor proveedor;
+    
     public Compra() {
+    	proveedor = new Proveedor();
     }
 
     public int getId_factura_compras() {
@@ -86,15 +73,15 @@ public class Compra {
     }
 
     public int getIdProveedorFK() {
-        return idProveedorFK;
+        return proveedor.getIdProveedor();
     }
     public void setIdProveedorFK(int idProveedorFK) {
-        this.idProveedorFK = idProveedorFK;
+        this.proveedor.setIdProveedor(idProveedorFK);
     }
     public String getProveedorNombre() {
-        return proveedorNombre;
+        return proveedor.getNombre();
     }
     public void setProveedorNombre(String proveedorNombre) {
-        this.proveedorNombre = proveedorNombre;
+        this.proveedor.setNombre(proveedorNombre);
     }
 }
