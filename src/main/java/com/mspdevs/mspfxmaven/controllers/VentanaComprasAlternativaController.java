@@ -11,11 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.UnaryOperator;
 
-import com.mspdevs.mspfxmaven.model.Compra;
+import com.mspdevs.mspfxmaven.model.*;
 import com.mspdevs.mspfxmaven.model.DAO.*;
-import com.mspdevs.mspfxmaven.model.DetalleCompra;
-import com.mspdevs.mspfxmaven.model.Producto;
-import com.mspdevs.mspfxmaven.model.Proveedor;
 import com.mspdevs.mspfxmaven.utils.Alerta;
 import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
 import javafx.collections.FXCollections;
@@ -36,7 +33,7 @@ import javafx.util.StringConverter;
 import org.controlsfx.control.SearchableComboBox;
 
 
-public class VentanaComprasController implements Initializable {
+public class VentanaComprasAlternativaController implements Initializable {
     Alerta msj = new Alerta();
 
     @FXML
@@ -50,9 +47,6 @@ public class VentanaComprasController implements Initializable {
 
     @FXML
     private Button btnNuevoProveedor;
-
-    @FXML
-    private ToggleGroup busquedaProducto;
 
     @FXML
     private Spinner<Integer> campoCantidad;
@@ -85,9 +79,6 @@ public class VentanaComprasController implements Initializable {
     private TextField campoTotal;
 
     @FXML
-    private RadioButton codigoBarraRadio;
-
-    @FXML
     private TableColumn<Producto, Integer> colCantidad;
 
     @FXML
@@ -101,9 +92,6 @@ public class VentanaComprasController implements Initializable {
 
     @FXML
     private TableColumn<Producto, Double> colPV;
-
-    @FXML
-    private RadioButton nombreRadio;
 
     @FXML
     private SearchableComboBox<String> productoBox;
@@ -238,21 +226,25 @@ public class VentanaComprasController implements Initializable {
         Stage newStage = new Stage();
         newStage.setScene(scene);
         newStage.initStyle(StageStyle.UNDECORATED);
-        newStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
+        newStage.initOwner(((Node) event.getSource()).getScene().getWindow());
         newStage.initModality(Modality.APPLICATION_MODAL);
         newStage.showAndWait();
 
         // Deseleccionar los elementos del RadioButton
         //busquedaProducto.selectToggle(null);
 
+        // Luego de agregar el proveedor, actualiza el ComboBox
+        actualizarComboBoxProductos();
         // Vaciar el ComboBox
-        productoBox.setItems(FXCollections.observableArrayList());
+        //productoBox.setItems(FXCollections.observableArrayList());
         campoNombre.clear();
         campoPrecioLista.clear();
         campoPrecioVenta.clear();
         campoCantidad.getValueFactory().setValue(1);
         campoGanancia.setText("0");
         campoGanancia.setDisable(true);
+
+
     }
 
     @FXML
@@ -281,8 +273,8 @@ public class VentanaComprasController implements Initializable {
         int ProveedorId = proveedorDAO.obtenerPorNombre(ProveedorNombreSeleccionado);
 
         // Asegurarse de que todos los campos requeridos se hayan completado
-        if (numero.isEmpty() || tipo == null) {
-            msj.mostrarError("Error", "", "Por favor, complete todos los campos obligatorios.");
+        if (numero.isEmpty() || tipo == null || !validarNumeroFactura(numero)) {
+            msj.mostrarError("Error", "", "Por favor, complete todos los campos obligatorios correctamente.");
             return;
         }
 
@@ -340,7 +332,7 @@ public class VentanaComprasController implements Initializable {
 
                 msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha modificado el producto y el proveedor.");
             }
-        } catch (Exception e){
+        } catch (Exception e) {
 
         }
 
@@ -366,17 +358,20 @@ public class VentanaComprasController implements Initializable {
             }
 
             msj.mostrarAlertaInforme("Operación exitosa", "", "Se han agregado los detalles de compra.");
-        } catch (Exception e){
+        } catch (Exception e) {
             // Manejo de errores
         }
         vaciarCampos();
+        // Deshabilita los campos
+        habilitarCampos(false);
+        /*
         try {
             // Limpia la lista de clientes
             productoBox.getItems().clear();
         } catch (Exception ex) {
             // Manejar cualquier excepción que pueda ocurrir al limpiar
             ex.printStackTrace(); // O usa otro método de manejo de errores
-        }
+        }*/
         btnGuardar.setDisable(true);
     }
 
@@ -389,7 +384,7 @@ public class VentanaComprasController implements Initializable {
         Stage newStage = new Stage();
         newStage.setScene(scene);
         newStage.initStyle(StageStyle.UNDECORATED);
-        newStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
+        newStage.initOwner(((Node) event.getSource()).getScene().getWindow());
         newStage.initModality(Modality.APPLICATION_MODAL);
         newStage.showAndWait();
 
@@ -433,6 +428,32 @@ public class VentanaComprasController implements Initializable {
             return row;
         });
 
+        ProveedorDAOImpl proveedorDAO = new ProveedorDAOImpl();
+        ProductoDAOImpl productoDAO = new ProductoDAOImpl();
+
+        // Obteniene la lista de proveedores desde la base de datos
+        List<Proveedor> proveedores = null;
+        try {
+            proveedores = proveedorDAO.listarTodos();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        // Cargar los nombres en los ComboBox
+        for (Proveedor proveedor : proveedores) {
+            proveedorBox.getItems().add(proveedor.getRazonSocial());
+        }
+
+        // Obteniene la lista de productos desde la base de datos
+        List<Producto> productos = null;
+        try {
+            productos = productoDAO.listarTodos();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        // Agrega todos los nombres de clientes a la lista del ComboBox
+        productoBox.getItems().setAll(cargarNombresProductos());
+
         productoBox.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
                 // Obtiene el nombre o código de barras seleccionado
@@ -442,28 +463,22 @@ public class VentanaComprasController implements Initializable {
                 habilitarCampos(true);
                 campoNombre.setEditable(false);
 
-                // Verifica el Toggle seleccionado
-                Toggle selectedToggle = busquedaProducto.getSelectedToggle();
-
-                if (selectedToggle == nombreRadio) {
-                    // Realiza la búsqueda por nombre
+                // Realiza la búsqueda por nombre si el valor seleccionado está en la lista de nombres
+                if (productoBox.getItems().contains(nombreSeleccionado)) {
                     productoEncontrado = mostrarDetallesProductoPorNombre(nombreSeleccionado);
-                    // Borra el valor seleccionado en el SearchableComboBox
-                    productoBox.getSelectionModel().clearSelection();
-                } else if (selectedToggle == codigoBarraRadio) {
-                    // Realiza la búsqueda por código de barras
-                    productoEncontrado = mostrarDetallesProductoPorCodigoBarra(nombreSeleccionado);
-                    // Borra el valor seleccionado en el SearchableComboBox
-                    productoBox.getSelectionModel().clearSelection();
                 }
 
+                // Borra el valor seleccionado en el SearchableComboBox
+                productoBox.getSelectionModel().clearSelection();
 
                 if (!productoEncontrado) {
                     // Manejar la situación en la que no se encontró el producto
-                    msj.mostrarAlertaInforme("Error", "", "Producto no encontrado");
+                    //msj.mostrarAlertaInforme("Error", "", "Producto no encontrado");
                 }
             }
         });
+
+        productoBox.setDisable(true);
 
         // Crea un listener que verifica los campos antes de habilitar el botón
         //btnAgregarProducto.setDisable(true); // Inicialmente, el botón está deshabilitado
@@ -471,28 +486,22 @@ public class VentanaComprasController implements Initializable {
         btnGuardar.setDisable(true);
         btnCrearProducto.setDisable(true);
 
-        // Agrega un listener para el campo "campoNumFactura"
         campoNumFactura.textProperty().addListener((observable, oldValue, newValue) -> {
-            //alidarCamposYHabilitarBoton(btnAgregarProducto);
             validarCamposYHabilitarBoton(btnAgregar);
             validarCamposYHabilitarBoton(btnCrearProducto);
-            //validarCamposYHabilitarBoton(btnGuardar);
+            verificarCondicionesParaHabilitarProductoBox();
         });
 
-        // Agrega un listener para el ComboBox "tipoFacturaBox"
         tipoFacturaBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            //validarCamposYHabilitarBoton(btnAgregarProducto);
             validarCamposYHabilitarBoton(btnAgregar);
             validarCamposYHabilitarBoton(btnCrearProducto);
-            //validarCamposYHabilitarBoton(btnGuardar);
+            verificarCondicionesParaHabilitarProductoBox();
         });
 
-        // Agrega un listener para el SearchableComboBox "proveedorBox"
         proveedorBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            //validarCamposYHabilitarBoton(btnAgregarProducto);
             validarCamposYHabilitarBoton(btnAgregar);
             validarCamposYHabilitarBoton(btnCrearProducto);
-            //validarCamposYHabilitarBoton(btnGuardar);
+            verificarCondicionesParaHabilitarProductoBox();
         });
 
         // Personaliza el formato del DatePicker a "año/mes/día"
@@ -534,47 +543,6 @@ public class VentanaComprasController implements Initializable {
 
         completarTablaProductos();
         habilitarCampos(false);
-
-        ProveedorDAOImpl proveedorDAO = new ProveedorDAOImpl();
-        ProductoDAOImpl productoDAO = new ProductoDAOImpl();
-
-        // Obteniene la lista de proveedores desde la base de datos
-        List<Proveedor> proveedores = null;
-        try {
-            proveedores = proveedorDAO.listarTodos();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        // Cargar los nombres en los ComboBox
-        for (Proveedor proveedor : proveedores) {
-            proveedorBox.getItems().add(proveedor.getRazonSocial());
-        }
-
-        // Configura el ToggleGroup para los radio buttons
-        nombreRadio.setToggleGroup(busquedaProducto);
-        codigoBarraRadio.setToggleGroup(busquedaProducto);
-
-        // Obteniene la lista de productos desde la base de datos
-        List<Producto> productos = null;
-        try {
-            productos = productoDAO.listarTodos();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        // Agrega un Listener para el ToggleGroup para detectar cuál radio button está seleccionado
-        List<Producto> finalProductos = productos;
-        busquedaProducto.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
-            //productoBox.getItems().clear(); // Limpia el productoBox
-
-            if (newToggle == nombreRadio) {
-                // Habilita la búsqueda por nombre
-                productoBox.getItems().setAll(cargarNombresProductos());
-            } else if (newToggle == codigoBarraRadio) {
-                // Habilita la búsqueda por código de barras
-                productoBox.getItems().setAll(cargarCodigosBarrasProductos());
-            }
-        });
 
         // Obteniene la fecha actual
         Date fechaActual = new Date();
@@ -668,32 +636,6 @@ public class VentanaComprasController implements Initializable {
         }
     }
 
-    private boolean mostrarDetallesProductoPorCodigoBarra(String codigoBarra) {
-        // Llama a tu método de DAO para obtener los detalles del producto por su código de barras
-        ProductoDAOImpl productoDAO = new ProductoDAOImpl();
-        Producto productoSeleccionado = null;
-
-        try {
-            productoSeleccionado = productoDAO.obtenerProductoPorCodigoBarra(codigoBarra);
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Manejo de errores si es necesario
-        }
-
-        if (productoSeleccionado != null) {
-            // Rellena los campos con los detalles del producto
-            campoNombre.setText(productoSeleccionado.getNombre());
-            campoPrecioLista.setText(Double.toString(productoSeleccionado.getPrecioLista()));
-            campoPrecioVenta.setText(Double.toString(productoSeleccionado.getPrecioVenta()));
-            // Asigna el ID del producto a la propiedad userData de un elemento apropiado
-            btnAgregar.setUserData(productoSeleccionado.getIdProducto()); // Asigna el ID al botón Agregar
-            return true; // Producto encontrado
-        } else {
-            msj.mostrarError("Error", "", "Producto no encontrado");
-            return false; // Producto no encontrado
-        }
-    }
-
     private ObservableList<String> cargarNombresProductos() {
         ObservableList<String> nombres = FXCollections.observableArrayList();
         ProductoDAOImpl productoDAO = new ProductoDAOImpl();
@@ -708,26 +650,7 @@ public class VentanaComprasController implements Initializable {
             e.printStackTrace();
             // Manejo de errores si es necesario
         }
-
         return nombres;
-    }
-
-    private ObservableList<String> cargarCodigosBarrasProductos() {
-        ObservableList<String> codigosBarras = FXCollections.observableArrayList();
-        ProductoDAOImpl productoDAO = new ProductoDAOImpl();
-
-        try {
-            // Usa el ProductoDAOImpl para obtener los códigos de barras de productos desde la base de datos
-            List<Producto> productos = productoDAO.listarTodos();
-            for (Producto producto : productos) {
-                codigosBarras.add(producto.getCodigoBarra());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Manejo de errores si es necesario
-        }
-
-        return codigosBarras;
     }
 
     private void calcularPrecioVenta() {
@@ -755,8 +678,6 @@ public class VentanaComprasController implements Initializable {
         totalPrecioLista = 0.0;
         // Limpia la TableView
         tblDetalle.getItems().clear();
-        codigoBarraRadio.setSelected(false);
-        nombreRadio.setSelected(false);
         productoBox.setValue("");
     }
 
@@ -919,5 +840,45 @@ public class VentanaComprasController implements Initializable {
         if (!proveedorBox.getItems().isEmpty()) {
             proveedorBox.getSelectionModel().select(0);
         }
+    }
+
+    private boolean validarNumeroFactura(String numero) {
+        // Utiliza una expresión regular para verificar que 'numero' contiene exactamente 12 números.
+        // El patrón "\\d{12}" verifica que la cadena contenga exactamente 12 dígitos (números).
+        if (numero.matches("\\d{12}")) {
+            return true; // La cadena contiene exactamente 12 números
+        }
+        return false; // La cadena no cumple con el formato requerido
+    }
+
+    private void actualizarComboBoxProductos() {
+        ProductoDAOImpl productoDAO = new ProductoDAOImpl();
+        // Obteniene la lista de productos desde la base de datos
+        List<Producto> productos = null;
+        try {
+            productos = productoDAO.listarTodos();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            // Limpia la lista de clientes
+            productoBox.getItems().clear();
+        } catch (Exception ex) {
+            // Manejar cualquier excepción que pueda ocurrir al limpiar
+            ex.printStackTrace(); // O usa otro método de manejo de errores
+        }
+
+        for (Producto producto : productos) {
+            productoBox.getItems().add(producto.getNombre());
+        }
+    }
+
+    private void verificarCondicionesParaHabilitarProductoBox() {
+        boolean numeroFacturaValido = campoNumFactura.getText().length() == 12;
+        boolean tipoFacturaSeleccionado = tipoFacturaBox.getValue() != null;
+        boolean proveedorSeleccionado = proveedorBox.getValue() != null;
+
+        productoBox.setDisable(!(numeroFacturaValido && tipoFacturaSeleccionado && proveedorSeleccionado));
     }
 }

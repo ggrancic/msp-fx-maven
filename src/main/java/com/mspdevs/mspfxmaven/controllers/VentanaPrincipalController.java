@@ -124,7 +124,7 @@ public class VentanaPrincipalController implements Initializable {
     
     @FXML
     void abrirVentanaCompras(ActionEvent event) throws IOException {
-    	GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaCompras.fxml"));
+    	GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaAlternativaCompras.fxml"));
     	bpane.setCenter(centro);
     }
     
@@ -149,7 +149,7 @@ public class VentanaPrincipalController implements Initializable {
         GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaReportesBotones.fxml"));
         bpane.setCenter(centro);
     }
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Acá se inicializa todo lo referido a los elementos del fxml.
@@ -197,7 +197,7 @@ public class VentanaPrincipalController implements Initializable {
             confirmacion.setTitle("Confirmar");
             confirmacion.setHeaderText("¿Desea salir o cerrar sesión?");
             ButtonType salirButton = new ButtonType("Salir");
-            ButtonType noButton = new ButtonType("No salir");
+            ButtonType noButton = new ButtonType("Cancelar");
             ButtonType cerrarSesionButton = new ButtonType("Cerrar sesión");
 
             confirmacion.getButtonTypes().setAll(salirButton, noButton, cerrarSesionButton);
@@ -237,7 +237,7 @@ public class VentanaPrincipalController implements Initializable {
             confirmacion.setTitle("Confirmar");
             confirmacion.setHeaderText("¿Desea salir o cerrar sesión?");
             ButtonType salirButton = new ButtonType("Salir");
-            ButtonType noButton = new ButtonType("No salir");
+            ButtonType noButton = new ButtonType("Cancelar");
             ButtonType cerrarSesionButton = new ButtonType("Cerrar sesión");
 
             confirmacion.getButtonTypes().setAll(salirButton, noButton, cerrarSesionButton);
@@ -272,7 +272,7 @@ public class VentanaPrincipalController implements Initializable {
         confirmacion.setTitle("Confirmar");
         confirmacion.setHeaderText("¿Desea salir o cerrar sesión?");
         ButtonType salirButton = new ButtonType("Salir");
-        ButtonType noButton = new ButtonType("No salir");
+        ButtonType noButton = new ButtonType("Cancelar");
         ButtonType cerrarSesionButton = new ButtonType("Cerrar sesión");
 
         confirmacion.getButtonTypes().setAll(salirButton, noButton, cerrarSesionButton);
@@ -355,9 +355,6 @@ public class VentanaPrincipalController implements Initializable {
         idDeEmpleado = String.valueOf(id_empleado);
     }
 
-
-
-
     // Agrega este método para manejar el evento de cierre
     public void setCerrarEvento(Stage primaryStage) {
         /*
@@ -419,7 +416,7 @@ public class VentanaPrincipalController implements Initializable {
             confirmacion.setTitle("Confirmar");
             confirmacion.setHeaderText("¿Desea salir o cerrar sesión?");
             ButtonType salirButton = new ButtonType("Salir");
-            ButtonType noButton = new ButtonType("No salir");
+            ButtonType noButton = new ButtonType("Cancelar");
             ButtonType cerrarSesionButton = new ButtonType("Cerrar sesión");
 
             confirmacion.getButtonTypes().setAll(salirButton, noButton, cerrarSesionButton);
@@ -447,7 +444,7 @@ public class VentanaPrincipalController implements Initializable {
 
     void habilitarSoloVentas() {
         botonera.getItems().remove(btnClientes);
-        botonera.getItems().remove(btnCompra);
+        botonera.getItems().remove(btnCompras);
         botonera.getItems().remove(btnInventario);
         botonera.getItems().remove(btnReportes);
         botonera.getItems().remove(btnProveedores);

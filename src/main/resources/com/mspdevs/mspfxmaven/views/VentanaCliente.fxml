@@ -120,7 +120,7 @@
                            <children>
                               <TableView fx:id="tablaClientes" stylesheets="@../styles/style.css" GridPane.hgrow="ALWAYS" GridPane.vgrow="SOMETIMES">
                                  <columns>
-                                    <TableColumn fx:id="colId" editable="false" minWidth="5.0" prefWidth="5.0" text="ID" />
+                                    <TableColumn fx:id="colId" editable="false" prefWidth="30.0" text="ID" />
                                     <TableColumn fx:id="colNom" editable="false" prefWidth="105.0" text="Nombre" />
                                     <TableColumn fx:id="colApel" editable="false" prefWidth="93.0" text="Apellido" />
                                     <TableColumn fx:id="colRazonSocial" editable="false" prefWidth="72.0" text="Razón S." />

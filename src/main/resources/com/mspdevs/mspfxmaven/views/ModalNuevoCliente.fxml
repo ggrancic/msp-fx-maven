@@ -61,7 +61,7 @@
             </RadioButton>
          </children>
          <padding>
-            <Insets left="150.0" right="150.0" top="10.0" />
+            <Insets left="150.0" right="150.0" top="5.0" />
          </padding>
       </GridPane>
       <SplitPane dividerPositions="0.5" style="-fx-background-color: lightgray;" stylesheets="@../styles/style.css">
