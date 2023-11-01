@@ -18,7 +18,7 @@ public class ProductoDAOImpl extends ConexionMySQL implements ProductoDAO {
         try {
             this.conectar();
             PreparedStatement st = this.con.prepareStatement(
-                    "SELECT p.*, r.*, pr.*, pe.nombre AS proveedor_nombre " +
+                    "SELECT p.*, r.*, pr.*, pe.razon_social AS proveedor_nombre " +
                             "FROM productos p " +
                             "JOIN rubros r ON p.id_rubro = r.id_rubro " +
                             "JOIN proveedores pr ON p.id_proveedor = pr.id_proveedor " +
@@ -43,7 +43,7 @@ public class ProductoDAOImpl extends ConexionMySQL implements ProductoDAO {
 
                 Proveedor proveedor = new Proveedor();
                 proveedor.setIdProveedor(rs.getInt("pr.id_proveedor"));
-                proveedor.setNombre(rs.getString("proveedor_nombre")); // Obtiene el nombre del proveedor
+                proveedor.setRazonSocial(rs.getString("proveedor_nombre")); // Obtiene el nombre del proveedor
 
                 Producto todo = new Producto(producto, rubro, proveedor);
                 listaTodoEnUno.add(todo);
@@ -262,6 +262,27 @@ public class ProductoDAOImpl extends ConexionMySQL implements ProductoDAO {
             st.setInt(3, nuevaCantidadDisponible);
             st.setInt(4, nuevoProveedorId);  // Actualiza el ID del proveedor
             st.setInt(5, idProducto);
+
+            int filasAfectadas = st.executeUpdate();
+            if (filasAfectadas != 1) {
+                throw new Exception("No se pudo actualizar el producto con ID: " + idProducto);
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.cerrarConexion();
+        }
+    }
+
+    public void actualizarProductoPorVenta(int idProducto, int nuevaCantidadDisponible) throws Exception {
+        try {
+            this.conectar();
+
+            PreparedStatement st = this.con.prepareStatement(
+                    "UPDATE productos SET cantidad_disponible = ? WHERE id_producto = ?"
+            );
+            st.setInt(1, nuevaCantidadDisponible);
+            st.setInt(2, idProducto);
 
             int filasAfectadas = st.executeUpdate();
             if (filasAfectadas != 1) {

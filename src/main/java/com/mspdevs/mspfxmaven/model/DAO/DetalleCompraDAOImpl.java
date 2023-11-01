@@ -38,7 +38,6 @@ public class DetalleCompraDAOImpl extends ConexionMySQL implements DetalleCompra
         } finally {
             this.cerrarConexion();
         }
-
     }
 
     @Override

@@ -1,5 +1,41 @@
 package com.mspdevs.mspfxmaven.controllers;
 
+import com.mspdevs.mspfxmaven.model.Cliente;
+import com.mspdevs.mspfxmaven.model.DAO.ClienteDAOImpl;
+import com.mspdevs.mspfxmaven.model.DAO.DetalleVentaDAOImpl;
+import com.mspdevs.mspfxmaven.model.DAO.ProductoDAOImpl;
+import com.mspdevs.mspfxmaven.model.DAO.VentaDAOImpl;
+import com.mspdevs.mspfxmaven.model.DetalleVenta;
+import com.mspdevs.mspfxmaven.model.Producto;
+import com.mspdevs.mspfxmaven.model.Venta;
+import com.mspdevs.mspfxmaven.utils.Alerta;
+import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventType;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.util.Callback;
+import javafx.util.Duration;
+import javafx.util.StringConverter;
+import org.controlsfx.control.SearchableComboBox;
 
 import java.io.IOException;
 import java.net.URL;
@@ -12,51 +48,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import com.mspdevs.mspfxmaven.model.*;
-import com.mspdevs.mspfxmaven.model.DAO.*;
-import com.mspdevs.mspfxmaven.utils.Alerta;
-import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.event.ActionEvent;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.util.Callback;
-import javafx.util.StringConverter;
-import org.controlsfx.control.SearchableComboBox;
-
-public class VentanaVentasController implements Initializable{
-
+public class VentanaVentasAlternativaController implements Initializable {
     Alerta msj = new Alerta();
-
-    @FXML
-    private Button btnAgregar;
-
-    @FXML
-    private Button btnAgregarProducto;
-
-    @FXML
-    private Button btnCrearProducto;
-
     @FXML
     private Button btnFinalizarVenta;
 
     @FXML
     private Button btnNuevoCliente;
-
-    @FXML
-    private ToggleGroup busquedaProducto;
 
     @FXML
     private Spinner<Integer> campoCantidad;
@@ -68,16 +66,7 @@ public class VentanaVentasController implements Initializable{
     private TextField campoIva;
 
     @FXML
-    private TextField campoNombre;
-
-    @FXML
     private TextField campoNumFactura;
-
-    @FXML
-    private TextField campoPrecioLista;
-
-    @FXML
-    private TextField campoPrecioVenta;
 
     @FXML
     private TextField campoSubtotal;
@@ -87,9 +76,6 @@ public class VentanaVentasController implements Initializable{
 
     @FXML
     private SearchableComboBox<String> clienteBox;
-
-    @FXML
-    private RadioButton codigoBarraRadio;
 
     @FXML
     private TableColumn<Producto, Integer> colCantidad;
@@ -105,9 +91,6 @@ public class VentanaVentasController implements Initializable{
 
     @FXML
     private TableColumn<Producto, Double> colTotal;
-
-    @FXML
-    private RadioButton nombreRadio;
 
     @FXML
     private SearchableComboBox<String> productoBox;
@@ -130,110 +113,24 @@ public class VentanaVentasController implements Initializable{
 
     private ObservableList<Producto> todosLosProductos;
 
-    boolean productoEncontrado = false; // Variable para verificar si se encontró el producto
+    // Define el listener como una variable miembro
+    ChangeListener<String> productoBoxListener = null;
 
-    private String clienteSeleccionado;
-
-    @FXML
-    void accionAgregarALista(ActionEvent event) {
-        // Recopila los datos de los campos
-        String nombre = campoNombre.getText();
-        String precioLista = campoPrecioLista.getText();
-        String precioVenta = campoPrecioVenta.getText();
-        String cantidad = String.valueOf(campoCantidad.getValue());
-
-        // Validación: verifica si los campos requeridos están vacíos
-        if (nombre.isEmpty() || precioVenta.isEmpty() || precioLista.isEmpty() || cantidad == "0" || cantidad.isEmpty()) {
-            msj.mostrarAlertaInforme("Error", "", "Debe completar todos los campos.");
-            return;
-        }
-
-        // Validación: verifica que el precio de lista y el precio de venta no sean 0.00
-        double precioListaDoubleValidacion = Double.parseDouble(precioLista);
-        double precioVentaDoubleValidacion = Double.parseDouble(precioVenta);
-        if (precioListaDoubleValidacion <= 0 || precioVentaDoubleValidacion <= 0) {
-            msj.mostrarAlertaInforme("Error", "", "El precio de lista y el precio de venta deben ser mayores que 0.00.");
-            return;
-        }
-
-        // Validación: verifica que el precio de venta sea mayor que el precio de lista
-        if (precioVentaDoubleValidacion <= precioListaDoubleValidacion) {
-            msj.mostrarAlertaInforme("Error", "", "El precio de venta debe ser mayor que el precio de lista.");
-            return;
-        }
-
-        // Deshabilita los campos
-        habilitarCampos(false);
-
-        // Obtiene el ID del producto desde la propiedad userData
-        int productoId = (int) btnAgregar.getUserData(); // Accede al ID desde el botón Agregar
-
-        // Crea un nuevo objeto Producto
-        Producto producto = new Producto();
-        producto.setIdProducto(productoId); // Asigna el ID del producto
-        producto.setNombre(nombre);
-        producto.setPrecioLista(Double.parseDouble(String.valueOf(precioLista)));
-        producto.setPrecioVenta(Double.parseDouble(precioVenta));
-        producto.setCantidadDisponible(Integer.parseInt(cantidad));
-
-        // Verifica si el producto ya existe en la tabla
-        if (esProductoExistente(producto)) {
-            // Muestra un mensaje de error y vacía los campos
-            msj.mostrarAlertaInforme("Error", "", "El producto ya está en la lista.");
-            campoNombre.clear();
-            campoPrecioLista.clear();
-            campoPrecioVenta.clear();
-            campoCantidad.getValueFactory().setValue(1);
-        } else {
-            // Agrega el producto a la TableView
-            tblDetalle.getItems().add(producto);
-
-            // Habilitar el botón "btnGuardar" después de agregar un producto
-            btnFinalizarVenta.setDisable(false);
-
-            // Limpia los campos después de agregar el producto a la lista
-            campoNombre.clear();
-            campoPrecioLista.clear();
-            campoPrecioVenta.clear();
-            campoCantidad.getValueFactory().setValue(1);
-
-            // Calcula el monto total del producto (precio de lista * cantidad)
-            double precioVentaDouble = Double.parseDouble(precioVenta);
-            int cantidadInt = Integer.parseInt(cantidad);
-            double montoTotalProducto = precioVentaDouble * cantidadInt;
-
-            // Agrega el monto total del producto al campo "campoTotal"
-            totalPrecioLista += montoTotalProducto;
-
-            // Calcula el precio de lista sin IVA (monto total / 1.21)
-            double precioVentaSinIva = montoTotalProducto / 1.21;
-
-            // Calcula el IVA (precio total - precio de lista sin IVA)
-            double iva = montoTotalProducto - precioVentaSinIva;
-
-            // Suma el subtotal y el IVA total
-            subtotalTotal += precioVentaSinIva;
-            ivaTotal += iva;
-
-            // Formatea los valores para mostrarlos en los campos
-            // Define el formato para dos decimales
-            DecimalFormat formatoDosDecimales = new DecimalFormat("#,##0.00");
-
-            // Llama a la función para actualizar el resumen
-            actualizarResumen();
-            System.out.println("Cantidad de productos seleccionados: " + todosLosProductos.size());
-        }
-    }
+    // Variable para rastrear si el listener está habilitado
+    boolean listenerHabilitado = true;
 
     @FXML
-    void accionAgregarProducto(ActionEvent event) {
+    private Button botonInvisible;
+    private String usuario;
 
+    // Define un evento personalizado para limpiar la selección en productoBox
+    public static final EventType<Event> LIMPIAR_SELECCION_EVENT_TYPE = new EventType<>(Event.ANY, "LIMPIAR_SELECCION_EVENT");
+
+    private void limpiarSeleccionProductoBox() {
+        // Lógica para limpiar la selección en productoBox
+        productoBox.valueProperty().set("");
     }
 
-    @FXML
-    void accionCrearProducto(ActionEvent event) {
-
-    }
 
     @FXML
     void accionGuardarVenta(ActionEvent event) throws Exception {
@@ -241,24 +138,25 @@ public class VentanaVentasController implements Initializable{
         String totalSinIvaText = campoIva.getText();
         String totalText = campoTotal.getText();
         String numeroFactura = campoNumFactura.getText();
+        String idEmpleado = usuario;
 
         LocalDate fechaSeleccionada = campoFecha.getValue();
         if (fechaSeleccionada != null) {
             // Formatea la fecha en el formato de MySQL 'yyyy-MM-dd' y asignarla a la variable de miembro
             DateTimeFormatter formatoMySQL = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             fechaMySQL = java.sql.Date.valueOf(fechaSeleccionada);
-            System.out.println("Fecha de Compra (formato MySQL): " + fechaMySQL);
+            //System.out.println("Fecha de Compra (formato MySQL): " + fechaMySQL);
         } else {
-            System.err.println("Fecha no seleccionada");
+            //System.err.println("Fecha no seleccionada");
         }
 
         String tipo = tipoFacturaBox.getValue();
-        String clienteSeleccionado = clienteBox.getSelectionModel().getSelectedItem();
+        String razonSocialSeleccionada = clienteBox.getSelectionModel().getSelectedItem();
 
         ClienteDAOImpl clienteDAO = new ClienteDAOImpl();
-        int ClienteId = clienteDAO.obtenerPorRazonSocial(clienteSeleccionado);
+        int ClienteId = clienteDAO.obtenerPorRazonSocial(razonSocialSeleccionada);
 
-        // Asegurarse de que todos los campos requeridos se hayan completado
+        // Asegura de que todos los campos requeridos se hayan completado
         if (numeroFactura.isEmpty() || tipo == null) {
             msj.mostrarError("Error", "", "Por favor, complete todos los campos obligatorios.");
             return;
@@ -278,7 +176,6 @@ public class VentanaVentasController implements Initializable{
         double subtotal = Double.parseDouble(subtotalText);
         double totalSinIva = Double.parseDouble(totalSinIvaText);
         double total = Double.parseDouble(totalText);
-
         // Luego, inserta la compra en la base de datos
         VentaDAOImpl ventaDAO = new VentaDAOImpl();
         ProductoDAOImpl productoDAO = new ProductoDAOImpl();
@@ -289,10 +186,11 @@ public class VentanaVentasController implements Initializable{
         venta.setFechaEmision(fechaMySQL);
         venta.setNumeroFactura(numeroFactura);
         venta.setSubtotal(subtotal);
-        venta.setIva(totalSinIva);
+        venta.setIva(ivaTotal);
         venta.setTotal(total);
         venta.setTipo(tipo);
         venta.setIdClienteFK(ClienteId);
+        venta.setIdEmpleadoFK(Integer.parseInt(idEmpleado));
 
         String nuevaRazonSocialSeleccionada = clienteBox.getSelectionModel().getSelectedItem();
 
@@ -356,6 +254,21 @@ public class VentanaVentasController implements Initializable{
         newStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
         newStage.initModality(Modality.APPLICATION_MODAL);
         newStage.showAndWait();
+
+        try {
+            // Restablecer el cliente seleccionado como "Consumidor Final"
+            clienteBox.getSelectionModel().select("Consumidor Final");
+
+            // Llama a tu método para obtener el próximo número de factura y establecerlo en campoNumFactura
+            int nuevoNumeroFactura = obtenerProximoNumeroFactura();
+            campoNumFactura.setText(String.format("%012d", nuevoNumeroFactura));
+            productoBox.getSelectionModel().clearSelection();
+            campoCantidad.getValueFactory().setValue(1);
+            campoCantidad.requestFocus();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Manejo de errores si es necesario
+        }
     }
 
     @FXML
@@ -372,24 +285,14 @@ public class VentanaVentasController implements Initializable{
         newStage.initModality(Modality.APPLICATION_MODAL);
         newStage.showAndWait();
 
+        /*
         // Verifica si hay un proveedor seleccionado antes de borrar los elementos
         if (!clienteBox.getSelectionModel().isEmpty()) {
             clienteBox.getSelectionModel().clearSelection();
-        }
+        }*/
         // Luego de agregar el proveedor, actualiza el ComboBox
         actualizarComboBoxClientes();
     }
-
-    @FXML
-    void buscarPorCodigo(ActionEvent event) {
-
-    }
-
-    @FXML
-    void buscarPorNombre(ActionEvent event) {
-
-    }
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -419,72 +322,25 @@ public class VentanaVentasController implements Initializable{
             return row;
         });
 
-        productoBox.valueProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue != null) {
-                // Obtiene el nombre o código de barras seleccionado
-                String nombreSeleccionado = newValue;
+        // Obtiene la lista de todos los productos desde la base de datos
+        List<Producto> productos = cargarProductosDesdeBaseDeDatos();
 
-                // Habilita los campos después de cargar el producto
-                habilitarCampos(true);
-                campoNombre.setEditable(false);
+        // Crea listas para códigos de barras y nombres de productos
+        List<String> codigosBarras = new ArrayList<>();
+        List<String> nombres = new ArrayList<>();
 
-                // Verifica el Toggle seleccionado
-                Toggle selectedToggle = busquedaProducto.getSelectedToggle();
+        // Extrae códigos de barras y nombres de productos
+        for (Producto producto : productos) {
+            codigosBarras.add(producto.getCodigoBarra());
+            nombres.add(producto.getNombre());
+        }
 
-                if (selectedToggle == nombreRadio) {
-                    // Realiza la búsqueda por nombre
-                    productoEncontrado = mostrarDetallesProductoPorNombre(nombreSeleccionado);
-                    // Borra el valor seleccionado en el SearchableComboBox
-                    productoBox.getSelectionModel().clearSelection();
-                } else if (selectedToggle == codigoBarraRadio) {
-                    // Realiza la búsqueda por código de barras
-                    productoEncontrado = mostrarDetallesProductoPorCodigoBarra(nombreSeleccionado);
-                    // Borra el valor seleccionado en el SearchableComboBox
-                    productoBox.getSelectionModel().clearSelection();
-                }
-
-
-                if (!productoEncontrado) {
-                    // Manejar la situación en la que no se encontró el producto
-                    msj.mostrarAlertaInforme("Error", "", "Producto no encontrado");
-                }
-            }
-        });
-
-        // Selecciona el radio button "codigoBarraRadio" al inicializar
-        codigoBarraRadio.setSelected(true);
-        // Cargar los productos basados en código de barras al inicializar
-        productoBox.getItems().setAll(cargarCodigosBarrasProductos());
+        // Llena el ComboBox con las listas de códigos de barras y nombres
+        productoBox.getItems().addAll(codigosBarras);
+        productoBox.getItems().addAll(nombres);
 
         // Crea un listener que verifica los campos antes de habilitar el botón
-        btnAgregarProducto.setDisable(true); // Inicialmente, el botón está deshabilitado
-        btnAgregar.setDisable(true);
         btnFinalizarVenta.setDisable(true);
-        btnCrearProducto.setDisable(true);
-
-        // Agrega un listener para el campo "campoNumFactura"
-        campoNumFactura.textProperty().addListener((observable, oldValue, newValue) -> {
-            validarCamposYHabilitarBoton(btnAgregarProducto);
-            validarCamposYHabilitarBoton(btnAgregar);
-            validarCamposYHabilitarBoton(btnCrearProducto);
-            //validarCamposYHabilitarBoton(btnGuardar);
-        });
-
-        // Agrega un listener para el ComboBox "tipoFacturaBox"
-        tipoFacturaBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            validarCamposYHabilitarBoton(btnAgregarProducto);
-            validarCamposYHabilitarBoton(btnAgregar);
-            validarCamposYHabilitarBoton(btnCrearProducto);
-            //validarCamposYHabilitarBoton(btnGuardar);
-        });
-
-        // Agrega un listener para el SearchableComboBox "clienteBox"
-        clienteBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            validarCamposYHabilitarBoton(btnAgregarProducto);
-            validarCamposYHabilitarBoton(btnAgregar);
-            validarCamposYHabilitarBoton(btnCrearProducto);
-            //validarCamposYHabilitarBoton(btnGuardar);
-        });
 
         // Personaliza el formato del DatePicker a "año/mes/día"
         String pattern = "yyyy/MM/dd";
@@ -522,6 +378,7 @@ public class VentanaVentasController implements Initializable{
         });
 
         completarTablaProductos();
+
         colTotal.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Producto, Double>, ObservableValue<Double>>() {
             @Override
             public ObservableValue<Double> call(TableColumn.CellDataFeatures<Producto, Double> param) {
@@ -547,10 +404,11 @@ public class VentanaVentasController implements Initializable{
             throw new RuntimeException(e);
         }
 
+
         // Agrega "Consumidor Final" a la lista de clientes si no existe
         Cliente consumidorFinal = null;
         for (Cliente cliente : clientes) {
-            if (cliente.getNombre().equals("Consumidor") && cliente.getApellido().equals("Final")) {
+            if (cliente.getRazonSocial().equals("Consumidor Final")) {
                 consumidorFinal = cliente;
                 break;
             }
@@ -559,7 +417,7 @@ public class VentanaVentasController implements Initializable{
         // Crea una lista de nombres de clientes
         List<String> nombresClientes = new ArrayList<>();
         for (Cliente cliente : clientes) {
-            nombresClientes.add(cliente.getNombre() + " " + cliente.getApellido());
+            nombresClientes.add(cliente.getRazonSocial());
         }
 
         // Agrega todos los nombres de clientes a la lista del ComboBox
@@ -582,38 +440,12 @@ public class VentanaVentasController implements Initializable{
 
         // Si "Consumidor Final" está en la lista de clientes, seleccionarlo por defecto
         if (consumidorFinal != null) {
-            clienteBox.getSelectionModel().select(consumidorFinal.getNombre() + " " + consumidorFinal.getApellido());
+            clienteBox.getSelectionModel().select(consumidorFinal.getRazonSocial());
             // Establecer "B" como el valor seleccionado en tipoFacturaBox
             tipoFacturaBox.setValue("B");
             // Deshabilitar la selección en tipoFacturaBox
             tipoFacturaBox.setDisable(true);
         }
-
-        // Configura el ToggleGroup para los radio buttons
-        nombreRadio.setToggleGroup(busquedaProducto);
-        codigoBarraRadio.setToggleGroup(busquedaProducto);
-
-        // Obteniene la lista de productos desde la base de datos
-        List<Producto> productos = null;
-        try {
-            productos = productoDAO.listarTodos();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        // Agrega un Listener para el ToggleGroup para detectar cuál radio button está seleccionado
-        List<Producto> finalProductos = productos;
-        busquedaProducto.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
-            //productoBox.getItems().clear(); // Limpia el productoBox
-
-            if (newToggle == nombreRadio) {
-                // Habilita la búsqueda por nombre
-                productoBox.getItems().setAll(cargarNombresProductos());
-            } else if (newToggle == codigoBarraRadio) {
-                // Habilita la búsqueda por código de barras
-                productoBox.getItems().setAll(cargarCodigosBarrasProductos());
-            }
-        });
 
         // Obteniene la fecha actual
         Date fechaActual = new Date();
@@ -634,7 +466,6 @@ public class VentanaVentasController implements Initializable{
 
         // Establece el valor inicial en 0
         campoCantidad.getValueFactory().setValue(1);
-        //campoPrecioVenta.setText("0");
 
         campoCantidad.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue == null) {
@@ -643,10 +474,6 @@ public class VentanaVentasController implements Initializable{
         });
 
         campoNumFactura.setTextFormatter(ManejoDeEntrada.soloNumerosFactura());
-        campoPrecioLista.setTextFormatter(ManejoDeEntrada.soloNumerosDecimales());
-        campoPrecioVenta.setTextFormatter(ManejoDeEntrada.soloNumerosDecimales());
-        //campoCantidad.setTextFormatter(ManejoDeEntrada.soloCantidadGanancia());
-
         campoCantidad.getEditor().setTextFormatter(ManejoDeEntrada.soloCantidad());
 
         // Agrega un listener para escuchar los cambios en el valor del Spinner
@@ -655,102 +482,125 @@ public class VentanaVentasController implements Initializable{
                 campoCantidad.getValueFactory().setValue(999);
             }
         });
-    }
 
-    // Esta función verifica si todos los campos requeridos tienen datos y habilita los botones
-    private void validarCamposYHabilitarBoton(Button boton) {
-        String numeroFactura = campoNumFactura.getText();
-        String tipoFactura = tipoFacturaBox.getSelectionModel().getSelectedItem();
-        String cliente = clienteBox.getValue();
+        campoCantidad.getEditor().focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) { // Cuando se obtiene el enfoque
+                Platform.runLater(() -> {
+                    // Posiciona el cursor al final del texto
+                    campoCantidad.getEditor().positionCaret(campoCantidad.getEditor().getText().length());
+                });
+            }
+        });
 
-        boolean camposValidos = !numeroFactura.isEmpty() && numeroFactura.length() == 12 && tipoFactura != null && cliente != null;
-        boton.setDisable(!camposValidos);
-    }
+        // Registra un manejador para el evento personalizado
+        productoBox.addEventHandler(LIMPIAR_SELECCION_EVENT_TYPE, event -> limpiarSeleccionProductoBox());
 
-    private boolean mostrarDetallesProductoPorNombre(String nombreProducto) {
-        // Llama a tu método de DAO para obtener los detalles del producto por su nombre
-        ProductoDAOImpl productoDAO = new ProductoDAOImpl();
-        Producto productoSeleccionado = null;
+        botonInvisible.setVisible(false);
 
+        botonInvisible.setOnAction(event -> {
+            productoBox.getSelectionModel().clearSelection();
+        });
+
+        // Agrega el ChangeListener a productoBox
+        productoBox.valueProperty().addListener((observable, oldValue, selectedValue) -> {
+            if (listenerHabilitado) {
+                // Aquí coloca la lógica para cargar el producto seleccionado
+                String selectedProduct = selectedValue;
+                // Asegura de que selectedProduct no sea nulo y procesa el producto
+                if (selectedProduct != null) {
+                    System.out.println("Listener activado");
+                    Producto productoSeleccionado = null;
+
+                    // Verifica si el valor seleccionado corresponde a un código de barras o a un nombre
+                    for (Producto producto : productos) {
+                        if (selectedValue.equals(producto.getCodigoBarra()) || selectedValue.equals(producto.getNombre())) {
+                            productoSeleccionado = producto;
+                            break; // Producto encontrado, salir del bucle
+                        }
+                    }
+
+                    if (productoSeleccionado != null) {
+                        // Verifica si el producto ya existe en la tabla
+                        boolean productoDuplicado = false;
+                        for (Producto productoEnTabla : tblDetalle.getItems()) {
+                            if (productoEnTabla.getIdProducto() == productoSeleccionado.getIdProducto()) {
+                                productoDuplicado = true;
+                                break; // Producto ya existe, salir del bucle
+                            }
+                        }
+
+                        if (!productoDuplicado) {
+                            Producto productoTabla = new Producto();
+                            productoTabla.setIdProducto(productoSeleccionado.getIdProducto());
+                            productoTabla.setNombre(productoSeleccionado.getNombre());
+                            productoTabla.setPrecioVenta(productoSeleccionado.getPrecioVenta());
+                            productoTabla.setCantidadDisponible(campoCantidad.getValue());
+
+                            tblDetalle.getItems().add(productoTabla);
+
+                            /*
+                            // Asegúrate de que el índice sea válido
+                            int lastIndex = tblDetalle.getItems().size() - 1;
+
+                            if (lastIndex >= 0) {
+                                // Desplázate hacia el último elemento
+                                tblDetalle.scrollTo(lastIndex);
+                            }*/
+
+                            // Reestablece la cantidad en campoCantidad
+                            campoCantidad.getValueFactory().setValue(1);
+
+                            // Actualiza otros valores, como el subtotal, el IVA y el total
+                            actualizarResumen();
+
+                            // Dispara el evento personalizado para limpiar la selección en productoBox
+                            //Event event = new Event(productoBox, null, VentanaVentasAlternativaController.LIMPIAR_SELECCION_EVENT_TYPE);
+                            //productoBox.fireEvent(event);
+
+                        } else {
+                            // Muestra un mensaje de error o advertencia indicando que el producto ya se agregó.
+                            msj.mostrarError("Error", "", "Este producto ya ha sido agregado a la tabla.");
+                        }
+                    } else {
+                        msj.mostrarError("Error", "", "Producto no encontrado");
+                    }
+                }
+
+                // Deshabilita temporalmente el listener para evitar ejecuciones adicionales
+                listenerHabilitado = false;
+
+                // Reestablece la habilitación del listener después de un breve período (puedes ajustar este tiempo)
+                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), e -> {
+                    listenerHabilitado = true;
+                    productoBox.getSelectionModel().clearSelection();
+                }));
+                timeline.setCycleCount(1);
+                timeline.play();
+            }
+            // Dispara el evento personalizado para limpiar la selección en productoBox
+            //Event event = new Event(productoBox, null, VentanaVentasAlternativaController.LIMPIAR_SELECCION_EVENT_TYPE);
+            //productoBox.fireEvent(event);
+        });
+
+        // Llama al método para obtener el último número de factura
+        VentaDAOImpl ventaDAO = new VentaDAOImpl();
         try {
-            productoSeleccionado = productoDAO.obtenerProductoPorNombre(nombreProducto);
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Manejo de errores si es necesario
-        }
+            String ultimoNumeroFactura = ventaDAO.obtenerUltimoNumeroFactura();
 
-        if (productoSeleccionado != null) {
-            // Rellena los campos con los detalles del producto
-            campoNombre.setText(productoSeleccionado.getNombre());
-            campoPrecioLista.setText(Double.toString(productoSeleccionado.getPrecioLista()));
-            campoPrecioVenta.setText(Double.toString(productoSeleccionado.getPrecioVenta()));
-            // Asigna el ID del producto a la propiedad userData de un elemento apropiado
-            btnAgregar.setUserData(productoSeleccionado.getIdProducto()); // Asigna el ID al botón Agregar
-            return true; // Producto encontrado
-        } else {
-            msj.mostrarError("Error", "", "Producto no encontrado");
-            return false; // Producto no encontrado
-        }
-    }
+            if (ultimoNumeroFactura == null) {
+                // Si no se encuentra ningún número de factura, establece "000000000001"
+                campoNumFactura.setText("000000000001");
+            } else {
+                // Incrementa en 1 el último número de factura
+                int nuevoNumeroFactura = Integer.parseInt(ultimoNumeroFactura) + 1;
 
-    private boolean mostrarDetallesProductoPorCodigoBarra(String codigoBarra) {
-        // Llama a tu método de DAO para obtener los detalles del producto por su código de barras
-        ProductoDAOImpl productoDAO = new ProductoDAOImpl();
-        Producto productoSeleccionado = null;
-
-        try {
-            productoSeleccionado = productoDAO.obtenerProductoPorCodigoBarra(codigoBarra);
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Manejo de errores si es necesario
-        }
-
-        if (productoSeleccionado != null) {
-            // Rellena los campos con los detalles del producto
-            campoNombre.setText(productoSeleccionado.getNombre());
-            campoPrecioLista.setText(Double.toString(productoSeleccionado.getPrecioLista()));
-            campoPrecioVenta.setText(Double.toString(productoSeleccionado.getPrecioVenta()));
-            // Asigna el ID del producto a la propiedad userData de un elemento apropiado
-            btnAgregar.setUserData(productoSeleccionado.getIdProducto()); // Asigna el ID al botón Agregar
-            return true; // Producto encontrado
-        } else {
-            msj.mostrarError("Error", "", "Producto no encontrado");
-            return false; // Producto no encontrado
-        }
-    }
-
-    private ObservableList<String> cargarNombresProductos() {
-        ObservableList<String> nombres = FXCollections.observableArrayList();
-        ProductoDAOImpl productoDAO = new ProductoDAOImpl();
-
-        try {
-            // Usa el ProductoDAOImpl para obtener los nombres de productos desde la base de datos
-            List<Producto> productos = productoDAO.listarTodos();
-            for (Producto producto : productos) {
-                nombres.add(producto.getNombre());
+                // Establece el nuevo número de factura en el campo "campoNumFactura"
+                campoNumFactura.setText(String.format("%012d", nuevoNumeroFactura));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            // Manejo de errores si es necesario
+            // Manejo de errores
         }
-        return nombres;
-    }
-
-    private ObservableList<String> cargarCodigosBarrasProductos() {
-        ObservableList<String> codigosBarras = FXCollections.observableArrayList();
-        ProductoDAOImpl productoDAO = new ProductoDAOImpl();
-
-        try {
-            // Usa el ProductoDAOImpl para obtener los códigos de barras de productos desde la base de datos
-            List<Producto> productos = productoDAO.listarTodos();
-            for (Producto producto : productos) {
-                codigosBarras.add(producto.getCodigoBarra());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Manejo de errores si es necesario
-        }
-        return codigosBarras;
     }
 
     public void vaciarCampos() {
@@ -769,10 +619,7 @@ public class VentanaVentasController implements Initializable{
     }
 
     private void habilitarCampos(boolean habilitar) {
-        campoNombre.setDisable(!habilitar);
-        campoPrecioLista.setDisable(!habilitar);
-        campoPrecioVenta.setDisable(!habilitar);
-        campoCantidad.setDisable(!habilitar);
+        //campoCantidad.setDisable(!habilitar);
     }
 
     public void completarTablaProductos() {
@@ -793,24 +640,15 @@ public class VentanaVentasController implements Initializable{
         this.colNom.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         this.colPU.setCellValueFactory(new PropertyValueFactory<>("precioVenta"));
         this.colCantidad.setCellValueFactory(new PropertyValueFactory<>("cantidadDisponible"));
+        //this.colTotal.setCellValueFactory(new PropertyValueFactory<>("totalVendido"));
+
         this.colPU.setCellFactory(col -> new PrecioVentaCell());
-    }
 
-    public class PrecioListaCell extends TableCell<Producto, Double> {
-        private final DecimalFormat formatoDosDecimales = new DecimalFormat("#,##0.00");
+        int lastIndex = tblDetalle.getItems().size() - 1;
 
-        @Override
-        protected void updateItem(Double precioLista, boolean empty) {
-            super.updateItem(precioLista, empty);
-
-            if (empty || precioLista == null) {
-                // Si la celda está vacía o el precio de lista es nulo, no se muestra ningún texto.
-                setText(null);
-            } else {
-                // Formatea el precio de lista con dos decimales y lo muestra en la celda.
-                String precioListaFormateado = formatoDosDecimales.format(precioLista);
-                setText(precioListaFormateado);
-            }
+        if (lastIndex >= 0) {
+            // Desplázate hacia el último elemento
+            tblDetalle.scrollTo(lastIndex);
         }
     }
 
@@ -830,16 +668,6 @@ public class VentanaVentasController implements Initializable{
                 setText(precioVentaFormateado);
             }
         }
-    }
-
-    private boolean esProductoExistente(Producto productoNuevo) {
-        for (Producto productoExistente : tblDetalle.getItems()) {
-            // Comprueba si un producto con el mismo ID ya existe en la tabla.
-            if (productoExistente.getIdProducto() == productoNuevo.getIdProducto()) {
-                return true; // El producto ya existe en la tabla.
-            }
-        }
-        return false; // El producto no existe en la tabla.
     }
 
     private void actualizarResumen() {
@@ -871,7 +699,7 @@ public class VentanaVentasController implements Initializable{
         // Define el formato para dos decimales
         DecimalFormat formatoDosDecimales = new DecimalFormat("#,##0.00");
 
-        // Obtén el tipo de factura seleccionado
+        // Obtiene el tipo de factura seleccionado
         String tipoFactura = tipoFacturaBox.getValue();
 
         if ("A".equals(tipoFactura)) {
@@ -901,7 +729,7 @@ public class VentanaVentasController implements Initializable{
 
     private void actualizarComboBoxClientes() {
         ClienteDAOImpl clienteDAO = new ClienteDAOImpl();
-        // Obteniene la lista de proveedores desde la base de datos
+        // Obteniene la lista de clientes desde la base de datos
         List<Cliente> clientes = null;
         try {
             clientes = clienteDAO.listarTodos();
@@ -910,19 +738,54 @@ public class VentanaVentasController implements Initializable{
         }
 
         try {
-            if (!clienteBox.getItems().isEmpty()) {
-                clienteBox.getItems().clear();
-            }
-        } catch (IndexOutOfBoundsException e) {
+            // Limpia la lista de clientes
+            clienteBox.getItems().clear();
+        } catch (Exception ex) {
+            // Manejar cualquier excepción que pueda ocurrir al limpiar
+            ex.printStackTrace(); // O usa otro método de manejo de errores
+        }
 
-        }
-        // Luego, agrega los nombres de proveedores nuevamente
         for (Cliente cliente : clientes) {
-            clienteBox.getItems().add(cliente.getNombre() + " " + cliente.getApellido());
+            clienteBox.getItems().add(cliente.getRazonSocial());
+            clienteBox.setValue("Consumidor Final");
         }
-        // Asegúrate de que el ComboBox esté seleccionando el primer elemento
-        if (!clienteBox.getItems().isEmpty()) {
-            clienteBox.getSelectionModel().select(0);
+    }
+
+    // Función para cargar todos los productos desde la base de datos
+    private List<Producto> cargarProductosDesdeBaseDeDatos() {
+        ProductoDAOImpl productoDAO = new ProductoDAOImpl();
+        List<Producto> productos = null;
+        try {
+            productos = productoDAO.listarTodos();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Manejo de errores si es necesario
         }
+        return productos;
+    }
+
+    // Método para obtener el próximo número de factura
+    private int obtenerProximoNumeroFactura() {
+        VentaDAOImpl ventaDAO = new VentaDAOImpl();
+        try {
+            String ultimoNumeroFactura = ventaDAO.obtenerUltimoNumeroFactura();
+
+            if (ultimoNumeroFactura == null) {
+                // Si no se encuentra ningún número de factura, establece "000000000001"
+                return 1;
+            } else {
+                // Incrementa en 1 el último número de factura
+                return Integer.parseInt(ultimoNumeroFactura) + 1;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Manejo de errores si es necesario
+        }
+        return 1; // Valor predeterminado si hay un error
+    }
+
+    // En algún método de inicialización, cuando se abre la ventana de ventas:
+    public void setUsuario(String usuario) {
+        this.usuario = String.valueOf(usuario);
     }
 }

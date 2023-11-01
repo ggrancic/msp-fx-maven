@@ -108,100 +108,100 @@
                      </font>
                   </Button>
 
-                  <Button fx:id="btnRubros" contentDisplay="TOP" layoutX="516.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#abrirVentanaRubros" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Rubros">
+                        <Button fx:id="btnRubros" contentDisplay="TOP" layoutX="516.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#abrirVentanaRubros" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Rubros">
 
-                     <graphic>
-                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../imgs/subcarpeta32.png" />
-                           </image>
+                            <graphic>
+                                <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../imgs/subcarpeta32.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Button>
+                    </items>
+                </ToolBar>
+                <ToolBar nodeOrientation="RIGHT_TO_LEFT" HBox.hgrow="NEVER">
+                    <items>
+                        <Button fx:id="btnCerrar" contentDisplay="TOP" mnemonicParsing="false" onAction="#cerrarAplicacion" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Cerrar Sesión">
+                            <graphic>
+                                <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../imgs/cerrar-sesion.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Button>
+                    </items>
+                </ToolBar>
+            </children>
+        </HBox>
+    </top>
+    <bottom>
+        <GridPane prefHeight="30.0" BorderPane.alignment="CENTER">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                    <children>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../imgs/usuario.png" />
+                            </image>
                         </ImageView>
-                     </graphic>
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
-                  </Button>
-              </items>
-            </ToolBar>
-            <ToolBar nodeOrientation="RIGHT_TO_LEFT" HBox.hgrow="NEVER">
-              <items>
-                  <Button fx:id="btnCerrar" contentDisplay="TOP" mnemonicParsing="false" onAction="#cerrarAplicacion" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Cerrar Sesión">
-                     <graphic>
-                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../imgs/cerrar-sesion.png" />
-                           </image>
+                        <Label text="Usuario" textFill="#6333c1">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                        <Label fx:id="usuarioLogueado" prefHeight="17.0" prefWidth="198.0" />
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER" prefWidth="100.0" spacing="10.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
+                    <children>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">
+                            <image>
+                                <Image url="@../imgs/reloj.png" />
+                            </image>
                         </ImageView>
-                     </graphic>
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
-                  </Button>
-              </items>
-            </ToolBar>
-         </children>
-      </HBox>
-   </top>
-   <bottom>
-      <GridPane prefHeight="30.0" BorderPane.alignment="CENTER">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
-               <children>
-                  <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../imgs/usuario.png" />
-                     </image>
-                  </ImageView>
-                  <Label text="Usuario" textFill="#6333c1">
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="usuarioLogueado" prefHeight="17.0" prefWidth="198.0" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" prefWidth="100.0" spacing="10.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
-               <children>
-                  <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">
-                     <image>
-                        <Image url="@../imgs/reloj.png" />
-                     </image>
-                  </ImageView>
-                  <Label alignment="TOP_LEFT" contentDisplay="CENTER" text="Hora:" textFill="#6333c1">
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="time" prefHeight="17.0" prefWidth="84.0" />
-               </children>
-            </HBox>
-            <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="2">
-               <children>
-                  <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../imgs/time-and-calendar.png" />
-                     </image>
-                  </ImageView>
-                  <Label text="Fecha: " textFill="#6333c1">
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="fecha" prefHeight="17.0" prefWidth="72.0" />
-               </children>
-            </HBox>
-         </children>
-      </GridPane>
-   </bottom>
-   <center>
-      <Pane styleClass="pcpal-bg" stylesheets="@../styles/style.css" BorderPane.alignment="CENTER" />
-   </center>
+                        <Label alignment="TOP_LEFT" contentDisplay="CENTER" text="Hora:" textFill="#6333c1">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                        <Label fx:id="time" prefHeight="17.0" prefWidth="84.0" />
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="2">
+                    <children>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../imgs/time-and-calendar.png" />
+                            </image>
+                        </ImageView>
+                        <Label text="Fecha: " textFill="#6333c1">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Label>
+                        <Label fx:id="fecha" prefHeight="17.0" prefWidth="72.0" />
+                    </children>
+                </HBox>
+            </children>
+        </GridPane>
+    </bottom>
+    <center>
+        <Pane styleClass="pcpal-bg" stylesheets="@../styles/style.css" BorderPane.alignment="CENTER" />
+    </center>
 </BorderPane>

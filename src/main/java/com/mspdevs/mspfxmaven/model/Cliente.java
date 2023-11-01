@@ -2,7 +2,6 @@ package com.mspdevs.mspfxmaven.model;
 
 public class Cliente extends Persona {
     private int idCliente;
-    private String cuil;
     private Persona persona; // Agregar un campo para la persona relacionada
 
     // Getters y setters de idProveedor y cuit
@@ -14,10 +13,4 @@ public class Cliente extends Persona {
     }
     public Persona getPersona() { return persona; }
     public void setPersona(Persona persona) { this.persona = persona; }
-    public String getCuil() {
-        return cuil;
-    }
-    public void setCuil(String cuil) {
-        this.cuil = cuil;
-    }
 }

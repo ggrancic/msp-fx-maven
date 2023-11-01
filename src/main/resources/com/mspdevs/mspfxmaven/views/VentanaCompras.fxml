@@ -42,7 +42,7 @@
             </ImageView>
             <Label alignment="CENTER" contentDisplay="CENTER" styleClass="shadow-abajo-2" text="Gestión de Compras" textFill="WHITE">
                <font>
-                  <Font name="SansSerif Bold" size="16.0" />
+                  <Font name="SansSerif Bold" size="20.0" />
                </font>
             </Label>
          </children>
@@ -124,8 +124,7 @@
                                           <Font size="14.0" />
                                        </font>
                                     </Label>
-                                    <SearchableComboBox fx:id="productoBox" />
-                                    <Button fx:id="btnAgregarProducto" mnemonicParsing="false" onAction="#accionAgregarProducto" text="IR" />
+                                    <SearchableComboBox fx:id="productoBox" prefHeight="25.0" prefWidth="196.0" />
                                  </children>
                               </HBox>
                               <HBox alignment="CENTER" spacing="10.0">

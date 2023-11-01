@@ -27,6 +27,7 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
                 Cliente cliente = new Cliente();
                 cliente.setIdCliente(rs.getInt("id_cliente"));
                 cliente.setCuil(rs.getString("cuil"));
+                cliente.setRazonSocial(rs.getString("razon_social"));
                 cliente.setIdPersona(rs.getInt("id_persona"));
                 cliente.setNombre(rs.getString("nombre"));
                 cliente.setApellido(rs.getString("apellido"));
@@ -83,7 +84,8 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
                 // Este es el caso de que no existe la persona en la db. Por lo tanto, tengo que tomar los datos
                 // que vienen del formulario y dar de alta a la persona en la db.
                 // Primero, insertamos los datos en la tabla "Personas"
-                String queryPersonas = "INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, mail, telefono) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                String queryPersonas = "INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, cuil, razon_social, mail, telefono) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 PreparedStatement stPersonas = this.con.prepareStatement(queryPersonas);
                 stPersonas.setString(1, cliente.getNombre());
                 stPersonas.setString(2, cliente.getApellido());
@@ -91,8 +93,10 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
                 stPersonas.setString(4, cliente.getLocalidad());
                 stPersonas.setString(5, cliente.getCalle());
                 stPersonas.setString(6, cliente.getDni());
-                stPersonas.setString(7, cliente.getMail());
-                stPersonas.setString(8, cliente.getTelefono());
+                stPersonas.setString(7, cliente.getCuil());
+                stPersonas.setString(8, cliente.getRazonSocial());
+                stPersonas.setString(9, cliente.getMail());
+                stPersonas.setString(10, cliente.getTelefono());
                 stPersonas.executeUpdate();
                 stPersonas.close();
 
@@ -105,11 +109,10 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
                 stGetId.close();
             }
             // Por ultimo, insertamos los datos en la tabla "Clientes" usando el ID de la persona (clave foranea)
-            String queryClientes = "INSERT INTO clientes (idpersona, id_cliente, cuil) VALUES (?, ?, ?)";
+            String queryClientes = "INSERT INTO clientes (idpersona, id_cliente) VALUES (?, ?)";
             PreparedStatement stClientes = this.con.prepareStatement(queryClientes);
             stClientes.setInt(1, idPersonaFK);
             stClientes.setInt(2, cliente.getIdCliente());
-            stClientes.setString(3, cliente.getCuil());
             stClientes.executeUpdate();
             stClientes.close();
         } catch (Exception e) {
@@ -182,7 +185,7 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
             // Modificamos primero el registro correspondiente en la tabla "personas"
             PreparedStatement stModificarPersona = con.prepareStatement(
                     "UPDATE personas " +
-                            "SET nombre = ?, apellido = ?, provincia = ?, localidad = ?, calle = ?, dni = ?, mail = ?, telefono = ? " +
+                            "SET nombre = ?, apellido = ?, provincia = ?, localidad = ?, calle = ?, dni = ?, cuil = ?, razon_social = ?, mail = ?, telefono = ? " +
                             "WHERE id_persona = ?"
             );
             stModificarPersona.setString(1, cliente.getNombre());
@@ -191,33 +194,70 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
             stModificarPersona.setString(4, cliente.getLocalidad());
             stModificarPersona.setString(5, cliente.getCalle());
             stModificarPersona.setString(6, cliente.getDni());
-            stModificarPersona.setString(7, cliente.getMail());
-            stModificarPersona.setString(8, cliente.getTelefono());
-            stModificarPersona.setInt(9, idPersona);
+            stModificarPersona.setString(7, cliente.getCuil());
+            stModificarPersona.setString(8, cliente.getRazonSocial());
+            stModificarPersona.setString(9, cliente.getMail());
+            stModificarPersona.setString(10, cliente.getTelefono());
+            stModificarPersona.setInt(11, idPersona);
             stModificarPersona.executeUpdate();
             stModificarPersona.close();
-
-            // Luego, modificamos el registro correspondiente en la tabla "clientes"
-            PreparedStatement stModificarCliente = con.prepareStatement(
-                    "UPDATE clientes " +
-                            "SET cuil = ? " +
-                            "WHERE idpersona = ?"
-            );
-            stModificarCliente.setString(1, cliente.getCuil());
-            stModificarCliente.setInt(2, idPersona);
-            stModificarCliente.executeUpdate();
-            stModificarCliente.close();
 
             // Confirmamos la transacción (hacemos los cambios permanentes)
             con.commit();
         } catch (Exception e) {
             // Si ocurre un error, revertimos la transacción
             con.rollback();
+            e.printStackTrace();
             throw e;
         } finally {
             // Restablecemos la configuración de la conexión y la cerramos
             con.setAutoCommit(true);
             this.cerrarConexion();
         }
+    }
+
+    public int obtenerPorRazonSocial(String razonSocial) throws Exception {
+        int idCliente = -1; // Valor predeterminado si no se encuentra el cliente
+        try {
+            this.conectar();
+            PreparedStatement st = this.con.prepareStatement(
+                    "SELECT c.id_cliente FROM clientes c " +
+                            "INNER JOIN personas per ON c.idpersona = per.id_persona " +
+                            "WHERE per.razon_social = ?");
+            st.setString(1, razonSocial);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                idCliente = rs.getInt("id_cliente");
+            }
+            rs.close();
+            st.close();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.cerrarConexion();
+        }
+        return idCliente;
+        /*
+        int idCliente = -1; // Valor predeterminado si no se encuentra el proveedor
+        try {
+            this.conectar();
+            //PreparedStatement st = this.con.prepareStatement("SELECT * FROM proveedores WHERE nombre = ?");
+            PreparedStatement st = this.con.prepareStatement(
+                    "SELECT c.id_cliente FROM clientes c " +
+                            "INNER JOIN personas per ON c.idpersona = per.id_persona " +
+                            "WHERE per.nombre = ? AND per.apellido = ?");
+            st.setString(1, nombre);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                idCliente = rs.getInt("id_cliente");
+            }
+            rs.close();
+            st.close();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            this.cerrarConexion();
+        }
+        return idCliente;*/
     }
 }

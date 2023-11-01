@@ -1,5 +1,7 @@
 package com.mspdevs.mspfxmaven.model;
 
+import java.util.Objects;
+
 public class Producto {
     private int idProducto;
     private String nombre;
@@ -10,8 +12,13 @@ public class Producto {
     private int cantidadMinima;
     int idRubroFK;
     int idProveedorFK;
-    private String proveedorNombre;
+    private String proveedorRazonSocial;
     private String rubroNombre;
+
+    private int cantidadVendida;
+    private double totalVendido;
+
+
 
     //Agregado recien
     public Producto(Producto producto, Rubro rubro, Proveedor proveedor) {
@@ -23,8 +30,11 @@ public class Producto {
         this.cantidadMinima = producto.getCantidadMinima();
         this.idRubroFK = rubro.getIdRubro();
         this.idProveedorFK = proveedor.getIdProveedor();
-        this.proveedorNombre = proveedor.getNombre();
+        this.proveedorRazonSocial = proveedor.getRazonSocial();
         this.rubroNombre = rubro.getNombre();
+
+        // Agregado para ventas
+        this.totalVendido = producto.getTotalVendido();
         //this.precioLista = producto.getPrecioLista();
     }
 
@@ -79,11 +89,11 @@ public class Producto {
     public void setIdProveedorFK(int idProveedorFK) {
         this.idProveedorFK = idProveedorFK;
     }
-    public String getProveedorNombre() {
-        return proveedorNombre;
+    public String getProveedorRazonSocial() {
+        return proveedorRazonSocial;
     }
-    public void setProveedorNombre(String proveedorNombre) {
-        this.proveedorNombre = proveedorNombre;
+    public void setProveedorRazonSocial(String proveedorRazonSocial) {
+        this.proveedorRazonSocial = proveedorRazonSocial;
     }
     public String getRubroNombre() {
         return rubroNombre;
@@ -92,14 +102,39 @@ public class Producto {
         this.rubroNombre = rubroNombre;
     }
 
-
-
+    public int getCantidadVendida() {
+        return cantidadVendida;
+    }
+    public void setCantidadVendida(int cantidadVendida) {
+        this.cantidadVendida = cantidadVendida;
+    }
+    public double getTotalVendido() {
+        return totalVendido;
+    }
+    public void setTotalVendido(double totalVendido) {
+        this.totalVendido= totalVendido;
+    }
 
     public double getPrecioLista() {
         return precioLista;
     }
     public void setPrecioLista(double precioLista) {
         this.precioLista = precioLista;
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        Producto producto = (Producto) obj;
+        return idProducto == producto.idProducto;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idProducto);
     }
 
 }

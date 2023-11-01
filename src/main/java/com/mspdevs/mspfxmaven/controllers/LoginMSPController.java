@@ -3,15 +3,16 @@ package com.mspdevs.mspfxmaven.controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import com.mspdevs.mspfxmaven.model.DAO.EmpleadoDAOImpl;
 import com.mspdevs.mspfxmaven.model.Empleado;
 import com.mspdevs.mspfxmaven.model.DAO.EmpleadoDAOImpl;
 import com.mspdevs.mspfxmaven.utils.Alerta;
-
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
@@ -46,7 +47,6 @@ public class LoginMSPController implements Initializable {
 
     }
 
-
     @FXML
     void verificarLogin(MouseEvent event) {
         String usuarioIngresado = campoUser.getText();
@@ -58,6 +58,7 @@ public class LoginMSPController implements Initializable {
 
         EmpleadoDAOImpl empleados = new EmpleadoDAOImpl();
         ObservableList<Empleado> listaEmpleados = null;
+
 		try {
 			listaEmpleados = empleados.listarTodos();
 		} catch (Exception e) {
@@ -92,6 +93,7 @@ public class LoginMSPController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(url));
         Parent root = loader.load();
 
+
         VentanaPrincipalController ventanaPrincipalController = loader.getController();
         ventanaPrincipalController.mostrarUsuario(empleado.getNombre() + " " + empleado.getApellido());
         
@@ -103,7 +105,12 @@ public class LoginMSPController implements Initializable {
         Stage newStage = new Stage();
         newStage.setScene(scene);
         newStage.setMaximized(true);
+        newStage.setTitle("Market Sales Pro - Version 1.1");
+        Image icon = new Image(getClass().getResourceAsStream("/com/mspdevs/mspfxmaven/imgs/carrito-de-compras.png"));
+        newStage.getIcons().add(icon);
         newStage.show();
-    }
 
+        VentanaPrincipalController principalController = loader.getController();
+        principalController.setCerrarEvento(newStage); // Configura el evento de cierre
+    }
 }

@@ -5,12 +5,11 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import com.mspdevs.mspfxmaven.utils.Alerta;
+import com.mspdevs.mspfxmaven.utils.PantallaInicioUtil;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -19,20 +18,23 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.control.Button;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import com.mspdevs.mspfxmaven.Main;
 
 
 
@@ -40,10 +42,10 @@ public class VentanaPrincipalController implements Initializable {
     Alerta msj = new Alerta();
 
     private LoginMSPController loginController;
-    
+
     @FXML
     private HBox hbox ;
-    
+
     @FXML
     private BorderPane bpane;
 
@@ -52,13 +54,13 @@ public class VentanaPrincipalController implements Initializable {
 
     @FXML
     private Button btnCerrar;
-    
+
     @FXML
     private Button btnClientes;
-    
+
     @FXML
     private Button btnInventario;
-    
+
     @FXML
     private Button btnProveedores;
 
@@ -70,10 +72,10 @@ public class VentanaPrincipalController implements Initializable {
 
     @FXML
     private Label fecha;
-    
+
     @FXML
     private Button btnCompra;
-    
+
     @FXML
     private Button btnCompras;
     
@@ -90,6 +92,9 @@ public class VentanaPrincipalController implements Initializable {
     private ToolBar botonera;
 
     private volatile boolean stop = false;
+
+    private String idDeEmpleado = "";
+
 
     @FXML
     void abrirVentanaCliente(MouseEvent event) throws IOException {
@@ -129,14 +134,24 @@ public class VentanaPrincipalController implements Initializable {
     
     @FXML
     void abrirVentanaVentas(ActionEvent event) throws IOException {
-    	GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaVentas.fxml"));
-    	bpane.setCenter(centro);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaAlternativaVentas.fxml"));
+        Parent root = loader.load();
+        VentanaVentasAlternativaController ventasAlternativaController = loader.getController();
+
+        String nombreUsuario = usuarioLogueado.getText();
+        // Configura el usuario en el controlador de ventas
+        ventasAlternativaController.setUsuario(idDeEmpleado);
+
+        bpane.setCenter(root);
+        /*
+    	GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaVentasAlternativa.fxml"));
+    	bpane.setCenter(centro);*/
     }
-    
+
     @FXML
     void abrirReportes(ActionEvent event) throws IOException {
-    	GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaReportesBotones.fxml"));
-    	bpane.setCenter(centro);
+        GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaReportesBotones.fxml"));
+        bpane.setCenter(centro);
     }
     
     @Override
@@ -175,20 +190,84 @@ public class VentanaPrincipalController implements Initializable {
     }
 
     public void irAPantallaLogin(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mspdevs/mspfxmaven/views/LoginMSP.fxml"));
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-            Stage stage = new Stage();
-            stage.setScene(scene);
-            stage.show();
+        PantallaInicioUtil.mostrarPantallaInicio(Main.primaryStage);
+        // Cierra la ventana actual si es necesario
+        // Agrega un manejador al evento de cierre de la ventana
+        Stage currentStage = (Stage) btnCerrar.getScene().getWindow();
+        currentStage.close();
+        currentStage.setOnCloseRequest(e -> {
+            e.consume(); // Evita que la ventana se cierre de inmediato
+            Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmacion.setTitle("Confirmar");
+            confirmacion.setHeaderText("¿Desea salir o cerrar sesión?");
+            ButtonType salirButton = new ButtonType("Salir");
+            ButtonType noButton = new ButtonType("No salir");
+            ButtonType cerrarSesionButton = new ButtonType("Cerrar sesión");
 
-            // Obtener el Stage actual y cerrarlo
-            Stage currentStage = (Stage) btnCerrar.getScene().getWindow();
-            currentStage.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            confirmacion.getButtonTypes().setAll(salirButton, noButton, cerrarSesionButton);
+
+            Stage stage = (Stage) confirmacion.getDialogPane().getScene().getWindow();
+            stage.setAlwaysOnTop(true);
+
+            confirmacion.showAndWait().ifPresent(response -> {
+                if (response == salirButton) {
+                    // Cerrar la aplicación
+                    stop = true; // Detener el hilo de actualización del tiempo
+                    currentStage.close();
+                } else if (response == noButton) {
+                    // No hacer nada, simplemente cerrar la ventana de confirmación
+                } else if (response == cerrarSesionButton) {
+                    // Cerrar sesión y volver a la ventana de inicio de sesión
+                    stop = true; // Detener el hilo de actualización del tiempo
+                    // Lógica para crear el backup de la base de datos
+                    //realizarBackupBaseDeDatos();
+                    PantallaInicioUtil.mostrarPantallaInicio(Main.primaryStage);
+                }
+            });
+        });
+        // Cierra la ventana actual si es necesario
+        currentStage.close();
+    }
+
+    public void irAPantallaLogin(Stage stage) {
+        PantallaInicioUtil.mostrarPantallaInicio(Main.primaryStage);
+        // Cierra la ventana actual si es necesario
+        // Agrega un manejador al evento de cierre de la ventana
+        Stage currentStage = (Stage) btnCerrar.getScene().getWindow();
+        currentStage.close();
+        currentStage.setOnCloseRequest(e -> {
+            e.consume(); // Evita que la ventana se cierre de inmediato
+            Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmacion.setTitle("Confirmar");
+            confirmacion.setHeaderText("¿Desea salir o cerrar sesión?");
+            ButtonType salirButton = new ButtonType("Salir");
+            ButtonType noButton = new ButtonType("No salir");
+            ButtonType cerrarSesionButton = new ButtonType("Cerrar sesión");
+
+            confirmacion.getButtonTypes().setAll(salirButton, noButton, cerrarSesionButton);
+
+            //Stage stage = (Stage) confirmacion.getDialogPane().getScene().getWindow();
+            stage.setAlwaysOnTop(true);
+
+            confirmacion.showAndWait().ifPresent(response -> {
+                if (response == salirButton) {
+                    // Cerrar la aplicación
+                    stop = true; // Detener el hilo de actualización del tiempo
+                    currentStage.close();
+                } else if (response == noButton) {
+                    // No hacer nada, simplemente cerrar la ventana de confirmación
+                } else if (response == cerrarSesionButton) {
+                    // Cerrar sesión y volver a la ventana de inicio de sesión
+                    stop = true; // Detener el hilo de actualización del tiempo
+                    // Lógica para crear el backup de la base de datos
+                    //realizarBackupBaseDeDatos();
+                    PantallaInicioUtil.mostrarPantallaInicio(Main.primaryStage);
+                }
+            });
+        });
+
+        // Cierra la ventana actual si es necesario
+        currentStage.close();
     }
 
     @FXML
@@ -219,10 +298,9 @@ public class VentanaPrincipalController implements Initializable {
                 // Lógica para crear el backup de la base de datos
                 //realizarBackupBaseDeDatos();
                 irAPantallaLogin(event);
-            }
-        });
-    }
-
+                }
+            });
+        }
 
     // ... otros métodos ...
 
@@ -238,9 +316,6 @@ public class VentanaPrincipalController implements Initializable {
             return null;
         }
     }
-
-
-
 
     // Método para crear un backup de la base de datos
     private void realizarBackupBaseDeDatos() {
@@ -279,18 +354,57 @@ public class VentanaPrincipalController implements Initializable {
         }
     }
 
-
     public void mostrarUsuario(String usuario) {
         usuarioLogueado.setText(usuario);
     }
-    
+
+
+
+
+    // Agrega este método para manejar el evento de cierre
+    public void setCerrarEvento(Stage primaryStage) {
+
+        primaryStage.getScene().getWindow().setOnCloseRequest(e -> {
+
+            e.consume(); // Evita que la ventana principal se cierre de inmediato
+
+            Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmacion.setTitle("Confirmar");
+            confirmacion.setHeaderText("¿Desea salir o cerrar sesión?");
+            ButtonType salirButton = new ButtonType("Salir");
+            ButtonType noButton = new ButtonType("No salir");
+            ButtonType cerrarSesionButton = new ButtonType("Cerrar sesión");
+
+            confirmacion.getButtonTypes().setAll(salirButton, noButton, cerrarSesionButton);
+
+            Stage stage = (Stage) confirmacion.getDialogPane().getScene().getWindow();
+            stage.setAlwaysOnTop(true);
+
+            confirmacion.showAndWait().ifPresent(response -> {
+                if (response == salirButton) {
+                    // Cerrar la aplicación
+                    stop = true; // Detener el hilo de actualización del tiempo
+                    primaryStage.close(); // Cierra la ventana principal
+                } else if (response == noButton) {
+                    // No hacer nada, simplemente cerrar la ventana de confirmación
+                } else if (response == cerrarSesionButton) {
+                    // Cerrar sesión y volver a la ventana de inicio de sesión
+                    stop = true; // Detener el hilo de actualización del tiempo
+                    // Lógica para crear el backup de la base de datos
+                    //realizarBackupBaseDeDatos();
+                    irAPantallaLogin(primaryStage);
+                }
+            });
+        });
+    }
+
     void habilitarSoloVentas() {
-    	botonera.getItems().remove(btnClientes);
-    	botonera.getItems().remove(btnCompras);
-    	botonera.getItems().remove(btnInventario);
-    	botonera.getItems().remove(btnReportes);
-    	botonera.getItems().remove(btnProveedores);
-    	botonera.getItems().remove(btnUsuarios);
-    	botonera.getItems().remove(btnRubros);    	
+        botonera.getItems().remove(btnClientes);
+        botonera.getItems().remove(btnCompra);
+        botonera.getItems().remove(btnInventario);
+        botonera.getItems().remove(btnReportes);
+        botonera.getItems().remove(btnProveedores);
+        botonera.getItems().remove(btnUsuarios);
+        botonera.getItems().remove(btnRubros);
     }
 }
