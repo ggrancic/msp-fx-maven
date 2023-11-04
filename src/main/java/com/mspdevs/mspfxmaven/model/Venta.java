@@ -10,24 +10,12 @@ public class Venta {
     private double subtotal;
     private double iva;
     private double total;
-    int idClienteFK;
-    private String clienteNombre;
-
-    int idEmpleadoFK;
-
-    public Venta(Venta venta, Cliente cliente) {
-        this.id_factura_ventas = venta.id_factura_ventas;
-        this.numeroFactura = numeroFactura;
-        this.tipo = tipo;
-        this.fechaEmision = fechaEmision;
-        this.subtotal = subtotal;
-        this.iva = iva;
-        this.total = total;
-        this.idClienteFK = cliente.getIdCliente();
-        this.clienteNombre = cliente.getNombre();
-    }
+    private Cliente cliente;
+    private Empleado empleado;
 
     public Venta() {
+    	this.cliente = new Cliente();
+    	this.empleado = new Empleado();
     }
 
     public int getId_factura_ventas() {
@@ -86,24 +74,20 @@ public class Venta {
         this.total = total;
     }
 
-    public int getIdClienteFK() {
-        return idClienteFK;
-    }
-    public void setIdClienteFK(int idClienteFK) {
-        this.idClienteFK = idClienteFK;
-    }
-    public String getClienteNombre() {
-        return clienteNombre;
-    }
-    public void setClienteNombre(String clienteNombre) {
-        this.clienteNombre = clienteNombre;
-    }
+	public Cliente getCliente() {
+		return cliente;
+	}
 
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
+	}
 
-    public int getIdEmpleadoFK() {
-        return idEmpleadoFK;
-    }
-    public void setIdEmpleadoFK(int idEmpleadoFK) {
-        this.idEmpleadoFK = idEmpleadoFK;
-    }
+	public Empleado getEmpleado() {
+		return empleado;
+	}
+
+	public void setEmpleado(Empleado empleado) {
+		this.empleado = empleado;
+	}
+
 }

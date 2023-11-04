@@ -1,9 +1,13 @@
 package com.mspdevs.mspfxmaven.model.DAO;
 
+import com.mspdevs.mspfxmaven.model.Compra;
 import com.mspdevs.mspfxmaven.model.ConexionMySQL;
 import com.mspdevs.mspfxmaven.model.Venta;
+
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -35,7 +39,7 @@ public class VentaDAOImpl extends ConexionMySQL implements VentaDAO{
 
         try {
             this.conectar();
-            // Inserta la venta en la tabla "factura_ventas"
+
             PreparedStatement st = this.con.prepareStatement(
                     "INSERT INTO factura_ventas (numero, tipo, fechaDeEmision, subtotal, iva, total, cliente, empleado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     Statement.RETURN_GENERATED_KEYS
@@ -46,8 +50,8 @@ public class VentaDAOImpl extends ConexionMySQL implements VentaDAO{
             st.setDouble(4, venta.getSubtotal());
             st.setDouble(5, venta.getIva());
             st.setDouble(6, venta.getTotal());
-            st.setInt(7, venta.getIdClienteFK());
-            st.setInt(8, venta.getIdEmpleadoFK());
+            st.setInt(7, venta.getCliente().getIdCliente());
+            st.setInt(8, venta.getEmpleado().getId_empleado());
 
             int filasAfectadas = st.executeUpdate();
             if (filasAfectadas == 0) {
@@ -62,19 +66,14 @@ public class VentaDAOImpl extends ConexionMySQL implements VentaDAO{
                 throw new Exception("No se pudo obtener el ID de la venta generada.");
             }
 
-            // Resto de tu código para insertar en "detalle_ventas y otras operaciones.
-
         } catch (Exception e) {
             throw e;
         } finally {
             this.cerrarConexion();
         }
 
-        return idVentaGenerada; // Devuelve el ID de la venta generada
+        return idVentaGenerada;
     }
-
-
-
 
     public String obtenerUltimoNumeroFactura() throws Exception {
         String ultimoNumeroFactura = "0";
@@ -96,5 +95,70 @@ public class VentaDAOImpl extends ConexionMySQL implements VentaDAO{
         }
 
         return ultimoNumeroFactura;
+    }
+    
+    public ObservableList<Venta> listarConLimitYFecha(int inicio, int elementosPorPagina, Date fechaInicio, Date fechaFin) throws Exception {
+    	
+    	ObservableList<Venta> lista = null;
+		
+		try {
+			this.conectar();
+			String sql = "SELECT fv.id_factura_ventas,fv.numero, fv.tipo, fv.fechaDeEmision, fv.subtotal, fv.iva, fv.total, persona.nombre, cliente.id_cliente  " +
+                    "FROM factura_ventas fv " +
+                    "JOIN clientes cliente ON fv.cliente = cliente.id_cliente " +
+                    "JOIN personas persona ON cliente.idpersona = persona.id_persona ";
+			
+			 if (fechaInicio != null && fechaFin != null) {
+		            sql += "WHERE fv.fecha BETWEEN ? AND ? ";
+		            
+		        }
+		        
+		        sql += "ORDER BY fv.id_factura_ventas DESC LIMIT ?,?";
+		        
+		        PreparedStatement st = this.con.prepareStatement(sql);
+		        
+		        int parameterIndex = 1;
+		        
+		        if (fechaInicio != null && fechaFin != null) {
+		            st.setDate(parameterIndex++, new java.sql.Date(fechaInicio.getTime()));
+		            st.setDate(parameterIndex++, new java.sql.Date(fechaFin.getTime()));
+		        }
+		        
+		        st.setInt(parameterIndex++, inicio);
+		        st.setInt(parameterIndex++, elementosPorPagina);
+		        
+		        lista = FXCollections.observableArrayList();
+		        
+		        ResultSet rs = st.executeQuery();
+		        while (rs.next()) {
+		        	Venta venta = new Venta();
+		        	venta.setId_factura_ventas(rs.getInt("fv.id_factura_ventas"));
+		        	venta.setFechaEmision(rs.getDate("fv.fechaDeEmision"));
+		        	
+//		            Compra compra = new Compra();
+//		            compra.setId_factura_compras(rs.getInt("c.id_factura_compras"));
+//		            compra.setFecha(rs.getDate("c.fecha"));
+//		            compra.setNumeroFactura(rs.getString("c.numero"));
+//		            compra.setTipo(rs.getString("c.tipo"));
+//		            compra.setSubtotal(rs.getDouble("c.subtotal"));
+//		            compra.setTotalSinIva(rs.getDouble("c.totalSinIva"));
+//		            compra.setTotal(rs.getDouble("c.total"));
+//		            compra.setIdProveedorFK(rs.getInt("pr.id_proveedor"));
+//		            compra.setProveedorNombre(rs.getString("proveedor_nombre"));
+//
+//		            lista.add(compra);
+		        }
+		        
+		        rs.close();
+		        st.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		} finally {
+			this.cerrarConexion();
+		}
+		
+		return lista;
+    	
     }
 }
