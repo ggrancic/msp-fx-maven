@@ -15,6 +15,8 @@ import com.mspdevs.mspfxmaven.model.*;
 import com.mspdevs.mspfxmaven.model.DAO.*;
 import com.mspdevs.mspfxmaven.utils.Alerta;
 import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -26,9 +28,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import org.controlsfx.control.SearchableComboBox;
 
@@ -94,6 +99,9 @@ public class VentanaComprasAlternativaController implements Initializable {
     private TableColumn<Producto, Double> colPV;
 
     @FXML
+    private TableColumn<Producto, Void> colEliminar;
+
+    @FXML
     private SearchableComboBox<String> productoBox;
 
     @FXML
@@ -109,14 +117,124 @@ public class VentanaComprasAlternativaController implements Initializable {
     private double subtotalTotal = 0.0; // Variable para rastrear el subtotal total
     private double ivaTotal = 0.0; // Variable para rastrear el IVA total
     private Date fechaMySQL; // Declarar fechaMySQL como variable miembro
-    private ObservableList<Producto> todosLosProductos;
+    //private ObservableList<Producto> todosLosProductos;
+    private ObservableList<Producto> todosLosProductos = FXCollections.observableArrayList();
+
     private double subtotal = 0.0;
     private double iva = 0.0;
     private double total = 0.0;
     boolean productoEncontrado = false; // Variable para verificar si se encontró el producto
 
+    private boolean modoEdicion = false;
+
+    // Declarar un mapa para asociar objetos Producto con sus nombres
+    private Map<String, Producto> productosMap = new HashMap<>();
+
+    @FXML
+    void accionEditarProducto(ActionEvent event) {
+        // Obtén el producto seleccionado en la TableView
+        Producto productoSeleccionado = tblDetalle.getSelectionModel().getSelectedItem();
+
+        if (productoSeleccionado != null) {
+            // Habilita el modo de edición
+            modoEdicion = true;
+
+            // Deshabilita el productoBox
+            productoBox.setDisable(true);
+
+            // Llena los campos con los valores del producto seleccionado
+            campoNombre.setText(productoSeleccionado.getNombre());
+            campoPrecioLista.setText(String.valueOf(productoSeleccionado.getPrecioLista()));
+            campoPrecioVenta.setText(String.valueOf(productoSeleccionado.getPrecioVenta()));
+            campoCantidad.getValueFactory().setValue(productoSeleccionado.getCantidadDisponible());
+            campoGanancia.setText("0"); // Puedes llenar el campo de ganancia como desees
+        }
+    }
     @FXML
     void accionAgregarALista(ActionEvent event) throws Exception {
+        // Recopila los datos de los campos
+        String nombre = campoNombre.getText();
+        String precioLista = campoPrecioLista.getText();
+        String precioVenta = campoPrecioVenta.getText();
+        String cantidad = String.valueOf(campoCantidad.getValue());
+        String ganancia = campoGanancia.getText();
+
+        // Validación: verifica si los campos requeridos están vacíos
+        if (nombre.isEmpty() || precioVenta.isEmpty() || precioLista.isEmpty() || cantidad == "0" || cantidad.isEmpty() || ganancia.isEmpty()) {
+            msj.mostrarAlertaInforme("Error", "", "Debe completar todos los campos.");
+            return;
+        }
+
+        // Validación: verifica que el precio de lista y el precio de venta no sean 0.00
+        double precioListaDoubleValidacion = Double.parseDouble(precioLista);
+        double precioVentaDoubleValidacion = Double.parseDouble(precioVenta);
+        if (precioListaDoubleValidacion <= 0 || precioVentaDoubleValidacion <= 0) {
+            msj.mostrarAlertaInforme("Error", "", "El precio de lista y el precio de venta deben ser mayores que 0.00.");
+            return;
+        }
+
+        // Validación: verifica que el precio de venta sea mayor que el precio de lista
+        if (precioVentaDoubleValidacion <= precioListaDoubleValidacion) {
+            msj.mostrarAlertaInforme("Error", "", "El precio de venta debe ser mayor que el precio de lista.");
+            return;
+        }
+
+        // Obtiene el ID del producto desde la propiedad userData
+        int productoId = (int) btnAgregar.getUserData(); // Accede al ID desde el botón Agregar
+
+        // Comprueba si hay un producto seleccionado en la TableView
+        Producto productoSeleccionado = tblDetalle.getSelectionModel().getSelectedItem();
+
+        if (productoSeleccionado == null) {
+            // No se ha seleccionado un producto en la TableView, agrega uno nuevo
+            Producto producto = new Producto();
+            producto.setIdProducto(productoId); // Asigna el ID del producto
+            producto.setNombre(nombre);
+            producto.setPrecioLista(Double.parseDouble(precioLista));
+            producto.setPrecioVenta(Double.parseDouble(precioVenta));
+            producto.setCantidadDisponible(Integer.parseInt(cantidad));
+
+            if (!esProductoExistente(producto)) {
+                tblDetalle.getItems().add(producto);
+                campoNombre.clear();
+                campoPrecioLista.clear();
+                campoPrecioVenta.clear();
+                campoCantidad.getValueFactory().setValue(1);
+                campoGanancia.setText("0");
+            } else {
+                msj.mostrarAlertaInforme("Error", "", "El producto ya está en la lista.");
+                campoNombre.clear();
+                campoPrecioLista.clear();
+                campoPrecioVenta.clear();
+                campoCantidad.getValueFactory().setValue(1);
+                campoGanancia.setText("0");
+            }
+        } else {
+            // Se ha seleccionado un producto en la TableView, actualiza los valores
+            productoSeleccionado.setIdProducto(productoId); // Asigna el ID del producto
+            productoSeleccionado.setNombre(nombre);
+            productoSeleccionado.setPrecioLista(Double.parseDouble(precioLista));
+            productoSeleccionado.setPrecioVenta(Double.parseDouble(precioVenta));
+            productoSeleccionado.setCantidadDisponible(Integer.parseInt(cantidad));
+
+            // Limpia los campos después de agregar o actualizar el producto
+            campoNombre.clear();
+            campoPrecioLista.clear();
+            campoPrecioVenta.clear();
+            campoCantidad.getValueFactory().setValue(1);
+            campoGanancia.setText("0");
+        }
+
+        // Llama a la función para actualizar el resumen
+        actualizarResumen();
+        System.out.println("Cantidad de productos seleccionados: " + todosLosProductos.size());
+        tblDetalle.refresh();
+        // Deselecciona el producto en la TableView (si hay alguno seleccionado)
+        tblDetalle.getSelectionModel().clearSelection();
+
+
+        /*
+
         // Recopila los datos de los campos
         String nombre = campoNombre.getText();
         String precioLista = campoPrecioLista.getText();
@@ -211,7 +329,7 @@ public class VentanaComprasAlternativaController implements Initializable {
             // Llama a la función para actualizar el resumen
             actualizarResumen();
             System.out.println("Cantidad de productos seleccionados: " + todosLosProductos.size());
-        }
+        }*/
     }
 
     @FXML
@@ -230,11 +348,26 @@ public class VentanaComprasAlternativaController implements Initializable {
         newStage.initModality(Modality.APPLICATION_MODAL);
         newStage.showAndWait();
 
+        // Obtener el resultado del modal (true si se creó un nuevo producto, false si no)
+        boolean seCreóNuevoProducto = modalNuevoProductoController.seCreoNuevoProducto();
+        String nuevoNombreProducto = modalNuevoProductoController.getNuevoNombreProducto();
+
+        if (seCreóNuevoProducto) {
+            // Actualizar el ComboBox de productos
+            actualizarComboBoxProductos();
+
+            // Agregar el nuevo nombre del producto y seleccionarlo
+            productoBox.getItems().addAll(nuevoNombreProducto);
+            productoBox.getSelectionModel().select(nuevoNombreProducto);
+            //productoBox.setValue(nuevoNombreProducto);
+            System.out.println(nuevoNombreProducto);
+        }
+
         // Deseleccionar los elementos del RadioButton
         //busquedaProducto.selectToggle(null);
 
         // Luego de agregar el proveedor, actualiza el ComboBox
-        actualizarComboBoxProductos();
+        //actualizarComboBoxProductos();
         // Vaciar el ComboBox
         //productoBox.setItems(FXCollections.observableArrayList());
         campoNombre.clear();
@@ -243,8 +376,6 @@ public class VentanaComprasAlternativaController implements Initializable {
         campoCantidad.getValueFactory().setValue(1);
         campoGanancia.setText("0");
         campoGanancia.setDisable(true);
-
-
     }
 
     @FXML
@@ -351,8 +482,8 @@ public class VentanaComprasAlternativaController implements Initializable {
                 DetalleCompra detalleCompra = new DetalleCompra();
                 detalleCompra.setCantidad(cantidad);
                 detalleCompra.setPrecio(precio);
-                detalleCompra.setIdFacturaCompra(idCompraGenerada); // Usar el ID de la compra generada
-                detalleCompra.setIdProducto(idProducto);
+                detalleCompra.getFacturaCompra().setId_factura_compras(idCompraGenerada); // Usar el ID de la compra generada
+                detalleCompra.getProducto().setIdProducto(idProducto);
 
                 detalleCompraDAO.insertar(detalleCompra);
             }
@@ -405,6 +536,93 @@ public class VentanaComprasAlternativaController implements Initializable {
         // Configura la TableView para usar la lista observable
         todosLosProductos = tblDetalle.getItems();
 
+        colEliminar.setCellFactory(new Callback<TableColumn<Producto, Void>, TableCell<Producto, Void>>() {
+            @Override
+            public TableCell<Producto, Void> call(final TableColumn<Producto, Void> param) {
+                return new TableCell<Producto, Void>() {
+                    private final Button btnEliminar = new Button();
+                    {
+                        // Configura la imagen del botón
+                        Image eliminarImage = new Image(getClass().getResourceAsStream("/com/mspdevs/mspfxmaven/imgs/eliminar.png"));
+                        ImageView imageView = new ImageView(eliminarImage);
+                        imageView.setFitHeight(24);
+                        imageView.setFitWidth(24);
+                        btnEliminar.setStyle("-fx-background-color: transparent;"); // Establece el fondo transparente
+                        btnEliminar.setGraphic(imageView);
+
+                        btnEliminar.setOnAction(event -> {
+                            Producto producto = getTableView().getItems().get(getIndex());
+                            // Crea un cuadro de diálogo de confirmación
+                            boolean confirmado = msj.mostrarConfirmacion("Confirmación", "", "¿Está seguro de que desea quitar este producto de la tabla?");
+                            if (confirmado) {
+                                // Elimina el producto de la lista observable
+                                todosLosProductos.remove(producto);
+                                actualizarResumen();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(btnEliminar);
+                        }
+                    }
+                };
+            }
+        });
+
+        // Boton para eliminar producto de la tabla, sin imagen
+        /*
+        // Crear una columna personalizada con botones de eliminación
+        TableColumn<Producto, Void> eliminarColumn = new TableColumn<>("Eliminar");
+        eliminarColumn.setMinWidth(30);
+        eliminarColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Producto, Void>, ObservableValue<Void>>() {
+            @Override
+            public ObservableValue<Void> call(TableColumn.CellDataFeatures<Producto, Void> features) {
+                return new SimpleObjectProperty<>(null);
+            }
+        });
+        eliminarColumn.setCellFactory(new Callback<TableColumn<Producto, Void>, TableCell<Producto, Void>>() {
+            @Override
+            public TableCell<Producto, Void> call(final TableColumn<Producto, Void> param) {
+                return new TableCell<Producto, Void>() {
+                    private final Button btnEliminar = new Button("Eliminar");
+
+                    {
+                        btnEliminar.setOnAction((ActionEvent event) -> {
+                            Producto producto = getTableView().getItems().get(getIndex());
+                            // Crea un cuadro de diálogo de confirmación
+                            boolean confirmado = msj.mostrarConfirmacion("Confirmación", "", "¿Está seguro de que desea quitar este producto de la tabla?");
+
+                            if (confirmado) {
+                                // Elimina el producto de la lista observable
+                                todosLosProductos.remove(producto);
+                                actualizarResumen();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(btnEliminar);
+                        }
+                    }
+                };
+            }
+        });
+        // Agrega la columna personalizada al TableView
+        tblDetalle.getColumns().add(eliminarColumn);*/
+
+        // Haciendo doble clic en algun producto
+        /*
         // Para eliminar productos de la TableView y de la lista observable
         tblDetalle.setRowFactory(tv -> {
             TableRow<Producto> row = new TableRow<>();
@@ -426,7 +644,7 @@ public class VentanaComprasAlternativaController implements Initializable {
                 }
             });
             return row;
-        });
+        });*/
 
         ProveedorDAOImpl proveedorDAO = new ProveedorDAOImpl();
         ProductoDAOImpl productoDAO = new ProductoDAOImpl();
@@ -530,14 +748,7 @@ public class VentanaComprasAlternativaController implements Initializable {
 
         tipoFacturaBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                String tipoFactura = newValue;
-                if ("A".equals(tipoFactura)) {
-                    // Tipo de factura A
-                    actualizarResumen(); // Llama a la función para actualizar el resumen
-                } else if ("B".equals(tipoFactura) || "C".equals(tipoFactura)) {
-                    // Tipo de factura B o C
-                    actualizarResumen(); // Llama a la función para actualizar el resumen
-                }
+                actualizarResumen(); // Llama a la función para actualizar el resumen
             }
         });
 
@@ -598,6 +809,55 @@ public class VentanaComprasAlternativaController implements Initializable {
                 campoCantidad.getValueFactory().setValue(999);
             }
         });
+
+
+
+
+        // Crea un listener para la selección de la TableView
+        tblDetalle.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                // Habilita los campos para edición
+                campoNombre.setDisable(false);
+                campoPrecioLista.setDisable(false);
+                campoPrecioVenta.setDisable(false);
+                campoCantidad.setDisable(false);
+                campoGanancia.setDisable(false);
+
+                // Rellena los campos con los valores del producto seleccionado
+                campoNombre.setText(newSelection.getNombre());
+                campoPrecioLista.setText(String.valueOf(newSelection.getPrecioLista()));
+                campoPrecioVenta.setText(String.valueOf(newSelection.getPrecioVenta()));
+                campoCantidad.getValueFactory().setValue(newSelection.getCantidadDisponible());
+                campoGanancia.setText("0"); // Puedes modificar esto según tu lógica de cálculo de ganancia
+                productoBox.setDisable(true);
+            } else {
+                // Si no se selecciona ningún producto, deshabilita los campos
+                campoNombre.setDisable(true);
+                campoPrecioLista.setDisable(true);
+                campoPrecioVenta.setDisable(true);
+                campoCantidad.setDisable(true);
+                campoGanancia.setDisable(true);
+
+                // Limpia los campos
+                campoNombre.clear();
+                campoPrecioLista.clear();
+                campoPrecioVenta.clear();
+                campoCantidad.getValueFactory().setValue(1);
+                campoGanancia.setText("0");
+                productoBox.setDisable(false);
+            }
+        });
+
+
+    }
+
+    // Agregar un método para cargar los atributos del producto en los campos
+    private void cargarProductoEnCampos(Producto producto) {
+        campoNombre.setText(producto.getNombre());
+        campoPrecioLista.setText(String.valueOf(producto.getPrecioLista()));
+        campoPrecioVenta.setText(String.valueOf(producto.getPrecioVenta()));
+        campoCantidad.getValueFactory().setValue(producto.getCantidadDisponible());
+        campoGanancia.setText("0"); // Puedes establecer el valor de ganancia según tus requerimientos
     }
 
     // Esta función verifica si todos los campos requeridos tienen datos y habilita los botones

@@ -279,6 +279,7 @@
                                         <TableColumn fx:id="colPL" editable="false" prefWidth="50.0" text="Precio Lista" />
                                         <TableColumn fx:id="colPV" editable="false" prefWidth="50.0" text="Precio Venta" />
                                         <TableColumn fx:id="colCantidad" editable="false" minWidth="-Infinity" prefWidth="40.0" text="Cantidad" />
+                              <TableColumn fx:id="colEliminar" prefWidth="75.0" text="Eliminar" />
                                     </columns>
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

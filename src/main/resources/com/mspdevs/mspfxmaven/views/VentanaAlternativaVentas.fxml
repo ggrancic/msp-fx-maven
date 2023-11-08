@@ -200,6 +200,7 @@
                                         <TableColumn fx:id="colPU" editable="false" prefWidth="50.0" text="Precio Unitario" />
                                         <TableColumn fx:id="colCantidad" editable="false" prefWidth="50.0" text="Cantidad" />
                                         <TableColumn fx:id="colTotal" editable="false" minWidth="-Infinity" prefWidth="40.0" text="Total" />
+                              <TableColumn fx:id="colEliminar" prefWidth="75.0" text="Eliminar" />
                                     </columns>
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

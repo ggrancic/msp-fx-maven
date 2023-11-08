@@ -1,22 +1,23 @@
 package com.mspdevs.mspfxmaven.model;
 
 public class DetalleCompra {
-    private int idDetalleCompra;
+    private int id;
     private int cantidad;
     private double precio;
-    private int idFacturaCompra;
-    private int idProducto;
+    private Compra facturaCompra;
+    private Producto producto;
 
     public DetalleCompra() {
-
+        this.facturaCompra = new Compra();
+        this.producto = new Producto();
     }
 
-    public int getIdDetalleCompra() {
-        return idDetalleCompra;
+    public int getId() {
+        return id;
     }
 
-    public void setIdDetalleCompra(int idDetalleCompra) {
-        this.idDetalleCompra = idDetalleCompra;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getCantidad() {
@@ -35,19 +36,11 @@ public class DetalleCompra {
         this.precio = precio;
     }
 
-    public int getIdFacturaCompra() {
-        return idFacturaCompra;
+    public Compra getFacturaCompra() {
+        return facturaCompra;
     }
 
-    public void setIdFacturaCompra(int idFacturaCompra) {
-        this.idFacturaCompra = idFacturaCompra;
-    }
-
-    public int getIdProducto() {
-        return idProducto;
-    }
-
-    public void setIdProducto(int idProducto) {
-        this.idProducto = idProducto;
+    public Producto getProducto() {
+        return producto;
     }
 }

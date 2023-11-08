@@ -29,6 +29,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -96,6 +98,9 @@ public class VentanaVentasAlternativaController implements Initializable {
     private SearchableComboBox<String> productoBox;
 
     @FXML
+    private TableColumn<Producto, Void> colEliminar;
+
+    @FXML
     private TableView<Producto> tblDetalle;
 
     @FXML
@@ -112,9 +117,6 @@ public class VentanaVentasAlternativaController implements Initializable {
     private Date fechaMySQL; // Declarar fechaMySQL como variable miembro
 
     private ObservableList<Producto> todosLosProductos;
-
-    // Define el listener como una variable miembro
-    ChangeListener<String> productoBoxListener = null;
 
     // Variable para rastrear si el listener está habilitado
     boolean listenerHabilitado = true;
@@ -298,7 +300,46 @@ public class VentanaVentasAlternativaController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         // Configura la TableView para usar la lista observable
         todosLosProductos = tblDetalle.getItems();
+        colEliminar.setCellFactory(new Callback<TableColumn<Producto, Void>, TableCell<Producto, Void>>() {
+            @Override
+            public TableCell<Producto, Void> call(final TableColumn<Producto, Void> param) {
+                return new TableCell<Producto, Void>() {
+                    private final Button btnEliminar = new Button();
+                    {
+                        // Configura la imagen del botón
+                        Image eliminarImage = new Image(getClass().getResourceAsStream("/com/mspdevs/mspfxmaven/imgs/eliminar.png"));
+                        ImageView imageView = new ImageView(eliminarImage);
+                        imageView.setFitHeight(24);
+                        imageView.setFitWidth(24);
+                        btnEliminar.setStyle("-fx-background-color: transparent;"); // Establece el fondo transparente
+                        btnEliminar.setGraphic(imageView);
 
+                        btnEliminar.setOnAction(event -> {
+                            Producto producto = getTableView().getItems().get(getIndex());
+                            // Crea un cuadro de diálogo de confirmación
+                            boolean confirmado = msj.mostrarConfirmacion("Confirmación", "", "¿Está seguro de que desea quitar este producto de la tabla?");
+                            if (confirmado) {
+                                // Elimina el producto de la lista observable
+                                todosLosProductos.remove(producto);
+                                actualizarResumen();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(btnEliminar);
+                        }
+                    }
+                };
+            }
+        });
+
+        /*
         // Para eliminar productos de la TableView y de la lista observable
         tblDetalle.setRowFactory(tv -> {
             TableRow<Producto> row = new TableRow<>();
@@ -320,7 +361,7 @@ public class VentanaVentasAlternativaController implements Initializable {
                 }
             });
             return row;
-        });
+        });*/
 
         // Obtiene la lista de todos los productos desde la base de datos
         List<Producto> productos = cargarProductosDesdeBaseDeDatos();
@@ -366,14 +407,7 @@ public class VentanaVentasAlternativaController implements Initializable {
 
         tipoFacturaBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                String tipoFactura = newValue;
-                if ("A".equals(tipoFactura)) {
-                    // Tipo de factura A
-                    actualizarResumen(); // Llama a la función para actualizar el resumen
-                } else if ("B".equals(tipoFactura) || "C".equals(tipoFactura)) {
-                    // Tipo de factura B o C
-                    actualizarResumen(); // Llama a la función para actualizar el resumen
-                }
+                actualizarResumen(); // Llama a la función para actualizar el resumen
             }
         });
 
@@ -641,6 +675,7 @@ public class VentanaVentasAlternativaController implements Initializable {
         this.colPU.setCellValueFactory(new PropertyValueFactory<>("precioVenta"));
         this.colCantidad.setCellValueFactory(new PropertyValueFactory<>("cantidadDisponible"));
         //this.colTotal.setCellValueFactory(new PropertyValueFactory<>("totalVendido"));
+        this.colEliminar.setCellValueFactory(new PropertyValueFactory<>(""));
 
         this.colPU.setCellFactory(col -> new PrecioVentaCell());
 

@@ -359,8 +359,8 @@ public class VentanaComprasController implements Initializable {
                 DetalleCompra detalleCompra = new DetalleCompra();
                 detalleCompra.setCantidad(cantidad);
                 detalleCompra.setPrecio(precio);
-                detalleCompra.setIdFacturaCompra(idCompraGenerada); // Usar el ID de la compra generada
-                detalleCompra.setIdProducto(idProducto);
+                //detalleCompra.setIdFacturaCompra(idCompraGenerada); // Usar el ID de la compra generada
+                //detalleCompra.setIdProducto(idProducto);
 
                 detalleCompraDAO.insertar(detalleCompra);
             }
