@@ -22,7 +22,7 @@
 <?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.SearchableComboBox?>
 
-<GridPane stylesheets="@../styles/style.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.VentanaVentasAlternativaController">
+<GridPane stylesheets="@../styles/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.VentanaVentasAlternativaController">
     <columnConstraints>
         <ColumnConstraints halignment="CENTER" hgrow="NEVER" />
         <ColumnConstraints hgrow="ALWAYS" />
@@ -195,9 +195,9 @@
                                 </VBox>
                                 <TableView fx:id="tblDetalle" stylesheets="@../styles/style.css" HBox.hgrow="SOMETIMES">
                                     <columns>
-                                        <TableColumn fx:id="colId" editable="false" prefWidth="30.0" text="ID" />
+                                        <TableColumn fx:id="colCodBarra" editable="false" prefWidth="70.0" text="Codigo de Barra" />
                                         <TableColumn fx:id="colNom" editable="false" prefWidth="105.0" text="Nombre" />
-                                        <TableColumn fx:id="colPU" editable="false" prefWidth="50.0" text="Precio Unitario" />
+                                        <TableColumn fx:id="colPU" editable="false" prefWidth="35.0" text="Precio Unitario" />
                                         <TableColumn fx:id="colCantidad" editable="false" prefWidth="50.0" text="Cantidad" />
                                         <TableColumn fx:id="colTotal" editable="false" minWidth="-Infinity" prefWidth="40.0" text="Total" />
                                     </columns>

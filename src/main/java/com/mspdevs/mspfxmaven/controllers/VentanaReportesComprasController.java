@@ -54,7 +54,7 @@ public class VentanaReportesComprasController implements Initializable {
 	
 	DateTimeFormatter formatoMySql = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	
-	ModalDetalleComprasController dcc = new ModalDetalleComprasController();
+	
 	
 
     Alerta msj = new Alerta();
@@ -137,6 +137,7 @@ public class VentanaReportesComprasController implements Initializable {
     		FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mspdevs/mspfxmaven/views/ModalDetalleCompra.fxml"));
             Parent root = loader.load();
             
+            ModalDetalleComprasController dcc = new ModalDetalleComprasController();
             dcc = loader.getController();
             
             Compra compraSeleccionada = tablaCompras.getSelectionModel().getSelectedItem();

@@ -3,14 +3,15 @@ package com.mspdevs.mspfxmaven.model;
 public class DetalleVenta {
     private int idDetalleVenta;
     private int cantidad;
-    private int idProducto;
-    //private String nombreProducto;
-    //private double precioUnitario;
-    private int idFacturaVenta;
-    //private double total;
+    private Venta facturaVenta;
+    private double monto;
+
+
+	private Producto producto;
 
     public DetalleVenta() {
-
+    	this.facturaVenta = new Venta();
+    	this.producto = new Producto();
     }
 
     public int getIdDetalleVenta() {
@@ -28,45 +29,29 @@ public class DetalleVenta {
     public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
     }
+    
+    public Venta getFacturaVenta() {
+		return facturaVenta;
+	}
 
-    public int getIdFacturaVenta() {
-        return idFacturaVenta;
-    }
+	public void setFacturaVenta(Venta facturaVenta) {
+		this.facturaVenta = facturaVenta;
+	}
 
-    public void setIdFacturaVenta(int idFacturaVenta) {
-        this.idFacturaVenta = idFacturaVenta;
-    }
+	public Producto getProducto() {
+		return producto;
+	}
 
-    public int getIdProducto() {
-        return idProducto;
-    }
+	public void setProducto(Producto producto) {
+		this.producto = producto;
+	}
 
-    public void setIdProducto(int idProducto) {
-        this.idProducto = idProducto;
-    }
+	public double getMonto() {
+		return monto;
+	}
 
-    /*
-    public String getNombreProducto() {
-        return nombreProducto;
-    }
-
-    public void setNombreProducto(String nombreProducto) {
-        this.nombreProducto = nombreProducto;
-    }
-
-    public double getPrecioUnitario() {
-        return precioUnitario;
-    }
-
-    public void setPrecioUnitario(double precioUnitario) {
-        this.precioUnitario = precioUnitario;
-    }
-
-    public double getTotal() {
-        return total;
-    }
-
-    public void setTotal(double total) {
-        this.total = total;
-    }*/
+	public void setMonto(double monto) {
+		this.monto = monto;
+	}
+	
 }

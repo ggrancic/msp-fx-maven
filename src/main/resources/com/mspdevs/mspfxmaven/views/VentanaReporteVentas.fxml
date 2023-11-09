@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane stylesheets="@../styles/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.VentanaReportesComprasController">
+<GridPane stylesheets="@../styles/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.VentanaReportesVentasController">
    <columnConstraints>
       <ColumnConstraints halignment="CENTER" hgrow="NEVER" />
       <ColumnConstraints hgrow="ALWAYS" />
@@ -98,7 +98,7 @@
                               <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TableView fx:id="tablaCompras" onMouseClicked="#abrirModalDetalle" stylesheets="@../styles/style.css">
+                              <TableView fx:id="tablaVentas" onMouseClicked="#abrirModalDetalle" stylesheets="@../styles/style.css">
                                  <columns>
                                     <TableColumn fx:id="columnaNroFac" editable="false" minWidth="150.0" prefWidth="-1.0" resizable="false" text="N° FACTURA" />
                                     <TableColumn fx:id="columnaFecha" editable="false" minWidth="200.0" prefWidth="-1.0" text="FECHA" />

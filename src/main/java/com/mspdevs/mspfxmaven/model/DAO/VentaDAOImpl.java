@@ -103,13 +103,13 @@ public class VentaDAOImpl extends ConexionMySQL implements VentaDAO{
 		
 		try {
 			this.conectar();
-			String sql = "SELECT fv.id_factura_ventas,fv.numero, fv.tipo, fv.fechaDeEmision, fv.subtotal, fv.iva, fv.total, persona.nombre, cliente.id_cliente  " +
+			String sql = "SELECT fv.id_factura_ventas,fv.numero, fv.tipo, fv.fechaDeEmision, fv.subtotal, fv.iva, fv.total, persona.razon_social, cliente.id_cliente  " +
                     "FROM factura_ventas fv " +
                     "JOIN clientes cliente ON fv.cliente = cliente.id_cliente " +
                     "JOIN personas persona ON cliente.idpersona = persona.id_persona ";
 			
 			 if (fechaInicio != null && fechaFin != null) {
-		            sql += "WHERE fv.fecha BETWEEN ? AND ? ";
+		            sql += "WHERE fv.fechaDeEmision BETWEEN ? AND ? ";
 		            
 		        }
 		        
@@ -134,19 +134,14 @@ public class VentaDAOImpl extends ConexionMySQL implements VentaDAO{
 		        	Venta venta = new Venta();
 		        	venta.setId_factura_ventas(rs.getInt("fv.id_factura_ventas"));
 		        	venta.setFechaEmision(rs.getDate("fv.fechaDeEmision"));
+		        	venta.setNumeroFactura(rs.getString("fv.numero"));
+		        	venta.setTipo(rs.getString("fv.tipo"));
+		        	venta.setSubtotal(rs.getDouble("fv.subtotal"));
+		        	venta.setIva(rs.getDouble("fv.iva"));
+		        	venta.setTotal(rs.getDouble("fv.total"));
+		        	venta.getCliente().setRazonSocial(rs.getString("persona.razon_social"));
 		        	
-//		            Compra compra = new Compra();
-//		            compra.setId_factura_compras(rs.getInt("c.id_factura_compras"));
-//		            compra.setFecha(rs.getDate("c.fecha"));
-//		            compra.setNumeroFactura(rs.getString("c.numero"));
-//		            compra.setTipo(rs.getString("c.tipo"));
-//		            compra.setSubtotal(rs.getDouble("c.subtotal"));
-//		            compra.setTotalSinIva(rs.getDouble("c.totalSinIva"));
-//		            compra.setTotal(rs.getDouble("c.total"));
-//		            compra.setIdProveedorFK(rs.getInt("pr.id_proveedor"));
-//		            compra.setProveedorNombre(rs.getString("proveedor_nombre"));
-//
-//		            lista.add(compra);
+		        	lista.add(venta);
 		        }
 		        
 		        rs.close();

@@ -292,7 +292,7 @@ public class VentanaVentasController implements Initializable{
         venta.setIva(totalSinIva);
         venta.setTotal(total);
         venta.setTipo(tipo);
-        venta.setIdClienteFK(ClienteId);
+        venta.getCliente().setIdCliente(ClienteId);
 
         String nuevaRazonSocialSeleccionada = clienteBox.getSelectionModel().getSelectedItem();
 
@@ -333,8 +333,8 @@ public class VentanaVentasController implements Initializable{
                 // Inserta el detalle de venta
                 DetalleVenta detalleVenta = new DetalleVenta();
                 detalleVenta.setCantidad(cantidad);
-                detalleVenta.setIdProducto(idProducto);
-                detalleVenta.setIdFacturaVenta(idVentaGenerada); // Usar el ID de la compra generada
+                detalleVenta.getProducto().setIdProducto(idProducto);
+                detalleVenta.getFacturaVenta().setId_factura_ventas(idVentaGenerada);
 
                 detalleVentaDAO.insertar(detalleVenta);
             }
