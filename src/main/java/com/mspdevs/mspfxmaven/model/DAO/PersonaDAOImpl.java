@@ -34,6 +34,9 @@ public class PersonaDAOImpl extends ConexionMySQL implements PersonaDAO<Persona>
 				persona.setDni(rs.getString("dni"));
 				persona.setMail(rs.getString("mail"));
 				persona.setTelefono(rs.getString("telefono"));
+				persona.setCuil(rs.getString("cuil"));
+				persona.setCuit(rs.getString("cuit"));
+				persona.setRazonSocial(rs.getString("razon_social"));
 				
 				lista.add(persona);
 			}

@@ -15,6 +15,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
+
 import org.controlsfx.control.SearchableComboBox;
 
 import java.net.URL;
@@ -120,44 +122,61 @@ public class VentanaClientesController implements Initializable {
 
     @FXML
     void accionBotonAgregar(ActionEvent event) {
-        // Comprueba si se ha seleccionado un Toggle
+    	
+    	boolean clienteRepetido = false;
+
         if (!personaRadio.isSelected() && !empresaRadio.isSelected()) {
             msj.mostrarError("Error", "", "Debe seleccionar una opción: Persona o Empresa.");
         } else {
-            // Comprueba si se seleccionó personaRadio
+
             if (personaRadio.isSelected()) {
-                // Obtiene los valores de los campos en un objeto Cliente
+
                 Cliente cliente = obtenerValoresDeCampos();
 
-                // Realiza las validaciones
                 if (cliente.getDni().isEmpty() || cliente.getNombre().isEmpty() || cliente.getApellido().isEmpty() ||
                         cliente.getProvincia().isEmpty() || cliente.getLocalidad().isEmpty() ||
                         cliente.getCuil().isEmpty() || cliente.getMail().isEmpty() || cliente.getTelefono().isEmpty()) {
-                    // Muestra mensaje de error si falta ingresar datos
+                	
                     msj.mostrarError("Error", "", "Falta ingresar datos obligatorios.");
+                    
+                    
                 } else {
+                	
                     // Ajusta la Razón Social si está vacía (nombre + apellido)
                     if (cliente.getRazonSocial().isEmpty()) {
                         cliente.setRazonSocial(cliente.getNombre() + " " + cliente.getApellido());
                     }
-                    // Realiza las validaciones específicas
-                    if (ValidacionDeEntrada.validarEmail(cliente.getMail()) &&
-                            ValidacionDeEntrada.validarDNI(cliente.getDni()) &&
-                            ValidacionDeEntrada.validarCuil(cliente.getCuil()) &&
-                            ValidacionDeEntrada.validarTelefono(cliente.getTelefono())) {
-                        try {
-                            ClienteDAOImpl dao = new ClienteDAOImpl();
-                            dao.insertar(cliente);
-                            completarTabla();
-                            vaciarCampos();
-                            manejador.configurarBotones(false);
-                            msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el cliente correctamente.");
-                        } catch (Exception e) {
-                            msj.mostrarError("Error", "", "No se pudo agregar el cliente.");
-                            e.printStackTrace();
+                    
+                    for (Cliente clienteEnTabla : tablaClientes.getItems()) {
+                		if (clienteEnTabla.getCuil().equals(cliente.getCuil()) || clienteEnTabla.getCuil().equals(cliente.getCuit())) {
+                			clienteRepetido = true;
+                			break;
+                		}
+                	}
+                    
+                    if (!clienteRepetido) {
+                    	if (ValidacionDeEntrada.validarEmail(cliente.getMail()) &&
+                                ValidacionDeEntrada.validarDNI(cliente.getDni()) &&
+                                ValidacionDeEntrada.validarCuil(cliente.getCuil()) &&
+                                ValidacionDeEntrada.validarTelefono(cliente.getTelefono())) {
+                            try {
+                                ClienteDAOImpl dao = new ClienteDAOImpl();
+                                dao.insertar(cliente);
+                                completarTabla();
+                                vaciarCampos();
+                                manejador.configurarBotones(false);
+                                msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el cliente correctamente.");
+                            } catch (Exception e) {
+                                msj.mostrarError("Error", "", "No se pudo agregar el cliente.");
+                            }
                         }
+                    } else {
+                    	msj.mostrarError("Error", "", "Ya existe el cliente");
                     }
-                }
+                    
+                    }
+                    
+                    
             }
             // Realiza las validaciones
             if (empresaRadio.isSelected()) {
@@ -169,20 +188,35 @@ public class VentanaClientesController implements Initializable {
                     // Muestra un mensaje de error si falta ingresar datos
                     msj.mostrarError("Error", "", "Falta ingresar datos obligatorios.");
                 } else {
-                    if (ValidacionDeEntrada.validarEmail(cliente.getMail()) &&
-                            ValidacionDeEntrada.validarCuil(cliente.getCuil()) &&
-                            ValidacionDeEntrada.validarTelefono(cliente.getTelefono())) {
-                        try {
-                            ClienteDAOImpl dao = new ClienteDAOImpl();
-                            dao.insertar(cliente);
-                            completarTabla();
-                            vaciarCampos();
-                            manejador.configurarBotones(false);
-                            msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el cliente correctamente.");
-                        } catch (Exception e) {
-                            msj.mostrarError("Error", "", "No se pudo agregar el cliente.");
-                            e.printStackTrace();
+                	
+                	for (Cliente clienteEnTabla : tablaClientes.getItems()) {
+                		if (clienteEnTabla.getCuit() != null) {
+                			if (clienteEnTabla.getCuit().equals(cliente.getCuit())) {
+                    			clienteRepetido = true;
+                    			break;
+                    		}
+                		}		
+                	}
+                	
+                	
+                    if (!clienteRepetido) {
+                    	if (ValidacionDeEntrada.validarEmail(cliente.getMail()) &&
+                                ValidacionDeEntrada.validarCuil(cliente.getCuil()) &&
+                                ValidacionDeEntrada.validarTelefono(cliente.getTelefono())) {
+                            try {
+                                ClienteDAOImpl dao = new ClienteDAOImpl();
+                                dao.insertar(cliente);
+                                completarTabla();
+                                vaciarCampos();
+                                manejador.configurarBotones(false);
+                                msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el cliente correctamente.");
+                            } catch (Exception e) {
+                                msj.mostrarError("Error", "", "No se pudo agregar el cliente.");
+                                e.printStackTrace();
+                            }
                         }
+                    } else {
+                    	msj.mostrarError("Error", "", "Ya existe el cliente");
                     }
                 }
             }
@@ -323,6 +357,65 @@ public class VentanaClientesController implements Initializable {
             }
         }
     }
+    
+    
+    @FXML
+    void autoCompletarPorDni(ActionEvent event) {
+    	PersonaDAOImpl p = new PersonaDAOImpl();
+        ObservableList<Persona> personas = null;
+        try {
+            personas = p.listarTodos();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        for (Persona persona : personas) {
+        	if (persona.getDni() != null) {
+        		if (persona.getDni().equals(campoDni.getText())) {
+                	campoNombre.setText(persona.getNombre());
+                    campoApellido.setText(persona.getApellido());
+                    campoCuil.setText(persona.getCuil());
+                    campoRazonSocial.setText(persona.getRazonSocial());
+                    comboProvincia.setValue(persona.getProvincia());
+                    campoLocalidad.setText(persona.getLocalidad());
+                    campoCalle.setText(persona.getCalle());
+                    campoTelefono.setText(persona.getTelefono());
+                    campoEmail.setText(persona.getMail());
+                    campoCuil.requestFocus();
+                    empresaRadio.setDisable(true);
+                    return;
+                }
+        	}            
+        }
+    }
+    
+    @FXML
+    void autocompletarPorCuit(ActionEvent event) {
+    	PersonaDAOImpl p = new PersonaDAOImpl();
+        ObservableList<Persona> personas = null;
+        try {
+            personas = p.listarTodos();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        for (Persona persona : personas) {
+        	if(persona.getCuit() != null) {
+        		if (persona.getCuit().equals(campoCuil.getText())) {
+                    campoCuil.setText(persona.getCuit());
+                    campoRazonSocial.setText(persona.getRazonSocial());
+                    comboProvincia.setValue(persona.getProvincia());
+                    campoLocalidad.setText(persona.getLocalidad());
+                    campoCalle.setText(persona.getCalle());
+                    campoTelefono.setText(persona.getTelefono());
+                    campoEmail.setText(persona.getMail());
+                    personaRadio.setDisable(true);
+                    return;
+                }
+        	}
+            
+        }
+    }
+    
+    
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -367,6 +460,7 @@ public class VentanaClientesController implements Initializable {
                 campoLocalidad.setDisable(false);
                 // Focus en Dni
                 campoDni.requestFocus();
+//                vaciarSoloTexto();
             } else if (newValue == empresaRadio) {
                 // Habilita campos relacionados con empresas
                 campoDni.setDisable(true);
@@ -385,6 +479,7 @@ public class VentanaClientesController implements Initializable {
                 campoApellido.setText("");
                 // Focus en el campo Cuil
                 campoCuil.requestFocus();
+//                vaciarSoloTexto();
             }
         });
     }
@@ -409,7 +504,7 @@ public class VentanaClientesController implements Initializable {
         this.colId.setCellValueFactory(new PropertyValueFactory<>("idCliente"));
         this.colNom.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         this.colApel.setCellValueFactory(new PropertyValueFactory<>("apellido"));
-        this.colRazonSocial.setCellValueFactory(new PropertyValueFactory<>("razonSocial"));
+        this.colRazonSocial.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getRazonSocial()));
         this.colProv.setCellValueFactory(new PropertyValueFactory<>("provincia"));
         this.colLoc.setCellValueFactory(new PropertyValueFactory<>("localidad"));
         this.colCalle.setCellValueFactory(new PropertyValueFactory<>("calle"));
@@ -478,6 +573,21 @@ public class VentanaClientesController implements Initializable {
         // Deshabilita todos los campos de texto
         deshabilitarCamposTexto();
     }
+    
+    public void vaciarSoloTexto() {
+    	campoDni.setText("");
+        campoNombre.setText("");
+        campoApellido.setText("");
+        campoRazonSocial.setText("");
+        comboProvincia.getSelectionModel().clearSelection();
+        campoLocalidad.setText("");
+        campoCalle.setText("");
+        campoEmail.setText("");
+        campoTelefono.setText("");
+        campoBuscar.setText("");
+        campoCuil.setText("");
+        comboProvincia.setValue("Chaco");
+    }
 
     @FXML
     void filtrarClientes(KeyEvent event) {
@@ -540,6 +650,7 @@ public class VentanaClientesController implements Initializable {
         cliente.setLocalidad(localidadIngresada);
         cliente.setCalle(calleIngresada);
         cliente.setCuil(cuilIngresado);
+        cliente.setCuit(cuilIngresado);
         cliente.setRazonSocial(razonSocialIngresada);
         cliente.setMail(emailIngresado);
         cliente.setTelefono(telefonoIngresado);

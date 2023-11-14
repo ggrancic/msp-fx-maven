@@ -26,8 +26,9 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
                 // se crea una instancia de cliente para cada fila de resultados
                 Cliente cliente = new Cliente();
                 cliente.setIdCliente(rs.getInt("id_cliente"));
-                cliente.setCuil(rs.getString("cuil"));
-                cliente.setRazonSocial(rs.getString("razon_social"));
+                cliente.setCuil(rs.getString("p.cuil"));
+                cliente.setCuit(rs.getString("p.cuit"));
+                cliente.setRazonSocial(rs.getString("p.razon_social"));
                 cliente.setIdPersona(rs.getInt("id_persona"));
                 cliente.setNombre(rs.getString("nombre"));
                 cliente.setApellido(rs.getString("apellido"));
@@ -37,20 +38,6 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
                 cliente.setDni(rs.getString("dni"));
                 cliente.setMail(rs.getString("mail"));
                 cliente.setTelefono(rs.getString("telefono"));
-
-                /*Persona persona = new Persona();
-                persona.setIdPersona(rs.getInt("id_persona"));
-                persona.setNombre(rs.getString("nombre"));
-                persona.setApellido(rs.getString("apellido"));
-                persona.setProvincia(rs.getString("provincia"));
-                persona.setLocalidad(rs.getString("localidad"));
-                persona.setCalle(rs.getString("calle"));
-                persona.setDni(rs.getString("dni"));
-                persona.setMail(rs.getString("mail"));
-                persona.setTelefono(rs.getString("telefono"));*/
-
-                // Asignar la persona al proveedor
-                //proveedor.setPersona(persona);
 
                 lista.add(cliente); // Agrega el proveedor a la lista
             }
@@ -69,9 +56,10 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
     public void insertar(Cliente cliente) throws Exception {
         try {
             this.conectar();
-            String consultaSiExiste = "SELECT id_persona FROM personas WHERE dni = ?";
+            String consultaSiExiste = "SELECT id_persona FROM personas WHERE dni = ? OR cuit = ?";
             PreparedStatement miSt = this.con.prepareStatement(consultaSiExiste);
             miSt.setString(1, cliente.getDni());
+            miSt.setString(2, cliente.getCuit());
             ResultSet result = miSt.executeQuery();
 
             // Inicializo el id de la persona...
@@ -84,8 +72,8 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
                 // Este es el caso de que no existe la persona en la db. Por lo tanto, tengo que tomar los datos
                 // que vienen del formulario y dar de alta a la persona en la db.
                 // Primero, insertamos los datos en la tabla "Personas"
-                String queryPersonas = "INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, cuil, razon_social, mail, telefono) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                String queryPersonas = "INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, mail, telefono) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 PreparedStatement stPersonas = this.con.prepareStatement(queryPersonas);
                 stPersonas.setString(1, cliente.getNombre());
                 stPersonas.setString(2, cliente.getApellido());
@@ -93,10 +81,8 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
                 stPersonas.setString(4, cliente.getLocalidad());
                 stPersonas.setString(5, cliente.getCalle());
                 stPersonas.setString(6, cliente.getDni());
-                stPersonas.setString(7, cliente.getCuil());
-                stPersonas.setString(8, cliente.getRazonSocial());
-                stPersonas.setString(9, cliente.getMail());
-                stPersonas.setString(10, cliente.getTelefono());
+                stPersonas.setString(7, cliente.getMail());
+                stPersonas.setString(8, cliente.getTelefono());
                 stPersonas.executeUpdate();
                 stPersonas.close();
 
@@ -106,8 +92,19 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
                     idPersonaFK = rs.getInt(1);
                 }
                 rs.close();
-                stGetId.close();
+                stGetId.close();    
             }
+            
+            String queryUpdate = "UPDATE personas SET razon_social = ?, cuil = ?, cuit = ? WHERE id_persona = ?";
+            PreparedStatement stUpdate = this.con.prepareStatement(queryUpdate);
+            stUpdate.setString(1, cliente.getRazonSocial());
+            stUpdate.setString(2, cliente.getCuil());
+            stUpdate.setString(3, cliente.getCuit());
+            stUpdate.setInt(4, idPersonaFK);
+            stUpdate.executeUpdate();
+            stUpdate.close();
+            
+            
             // Por ultimo, insertamos los datos en la tabla "Clientes" usando el ID de la persona (clave foranea)
             String queryClientes = "INSERT INTO clientes (idpersona, id_cliente) VALUES (?, ?)";
             PreparedStatement stClientes = this.con.prepareStatement(queryClientes);
@@ -130,37 +127,19 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
             con.setAutoCommit(false);
 
             // Obtenemos el id_persona asociado al proveedor que se va a eliminar
-            int idPersona = cliente.getIdPersona();
+            int idcliente = cliente.getIdCliente();
 
             // Utiliza una sentencia SQL que elimine registros de ambas tablas en una sola consulta
             PreparedStatement stEliminar = con.prepareStatement(
-                    "DELETE clientes, personas " +
-                            "FROM clientes " +
-                            "INNER JOIN personas ON clientes.idpersona = personas.id_persona " +
-                            "WHERE clientes.idpersona = ?"
+                    "DELETE FROM clientes WHERE id_cliente = ?"
             );
-            stEliminar.setInt(1, idPersona);
+            stEliminar.setInt(1, idcliente);
             stEliminar.executeUpdate();
             stEliminar.close();
 
             // Confirmamos la transacción (hacemos los cambios permanentes)
             con.commit();
 
-            /*
-            // Eliminamos el registro  en la tabla "proveedores"
-            PreparedStatement stEliminarProveedor = con.prepareStatement("DELETE FROM proveedores WHERE id_persona = ?");
-            stEliminarProveedor.setInt(1, idPersona);
-            stEliminarProveedor.executeUpdate();
-            stEliminarProveedor.close();
-
-            // Luego, eliminamos el registro en la tabla "personas"
-            PreparedStatement stEliminarPersona = con.prepareStatement("DELETE FROM personas WHERE id_persona = ?");
-            stEliminarPersona.setInt(1, idPersona);
-            stEliminarPersona.executeUpdate();
-            stEliminarPersona.close();
-
-            // Confirmamos la transacción (hacemos los cambios permanentes)
-            con.commit();*/
         } catch (Exception e) {
             // Si ocurre un error, revertimos la transacción
             con.rollback();
