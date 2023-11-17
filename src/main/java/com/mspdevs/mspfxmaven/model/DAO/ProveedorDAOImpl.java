@@ -35,20 +35,6 @@ public class ProveedorDAOImpl extends ConexionMySQL implements ProveedorDAO {
                 proveedor.setMail(rs.getString("mail"));
                 proveedor.setTelefono(rs.getString("telefono"));
 
-                /*Persona persona = new Persona();
-                persona.setIdPersona(rs.getInt("id_persona"));
-                persona.setNombre(rs.getString("nombre"));
-                persona.setApellido(rs.getString("apellido"));
-                persona.setProvincia(rs.getString("provincia"));
-                persona.setLocalidad(rs.getString("localidad"));
-                persona.setCalle(rs.getString("calle"));
-                persona.setDni(rs.getString("dni"));
-                persona.setMail(rs.getString("mail"));
-                persona.setTelefono(rs.getString("telefono"));*/
-
-                // Asignar la persona al proveedor
-                //proveedor.setPersona(persona);
-
                 lista.add(proveedor); // Agrega el proveedor a la lista
             }
             rs.close();
@@ -81,8 +67,8 @@ public class ProveedorDAOImpl extends ConexionMySQL implements ProveedorDAO {
                 // Este es el caso de que no existe la persona en la db. Por lo tanto, tengo que tomar los datos
                 // que vienen del formulario y dar de alta a la persona en la db.
                 // Primero, insertamos los datos en la tabla "Personas"
-                String queryPersonas = "INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, cuit, razon_social, mail, telefono) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                String queryPersonas = "INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, mail, telefono) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 PreparedStatement stPersonas = this.con.prepareStatement(queryPersonas);
                 stPersonas.setString(1, proveedor.getNombre());
                 stPersonas.setString(2, proveedor.getApellido());
@@ -90,10 +76,8 @@ public class ProveedorDAOImpl extends ConexionMySQL implements ProveedorDAO {
                 stPersonas.setString(4, proveedor.getLocalidad());
                 stPersonas.setString(5, proveedor.getCalle());
                 stPersonas.setString(6, proveedor.getDni());
-                stPersonas.setString(7, proveedor.getCuit());
-                stPersonas.setString(8, proveedor.getRazonSocial());
-                stPersonas.setString(9, proveedor.getMail());
-                stPersonas.setString(10, proveedor.getTelefono());
+                stPersonas.setString(7, proveedor.getMail());
+                stPersonas.setString(8, proveedor.getTelefono());
                 stPersonas.executeUpdate();
                 stPersonas.close();
 
@@ -105,6 +89,16 @@ public class ProveedorDAOImpl extends ConexionMySQL implements ProveedorDAO {
                 rs.close();
                 stGetId.close();
             }
+            
+            String queryUpdate = "UPDATE personas SET razon_social = ?, cuil = ?, cuit = ? WHERE id_persona = ?";
+            PreparedStatement stUpdate = this.con.prepareStatement(queryUpdate);
+            stUpdate.setString(1, proveedor.getRazonSocial());
+            stUpdate.setString(2, proveedor.getCuil());
+            stUpdate.setString(3, proveedor.getCuit());
+            stUpdate.setInt(4, idPersonaFK);
+            stUpdate.executeUpdate();
+            stUpdate.close();
+            
             // Por ultimo, insertamos los datos en la tabla "Proveedores" usando el ID de la persona (clave foranea)
             String queryProveedores = "INSERT INTO proveedores (id_persona, id_proveedor) VALUES (?, ?)";
             PreparedStatement stProveedores = this.con.prepareStatement(queryProveedores);
@@ -123,53 +117,19 @@ public class ProveedorDAOImpl extends ConexionMySQL implements ProveedorDAO {
     public void eliminar(Proveedor proveedor) throws Exception {
         try {
             this.conectar();
-            // Comenzamos una transacción para asegurar la integridad de los datos
+
             con.setAutoCommit(false);
             // Obtenemos el id_persona asociado al proveedor que se va a eliminar
-            int idPersona = proveedor.getIdPersona();
+            int idProveedor = proveedor.getIdProveedor();
 
             // Utiliza una sentencia SQL que elimine registros de ambas tablas en una sola consulta
-            PreparedStatement stEliminar = con.prepareStatement(
-                    "DELETE proveedores, personas " +
-                            "FROM proveedores " +
-                            "INNER JOIN personas ON proveedores.id_persona = personas.id_persona " +
-                            "WHERE proveedores.id_persona = ?"
-            );
-            stEliminar.setInt(1, idPersona);
+            PreparedStatement stEliminar = con.prepareStatement("DELETE FROM proveedores WHERE id_proveedor = ?");
+            stEliminar.setInt(1, idProveedor);
             stEliminar.executeUpdate();
             stEliminar.close();
 
             // Confirmamos la transacción (hacemos los cambios permanentes)
             con.commit();
-            /*
-
-            // Utiliza una sentencia SQL que elimine registros de ambas tablas en una sola consulta
-            PreparedStatement stEliminar = con.prepareStatement(
-                    "DELETE proveedores, personas " +
-                            "FROM proveedores " +
-                            "INNER JOIN personas ON proveedores.id_persona = personas.id_persona " +
-                            "WHERE proveedores.id_persona = ?"
-            );
-            stEliminar.setInt(1, idPersona);
-            stEliminar.executeUpdate();
-            stEliminar.close();
-
-            // Confirmamos la transacción (hacemos los cambios permanentes)
-            con.commit();*/
-
-            /*
-            // Eliminamos el registro  en la tabla "proveedores"
-            PreparedStatement stEliminarProveedor = con.prepareStatement("DELETE FROM proveedores WHERE id_persona = ?");
-            stEliminarProveedor.setInt(1, idPersona);
-            stEliminarProveedor.executeUpdate();
-            stEliminarProveedor.close();
-            // Luego, eliminamos el registro en la tabla "personas"
-            PreparedStatement stEliminarPersona = con.prepareStatement("DELETE FROM personas WHERE id_persona = ?");
-            stEliminarPersona.setInt(1, idPersona);
-            stEliminarPersona.executeUpdate();
-            stEliminarPersona.close();
-            // Confirmamos la transacción (hacemos los cambios permanentes)
-            con.commit();*/
         } catch (Exception e) {
             // Si ocurre un error, revertimos la transacción
             con.rollback();

@@ -46,7 +46,7 @@
             <Separator opacity="0.0" orientation="VERTICAL" prefHeight="20.0" prefWidth="0.0" />
             <Pane prefHeight="45.0" prefWidth="360.0">
                <children>
-                  <Button fx:id="btnLogin" layoutX="251.0" layoutY="3.0" mnemonicParsing="false" onMouseClicked="#verificarLogin" prefHeight="40.0" prefWidth="95.0" style="-fx-focus-color: red; -fx-faint-focus-color: #ff000022;" styleClass="login-button" stylesheets="@../styles/style.css" text="Login" textFill="WHITE" />
+                  <Button fx:id="btnLogin" layoutX="251.0" layoutY="3.0" mnemonicParsing="false" onAction="#accionBtnLogin" prefHeight="40.0" prefWidth="95.0" style="-fx-focus-color: red; -fx-faint-focus-color: #ff000022;" styleClass="login-button" stylesheets="@../styles/style.css" text="Login" textFill="WHITE" />
                </children>
             </Pane>
          </children>

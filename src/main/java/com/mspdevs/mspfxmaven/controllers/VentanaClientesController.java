@@ -148,7 +148,7 @@ public class VentanaClientesController implements Initializable {
                     }            
                     
                     for (Cliente clienteEnTabla : tablaClientes.getItems()) {
-                		if (clienteEnTabla.getCuil().equals(cliente.getCuil()) || clienteEnTabla.getCuil().equals(cliente.getCuit())) {
+                		if (clienteEnTabla.getCuit().equals(cliente.getCuit())) {
                 			clienteRepetido = true;
                 			break;
                 		}
@@ -390,29 +390,32 @@ public class VentanaClientesController implements Initializable {
     
     @FXML
     void autocompletarPorCuit(ActionEvent event) {
-    	PersonaDAOImpl p = new PersonaDAOImpl();
-        ObservableList<Persona> personas = null;
-        try {
-            personas = p.listarTodos();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        for (Persona persona : personas) {
-        	if(persona.getCuit() != null) {
-        		if (persona.getCuit().equals(campoCuil.getText())) {
-                    campoCuil.setText(persona.getCuit());
-                    campoRazonSocial.setText(persona.getRazonSocial());
-                    comboProvincia.setValue(persona.getProvincia());
-                    campoLocalidad.setText(persona.getLocalidad());
-                    campoCalle.setText(persona.getCalle());
-                    campoTelefono.setText(persona.getTelefono());
-                    campoEmail.setText(persona.getMail());
-                    personaRadio.setDisable(true);
-                    return;
-                }
-        	}
-            
-        }
+    	
+    	if (!(personaRadio.isSelected())) {
+    		PersonaDAOImpl p = new PersonaDAOImpl();
+            ObservableList<Persona> personas = null;
+            try {
+                personas = p.listarTodos();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            for (Persona persona : personas) {
+            	if(persona.getCuit() != null) {
+            		if (persona.getCuit().equals(campoCuil.getText())) {
+                        campoCuil.setText(persona.getCuit());
+                        campoRazonSocial.setText(persona.getRazonSocial());
+                        comboProvincia.setValue(persona.getProvincia());
+                        campoLocalidad.setText(persona.getLocalidad());
+                        campoCalle.setText(persona.getCalle());
+                        campoTelefono.setText(persona.getTelefono());
+                        campoEmail.setText(persona.getMail());
+                        personaRadio.setDisable(true);
+                        return;
+                    }
+            	}
+                
+            }
+    	}
     }
     
     
@@ -615,7 +618,7 @@ public class VentanaClientesController implements Initializable {
         String provinciaIngresada = this.comboProvincia.getSelectionModel().getSelectedItem();
         String localidadIngresada = FormatoTexto.formatearTexto(this.campoLocalidad.getText());
         String calleIngresada = FormatoTexto.formatearTexto(this.campoCalle.getText());
-        String cuilIngresado = this.campoCuil.getText();
+        String cuitIngresado = this.campoCuil.getText();
         String dniIngresado = campoDni.getText();
         String razonSocialIngresada = campoRazonSocial.getText();
         String emailIngresado = this.campoEmail.getText().toLowerCase();
@@ -627,7 +630,8 @@ public class VentanaClientesController implements Initializable {
         cliente.setProvincia(provinciaIngresada);
         cliente.setLocalidad(localidadIngresada);
         cliente.setCalle(calleIngresada);
-        cliente.setCuil(cuilIngresado);
+        cliente.setCuil(cuitIngresado);
+        cliente.setCuit(cuitIngresado);
         cliente.setDni(dniIngresado);
         cliente.setRazonSocial(razonSocialIngresada);
         cliente.setMail(emailIngresado);

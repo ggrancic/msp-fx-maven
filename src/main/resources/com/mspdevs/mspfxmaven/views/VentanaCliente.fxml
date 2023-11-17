@@ -195,7 +195,7 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <TextField fx:id="campoDni" onAction="#autoCompletarPorDni" GridPane.columnIndex="1" />
+                              <TextField fx:id="campoDni" onAction="#autoCompletarPorDni" styleClass="disabled-label" stylesheets="@../styles/style.css" GridPane.columnIndex="1" />
                               <Label text="DNI">
                                  <font>
                                     <Font size="14.0" />
@@ -212,7 +212,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TextField fx:id="campoCuil" onAction="#autocompletarPorCuit" GridPane.columnIndex="1" />
+                              <TextField fx:id="campoCuil" onAction="#autocompletarPorCuit" styleClass="disabled-label" stylesheets="@../styles/style.css" GridPane.columnIndex="1" />
                               <Label text="CUIL / CUIT">
                                  <font>
                                     <Font size="14.0" />
@@ -232,7 +232,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TextField fx:id="campoNombre" GridPane.columnIndex="1" />
+                              <TextField fx:id="campoNombre" styleClass="disabled-label" stylesheets="@../styles/style.css" GridPane.columnIndex="1" />
                               <Label text="Nombre">
                                  <font>
                                     <Font size="14.0" />
@@ -252,7 +252,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TextField fx:id="campoApellido" GridPane.columnIndex="1" />
+                              <TextField fx:id="campoApellido" styleClass="disabled-label" stylesheets="@../styles/style.css" GridPane.columnIndex="1" />
                               <Label text="Apellido">
                                  <font>
                                     <Font size="14.0" />
@@ -269,7 +269,7 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <TextField fx:id="campoRazonSocial" prefWidth="137.0" GridPane.columnIndex="1" />
+                              <TextField fx:id="campoRazonSocial" prefWidth="137.0" styleClass="disabled-label" stylesheets="@../styles/dialog-style.css" GridPane.columnIndex="1" />
                               <Label text="Razón Social">
                                  <font>
                                     <Font size="14.0" />
@@ -286,7 +286,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TextField fx:id="campoEmail" GridPane.columnIndex="1" />
+                              <TextField fx:id="campoEmail" styleClass="disabled-label" stylesheets="@../styles/style.css" GridPane.columnIndex="1" />
                               <Label text="Email">
                                  <font>
                                     <Font size="14.0" />
@@ -311,7 +311,7 @@
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                              <TextField fx:id="campoCalle" GridPane.columnIndex="1" />
+                              <TextField fx:id="campoCalle" styleClass="disabled-label" stylesheets="@../styles/style.css" GridPane.columnIndex="1" />
                            </children>
                         </GridPane>
                         <GridPane layoutX="158.0" layoutY="86.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
@@ -323,7 +323,7 @@
                               <RowConstraints vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TextField fx:id="campoTelefono" prefWidth="162.0" GridPane.columnIndex="1" />
+                              <TextField fx:id="campoTelefono" prefWidth="162.0" styleClass="disabled-label" stylesheets="@../styles/style.css" GridPane.columnIndex="1" />
                               <Label text="Teléfono">
                                  <font>
                                     <Font size="14.0" />
@@ -369,7 +369,7 @@
                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <TextField fx:id="campoLocalidad" GridPane.columnIndex="1" />
+                              <TextField fx:id="campoLocalidad" styleClass="disabled-label" stylesheets="@../styles/style.css" GridPane.columnIndex="1" />
                               <Label text="Localidad">
                                  <font>
                                     <Font size="14.0" />

@@ -120,6 +120,9 @@ public class VentanaProveedoresController implements Initializable  {
 
     @FXML
     void accionBotonAgregar(ActionEvent event) {
+    	
+    	boolean proveedorRepetido = false;
+    	
         // Comprueba si se ha seleccionado un Toggle
         if (!personaRB.isSelected() && !empresaRB.isSelected()) {
             msj.mostrarError("Error", "", "Debe seleccionar una opción: Persona o Empresa.");
@@ -140,22 +143,34 @@ public class VentanaProveedoresController implements Initializable  {
                     if (proveedor.getRazonSocial().isEmpty()) {
                         proveedor.setRazonSocial(proveedor.getNombre() + " " + proveedor.getApellido());
                     }
-                    // Realiza las validaciones
-                    if (ValidacionDeEntrada.validarEmail(proveedor.getMail()) &&
-                            ValidacionDeEntrada.validarCuil(proveedor.getCuit()) &&
-                            ValidacionDeEntrada.validarDNI(proveedor.getDni()) &&
-                            ValidacionDeEntrada.validarTelefono(proveedor.getTelefono())) {
-                        try {
-                            ProveedorDAOImpl dao = new ProveedorDAOImpl();
-                            dao.insertar(proveedor);
-                            completarTabla();
-                            vaciarCampos();
-                            manejador.configurarBotones(false);
-                            msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el proveedor correctamente.");
-                        } catch (Exception e) {
-                            msj.mostrarError("Error", "", "No se pudo agregar el proveedor.");
-                            e.printStackTrace();
+                    
+                    
+                    for (Proveedor proveedorEnTabla : tablaProveedores.getItems()) {
+						if (proveedorEnTabla.getCuit().equals(proveedor.getCuit())) {
+							proveedorRepetido = true;
+							break;
+						}
+					}
+                    
+                    if (!proveedorRepetido) {
+                        if (ValidacionDeEntrada.validarEmail(proveedor.getMail()) &&
+                                ValidacionDeEntrada.validarCuil(proveedor.getCuit()) &&
+                                ValidacionDeEntrada.validarDNI(proveedor.getDni()) &&
+                                ValidacionDeEntrada.validarTelefono(proveedor.getTelefono())) {
+                            try {
+                                ProveedorDAOImpl dao = new ProveedorDAOImpl();
+                                dao.insertar(proveedor);
+                                completarTabla();
+                                vaciarCampos();
+                                manejador.configurarBotones(false);
+                                msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el proveedor correctamente.");
+                            } catch (Exception e) {
+                                msj.mostrarError("Error", "", "No se pudo agregar el proveedor.");
+                                e.printStackTrace();
+                            }
                         }
+                    } else {
+                    	msj.mostrarError("Error", "", "Ya existe el proveedor");
                     }
                 }
             }
@@ -169,21 +184,33 @@ public class VentanaProveedoresController implements Initializable  {
                     // Muestra un mensaje de error si falta ingresar datos
                     msj.mostrarError("Error", "", "Falta ingresar datos obligatorios.");
                 } else {
-                    if (ValidacionDeEntrada.validarEmail(proveedor.getMail()) &&
-                            ValidacionDeEntrada.validarCuil(proveedor.getCuit()) &&
-                            ValidacionDeEntrada.validarTelefono(proveedor.getTelefono())) {
-                        try {
-                            ProveedorDAOImpl dao = new ProveedorDAOImpl();
-                            dao.insertar(proveedor);
-                            completarTabla();
-                            vaciarCampos();
-                            manejador.configurarBotones(false);
-                            msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el proveedor correctamente.");
-                        } catch (Exception e) {
-                            msj.mostrarError("Error", "", "No se pudo agregar el proveedor.");
-                            e.printStackTrace();
+                	
+                	for (Proveedor proveedorEnTabla : tablaProveedores.getItems()) {
+						if (proveedorEnTabla.getCuit().equals(proveedor.getCuit())) {
+							proveedorRepetido = true;
+							break;
+						}
+					}
+                	
+                	if (!proveedorRepetido) {
+                		if (ValidacionDeEntrada.validarEmail(proveedor.getMail()) &&
+                                ValidacionDeEntrada.validarCuil(proveedor.getCuit()) &&
+                                ValidacionDeEntrada.validarTelefono(proveedor.getTelefono())) {
+                            try {
+                                ProveedorDAOImpl dao = new ProveedorDAOImpl();
+                                dao.insertar(proveedor);
+                                completarTabla();
+                                vaciarCampos();
+                                manejador.configurarBotones(false);
+                                msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el proveedor correctamente.");
+                            } catch (Exception e) {
+                                msj.mostrarError("Error", "", "No se pudo agregar el proveedor.");
+                                e.printStackTrace();
+                            }
                         }
-                    }
+                	} else {
+                		msj.mostrarError("Error", "", "Ya existe el proveedor");
+                	}
                 }
             }
         }
@@ -325,6 +352,83 @@ public class VentanaProveedoresController implements Initializable  {
             }
         }
     }
+    
+    @FXML
+    void autoCompletarPorDni(ActionEvent event) {
+    	PersonaDAOImpl p = new PersonaDAOImpl();
+        ObservableList<Persona> personas = null;
+        try {
+            personas = p.listarTodos();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        for (Persona persona : personas) {
+        	if (persona.getDni() != null) {
+        		if (persona.getDni().equals(campoDni.getText())) {
+                	campoNombre.setText(persona.getNombre());
+                    campoApellido.setText(persona.getApellido());
+                    campoCuit.setText(persona.getCuil());
+                    campoRazonSocial.setText(persona.getRazonSocial());
+                    comboProvincia.setValue(persona.getProvincia());
+                    campoLocalidad.setText(persona.getLocalidad());
+                    campoCalle.setText(persona.getCalle());
+                    campoTelefono.setText(persona.getTelefono());
+                    campoEmail.setText(persona.getMail());
+                    campoCuit.requestFocus();
+                    empresaRB.setDisable(true);
+                    return;
+                }
+        	}            
+        }
+    }
+    
+    @FXML
+    void autocompletarPorCuit(ActionEvent event) {
+    	
+    	if (!(personaRB.isSelected())) {
+    		PersonaDAOImpl p = new PersonaDAOImpl();
+            ObservableList<Persona> personas = null;
+            try {
+                personas = p.listarTodos();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            for (Persona persona : personas) {
+            	if(persona.getCuit() != null) {
+            		if (persona.getCuit().equals(campoCuit.getText())) {
+                        campoCuit.setText(persona.getCuit());
+                        campoRazonSocial.setText(persona.getRazonSocial());
+                        comboProvincia.setValue(persona.getProvincia());
+                        campoLocalidad.setText(persona.getLocalidad());
+                        campoCalle.setText(persona.getCalle());
+                        campoTelefono.setText(persona.getTelefono());
+                        campoEmail.setText(persona.getMail());
+                        personaRB.setDisable(true);
+                        return;
+                    }
+            	}
+                
+            }
+    	}
+    	
+    	
+    }
+    
+    
+    public void vaciarSoloTexto() {
+    	campoDni.setText("");
+        campoNombre.setText("");
+        campoApellido.setText("");
+        campoRazonSocial.setText("");
+        comboProvincia.getSelectionModel().clearSelection();
+        campoLocalidad.setText("");
+        campoCalle.setText("");
+        campoEmail.setText("");
+        campoTelefono.setText("");
+        campoCuit.setText("");
+        comboProvincia.setValue("Chaco");
+    }
+    
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

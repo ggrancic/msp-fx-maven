@@ -123,3 +123,8 @@
 .contenedorRC:hover {
 	-fx-background-color: rgba(0,0,0,0.2);
 }
+
+.disabled-label:disabled {
+    -fx-background-color: lightgray;
+    -fx-opacity: 1;
+}

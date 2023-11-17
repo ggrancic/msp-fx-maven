@@ -7,6 +7,8 @@ import com.mspdevs.mspfxmaven.model.DAO.EmpleadoDAOImpl;
 import com.mspdevs.mspfxmaven.model.Empleado;
 import com.mspdevs.mspfxmaven.model.DAO.EmpleadoDAOImpl;
 import com.mspdevs.mspfxmaven.utils.Alerta;
+import com.mspdevs.mspfxmaven.utils.LoginChecker;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -14,11 +16,14 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
@@ -46,39 +51,19 @@ public class LoginMSPController implements Initializable {
         // Acá se inicializa todo lo referido a los elementos del fxml.
 
     }
+       
 
     @FXML
-    void verificarLogin(MouseEvent event) {
-        String usuarioIngresado = campoUser.getText();
+    void accionBtnLogin(ActionEvent event) {
+    	String usuarioIngresado = campoUser.getText();
         String claveIngresada = campoClave.getText();
-        String nombreObtenido;
-        String rol;
-        Empleado empleadoAutenticado = null;
-        boolean ok = false;
-
-        EmpleadoDAOImpl empleados = new EmpleadoDAOImpl();
-        ObservableList<Empleado> listaEmpleados = null;
-
-		try {
-			listaEmpleados = empleados.listarTodos();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+    	
+    	LoginChecker loginCheck = new LoginChecker(usuarioIngresado, claveIngresada);
+    	loginCheck.autenticarEmpleado();
         
-        for (Empleado empleado : listaEmpleados) {
-			if (usuarioIngresado.equals(empleado.getNombre_usuario()) && claveIngresada.equals(empleado.getClave())) {
-				try {
-					empleadoAutenticado = empleado;
-					ok = true;
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-        
-        if (ok) {
+        if (loginCheck.getEstado()) {
         	try {
-				irAPantallaPcpal("/com/mspdevs/mspfxmaven/views/VentanaPrincipal.fxml", event, empleadoAutenticado);
+				irAPantallaPcpal("/com/mspdevs/mspfxmaven/views/VentanaPrincipal.fxml", event, loginCheck.getEmpleado());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -112,5 +97,10 @@ public class LoginMSPController implements Initializable {
 
         VentanaPrincipalController principalController = loader.getController();
         principalController.setCerrarEvento(newStage); // Configura el evento de cierre
+    }
+    
+    
+    public void disparar() {
+    	btnLogin.fire();
     }
 }

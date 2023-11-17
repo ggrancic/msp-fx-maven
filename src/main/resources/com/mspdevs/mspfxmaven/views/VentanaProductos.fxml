@@ -18,7 +18,7 @@
 <?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.SearchableComboBox?>
 
-<GridPane stylesheets="@../styles/style.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.VentanaProductosController">
+<GridPane stylesheets="@../styles/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mspdevs.mspfxmaven.controllers.VentanaProductosController">
    <columnConstraints>
       <ColumnConstraints halignment="CENTER" hgrow="NEVER" />
       <ColumnConstraints hgrow="ALWAYS" />
@@ -310,7 +310,7 @@
                   <Image url="@../imgs/caja-de-entrega128.png" />
                </image>
             </ImageView>
-            <Label alignment="CENTER" contentDisplay="CENTER" styleClass="shadow-abajo-2" text="Gestión de Productos" textFill="WHITE">
+            <Label alignment="CENTER" contentDisplay="CENTER" styleClass="shadow-abajo-2" text="Gestión de Inventario" textFill="WHITE">
                <font>
                   <Font name="SansSerif Bold" size="20.0" />
                </font>
