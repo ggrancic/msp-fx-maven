@@ -68,9 +68,9 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
             	// Este es el caso de que no existe la persona en la db. Por lo tanto, tengo que tomar los datos
             	// que vienen del formulario y dar de alta a la persona en la db.
             	
-            	String queryPersonas = "INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, mail, telefono)"
+            	String queryPersonas = "INSERT INTO personas (nombre, apellido, provincia, localidad, calle, dni, mail, telefono, cuit, cuil, razon_social)"
 
-                        + " VALUES (?,?,?,?,?,?,?,?)";
+                        + " VALUES (?,?,?,?,?,?,?,?,?,?,?)";
                 PreparedStatement stPersonas = this.con.prepareStatement(queryPersonas);
                 stPersonas.setString(1, empleado.getNombre());
                 stPersonas.setString(2, empleado.getApellido());
@@ -80,6 +80,9 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
                 stPersonas.setString(6, empleado.getDni());
                 stPersonas.setString(7, empleado.getMail());
                 stPersonas.setString(8, empleado.getTelefono());
+                stPersonas.setString(9, "");
+                stPersonas.setString(10, "");
+                stPersonas.setString(11, "");
                 stPersonas.executeUpdate();
                 stPersonas.close();
 

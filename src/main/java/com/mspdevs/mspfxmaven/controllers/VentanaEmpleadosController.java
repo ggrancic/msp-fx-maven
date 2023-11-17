@@ -115,6 +115,8 @@ public class VentanaEmpleadosController implements Initializable {
     void accionBotonAgregar(ActionEvent event) {
         // Obtiene los valores de los campos en un objeto Empleado
         Empleado empleado = obtenerValoresDeCampos();
+        
+        boolean clienteRepetido = false;
 
         // Verifica si algún campo de texto está vacío
         if (empleado.getNombre().isEmpty() || empleado.getApellido().isEmpty() || empleado.getProvincia().isEmpty() ||
@@ -123,21 +125,33 @@ public class VentanaEmpleadosController implements Initializable {
             // Muestra un mensaje de error si falta ingresar datos
             msj.mostrarError("Error", "", "Falta ingresar datos.");
         } else {
-            // Realiza las validaciones con ValidacionDeEntrada
-            if (ValidacionDeEntrada.validarEmail(empleado.getMail())  && ValidacionDeEntrada.validarSeleccionComboBox(comboAdmin, "Debe indicar si sera administrador o no.")
-                    && ValidacionDeEntrada.validarTelefono(empleado.getTelefono()) && ValidacionDeEntrada.validarDNI(empleado.getDni())) {
-                try {
-                    EmpleadoDAOImpl dao = new EmpleadoDAOImpl();
-                    dao.insertar(empleado);
-                    completarTabla();
-                    vaciarCampos();
-                    campoNombre.requestFocus();
-                    manejador.configurarBotones(false);
-                    msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el empleado correctamente.");
-                } catch (Exception e) {
-                    msj.mostrarError("Error", "", "No se pudo agregar el empleado.");
+        	
+        	
+        	for (Empleado empleadoEnTabla : tblEmpleados.getItems()) {
+        		if (empleadoEnTabla.getDni().equals(empleado.getDni())) {
+        			clienteRepetido = true;
+        		}
+        	}
+        	
+        	if (!clienteRepetido) {
+        		if (ValidacionDeEntrada.validarEmail(empleado.getMail())  && ValidacionDeEntrada.validarSeleccionComboBox(comboAdmin, "Debe indicar si sera administrador o no.")
+                        && ValidacionDeEntrada.validarTelefono(empleado.getTelefono()) && ValidacionDeEntrada.validarDNI(empleado.getDni())) {
+                    try {
+                        EmpleadoDAOImpl dao = new EmpleadoDAOImpl();
+                        dao.insertar(empleado);
+                        completarTabla();
+                        vaciarCampos();
+                        campoNombre.requestFocus();
+                        manejador.configurarBotones(false);
+                        msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el empleado correctamente.");
+                    } catch (Exception e) {
+                        msj.mostrarError("Error", "", "No se pudo agregar el empleado.");
+                    }
                 }
-            }
+        	} else {
+        		msj.mostrarError("Error", "", "Ya existe el empleado");
+        	}
+            
         }
     }
 

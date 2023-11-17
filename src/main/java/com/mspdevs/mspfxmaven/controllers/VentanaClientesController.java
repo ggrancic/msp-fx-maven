@@ -143,9 +143,9 @@ public class VentanaClientesController implements Initializable {
                 } else {
                 	
                     // Ajusta la Razón Social si está vacía (nombre + apellido)
-                    if (cliente.getRazonSocial().isEmpty()) {
+            		if (cliente.getRazonSocial().isEmpty()) {
                         cliente.setRazonSocial(cliente.getNombre() + " " + cliente.getApellido());
-                    }
+                    }            
                     
                     for (Cliente clienteEnTabla : tablaClientes.getItems()) {
                 		if (clienteEnTabla.getCuil().equals(cliente.getCuil()) || clienteEnTabla.getCuil().equals(cliente.getCuit())) {
