@@ -35,6 +35,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import com.mspdevs.mspfxmaven.Main;
+import com.mspdevs.mspfxmaven.model.Empleado;
+import com.mspdevs.mspfxmaven.model.DAO.EmpleadoDAOImpl;
 
 
 
@@ -93,7 +95,9 @@ public class VentanaPrincipalController implements Initializable {
 
     private volatile boolean stop = false;
 
-    private String idDeEmpleado = "";
+    private String nombreEmpleado;
+    
+    private int idEmpleado;
 
 
     @FXML
@@ -139,13 +143,12 @@ public class VentanaPrincipalController implements Initializable {
         VentanaVentasAlternativaController ventasAlternativaController = loader.getController();
 
         String nombreUsuario = usuarioLogueado.getText();
-        // Configura el usuario en el controlador de ventas
-        ventasAlternativaController.setUsuario(idDeEmpleado);
+        
+        EmpleadoDAOImpl empleadoDAO = new EmpleadoDAOImpl();
+        
+        ventasAlternativaController.setUsuario(idEmpleado);
 
         bpane.setCenter(root);
-        /*
-    	GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaVentasAlternativa.fxml"));
-    	bpane.setCenter(centro);*/
     }
 
     @FXML
@@ -161,6 +164,7 @@ public class VentanaPrincipalController implements Initializable {
 
         // BACKUP DE BD
         //usuarioLogueado.setText(loginController.getNombreUsuarioLogueado());
+
     }
 
     private void Timenow(){
@@ -353,13 +357,15 @@ public class VentanaPrincipalController implements Initializable {
             msj.mostrarAlertaInforme("Hola","Error en el backup", "Error general: " + e.getMessage());
         }
     }
-
-    public void mostrarUsuario(String usuario) {
-        usuarioLogueado.setText(usuario);
+    
+    public void obtenerEmpleado(Empleado empleadoAutenticado) {
+    	
+    	nombreEmpleado = empleadoAutenticado.getNombre() + " " + empleadoAutenticado.getApellido();
+    	idEmpleado = empleadoAutenticado.getId_empleado();
+    	
+    	usuarioLogueado.setText(nombreEmpleado);
+    	
     }
-
-
-
 
     // Agrega este método para manejar el evento de cierre
     public void setCerrarEvento(Stage primaryStage) {

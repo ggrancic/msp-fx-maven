@@ -67,7 +67,8 @@ public class VentaDAOImpl extends ConexionMySQL implements VentaDAO{
             }
 
         } catch (Exception e) {
-            throw e;
+            
+            e.printStackTrace();
         } finally {
             this.cerrarConexion();
         }

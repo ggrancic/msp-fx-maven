@@ -124,7 +124,7 @@ public class VentanaVentasAlternativaController implements Initializable {
 
     @FXML
     private Button botonInvisible;
-    private String usuario;
+    private int usuario;
     
     
     // ----------- METODOS ----------
@@ -146,7 +146,6 @@ public class VentanaVentasAlternativaController implements Initializable {
         String totalSinIvaText = campoIva.getText();
         String totalText = campoTotal.getText();
         String numeroFactura = campoNumFactura.getText();
-        String idEmpleado = usuario;
 
         LocalDate fechaSeleccionada = campoFecha.getValue();
         if (fechaSeleccionada != null) {
@@ -186,7 +185,7 @@ public class VentanaVentasAlternativaController implements Initializable {
         venta.setTotal(Double.parseDouble(totalText));
         venta.setTipo(tipo);
         venta.getCliente().setIdCliente(ClienteId);
-        venta.getEmpleado().setId_empleado(ClienteId);
+        venta.getEmpleado().setId_empleado(usuario);
 
         String nuevaRazonSocialSeleccionada = clienteBox.getSelectionModel().getSelectedItem();
 
@@ -204,7 +203,7 @@ public class VentanaVentasAlternativaController implements Initializable {
                 int cantidadDisponibleAnterior = productoDAO.obtenerCantidadDisponiblePorId(idProducto);
 
                 // Calcula la nueva cantidad disponible (cantidad anterior + cantidad nueva)
-                int nuevaCantidadDisponible = cantidadDisponibleAnterior - detalle.getProducto().getCantidadDisponible();
+                int nuevaCantidadDisponible = cantidadDisponibleAnterior - detalle.getCantidad();
 
                 // Actualiza el producto en la base de datos con la nueva cantidad disponible y el nuevo proveedor
                 productoDAO.actualizarProductoPorVenta(idProducto, nuevaCantidadDisponible);
@@ -426,8 +425,8 @@ public class VentanaVentasAlternativaController implements Initializable {
     }
 
     // En algún método de inicialización, cuando se abre la ventana de ventas:
-    public void setUsuario(String usuario) {
-        this.usuario = String.valueOf(usuario);
+    public void setUsuario(int idEmpleado) {
+        this.usuario = idEmpleado;
     }
     
     private ObservableList<Producto> cargarProductosDB() {

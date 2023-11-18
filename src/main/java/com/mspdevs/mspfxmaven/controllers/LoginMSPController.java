@@ -80,7 +80,7 @@ public class LoginMSPController implements Initializable {
 
 
         VentanaPrincipalController ventanaPrincipalController = loader.getController();
-        ventanaPrincipalController.mostrarUsuario(empleado.getNombre() + " " + empleado.getApellido());
+        ventanaPrincipalController.obtenerEmpleado(empleado);
         
         if (empleado.getEsAdmin().equals("N")) {
         	ventanaPrincipalController.habilitarSoloVentas();

@@ -177,4 +177,6 @@ public class EmpleadoDAOImpl extends ConexionMySQL implements EmpleadoDAO {
             this.cerrarConexion();
         }
     }
+    
+    
 }

@@ -216,27 +216,5 @@ public class ClienteDAOImpl extends ConexionMySQL implements ClienteDAO {
             this.cerrarConexion();
         }
         return idCliente;
-        /*
-        int idCliente = -1; // Valor predeterminado si no se encuentra el proveedor
-        try {
-            this.conectar();
-            //PreparedStatement st = this.con.prepareStatement("SELECT * FROM proveedores WHERE nombre = ?");
-            PreparedStatement st = this.con.prepareStatement(
-                    "SELECT c.id_cliente FROM clientes c " +
-                            "INNER JOIN personas per ON c.idpersona = per.id_persona " +
-                            "WHERE per.nombre = ? AND per.apellido = ?");
-            st.setString(1, nombre);
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) {
-                idCliente = rs.getInt("id_cliente");
-            }
-            rs.close();
-            st.close();
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            this.cerrarConexion();
-        }
-        return idCliente;*/
     }
 }
