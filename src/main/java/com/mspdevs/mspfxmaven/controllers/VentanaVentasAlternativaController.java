@@ -30,6 +30,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -40,6 +43,7 @@ import org.controlsfx.control.SearchableComboBox;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -50,6 +54,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class VentanaVentasAlternativaController implements Initializable {
     Alerta msj = new Alerta();
@@ -96,6 +101,9 @@ public class VentanaVentasAlternativaController implements Initializable {
     private TableColumn<DetalleVenta, Double> colTotal;
 
     @FXML
+    private TableColumn<DetalleVenta, Void> colEliminar;
+
+    @FXML
     private SearchableComboBox<String> productoBox;
 
     @FXML
@@ -103,6 +111,12 @@ public class VentanaVentasAlternativaController implements Initializable {
 
     @FXML
     private ComboBox<String> tipoFacturaBox;
+
+    @FXML
+    private Button btnAgregar;
+
+    @FXML
+    private Label lblCantDisponible;
 
     private double totalPrecioLista = 0.0; // Variable para el precio total de lista
     private double subtotalTotal = 0.0; // Variable para rastrear el subtotal total
@@ -125,6 +139,11 @@ public class VentanaVentasAlternativaController implements Initializable {
     @FXML
     private Button botonInvisible;
     private int usuario;
+
+    boolean productoEncontrado = false;
+
+    // Declara esta lista al principio de tu controlador
+    private List<String> productosConCantidadMinima = new ArrayList<>();
     
     
     // ----------- METODOS ----------
@@ -137,6 +156,68 @@ public class VentanaVentasAlternativaController implements Initializable {
         productoBox.valueProperty().set("");
     }
 
+    @FXML
+    void accionAgregarALista(ActionEvent event) {
+        // Obtiene el producto seleccionado
+        String selectedValue = productoBox.getValue();
+
+        ProductoDAOImpl productoDAO = new ProductoDAOImpl();
+
+        if (selectedValue != null) {
+            // Obtiene la cantidad del Spinner
+            int cantidad = campoCantidad.getValue();
+
+            try {
+                // Obtiene la información del producto seleccionado
+                Producto producto = productoDAO.obtenerProductoPorNombreOCodigoBarra(selectedValue);
+
+
+                if (producto != null) {
+                    // Verifica si el producto ya existe en la lista
+                    boolean productoDuplicado = false;
+                    for (DetalleVenta detalle : listaDetalles) {
+                        if (detalle.getProducto().getIdProducto() == producto.getIdProducto()) {
+                            productoDuplicado = true;
+                            break;
+                        }
+                    }
+
+                    if (!productoDuplicado) {
+                        // Crea un detalle de venta con la información del producto y la cantidad
+                        DetalleVenta detalle = new DetalleVenta();
+                        detalle.setProducto(producto);
+                        detalle.setCantidad(cantidad);
+                        detalle.setMonto(producto.getPrecioVenta() * cantidad);
+
+                        // Agrega el detalle a la lista
+                        listaDetalles.add(detalle);
+
+                        // Limpia la selección en productoBox y reinicia el Spinner
+                        productoBox.getSelectionModel().clearSelection();
+                        campoCantidad.getValueFactory().setValue(0);
+                        lblCantDisponible.setText("");
+
+                        // Actualiza la tabla y otros valores como el resumen
+                        tblDetalle.setItems(listaDetalles);
+                        actualizarResumen();
+                    } else {
+                        // Muestra un mensaje indicando que el producto ya se agregó.
+                        msj.mostrarError("Advertencia", "", "Este producto ya ha sido agregado a la lista.");
+                    }
+                } else {
+                    // Manejo si el producto no es encontrado
+                    msj.mostrarError("Error", "", "Producto no encontrado");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            // Manejo si no se ha seleccionado un producto
+            msj.mostrarError("Advertencia", "", "Seleccione un producto antes de agregarlo a la lista.");
+        }
+    }
 
     @FXML
     void accionGuardarVenta(ActionEvent event) throws Exception {
@@ -180,9 +261,9 @@ public class VentanaVentasAlternativaController implements Initializable {
         Venta venta = new Venta();
         venta.setFechaEmision(fechaMySQL);
         venta.setNumeroFactura(numeroFactura);
-        venta.setSubtotal(Double.parseDouble(subtotalText));
-        venta.setIva(Double.parseDouble(totalSinIvaText));
-        venta.setTotal(Double.parseDouble(totalText));
+        venta.setSubtotal(Double.parseDouble(subtotalText.replace(",", ".")));
+        venta.setIva(Double.parseDouble(totalSinIvaText.replace(",", ".")));
+        venta.setTotal(Double.parseDouble(totalText.replace(",",".")));
         venta.setTipo(tipo);
         venta.getCliente().setIdCliente(ClienteId);
         venta.getEmpleado().setId_empleado(usuario);
@@ -195,24 +276,37 @@ public class VentanaVentasAlternativaController implements Initializable {
      // Realiza la inserción de la compra y obtener el ID de la compra generada
         int idVentaGenerada = ventaDAO.insertarVenta(venta);
 
+        // Limpia la lista antes de procesar la venta actual
+        productosConCantidadMinima.clear();
+
         try {
             for (DetalleVenta detalle : listaDetalles) {
-            	int idProducto = detalle.getProducto().getIdProducto();
+                int idProducto = detalle.getProducto().getIdProducto();
 
                 // Obtiene la cantidad disponible anterior
                 int cantidadDisponibleAnterior = productoDAO.obtenerCantidadDisponiblePorId(idProducto);
 
-                // Calcula la nueva cantidad disponible (cantidad anterior + cantidad nueva)
+                // Calcula la nueva cantidad disponible (cantidad anterior - cantidad nueva)
                 int nuevaCantidadDisponible = cantidadDisponibleAnterior - detalle.getCantidad();
 
                 // Actualiza el producto en la base de datos con la nueva cantidad disponible y el nuevo proveedor
                 productoDAO.actualizarProductoPorVenta(idProducto, nuevaCantidadDisponible);
-                
+
+                // Verifica si la nueva cantidad disponible es menor o igual a la cantidad mínima
+                int cantidadMinima = detalle.getProducto().getCantidadMinima();
+                if (nuevaCantidadDisponible <= cantidadMinima) {
+                    // Almacena la información formateada
+                    productosConCantidadMinima.add(String.format(
+                            "%s: Solo quedan %d unidades. La cantidad mínima es %d. Reponer stock.",
+                            detalle.getProducto().getNombre(), nuevaCantidadDisponible, cantidadMinima)
+                    );
+                }
+
                 detalle.getFacturaVenta().setId_factura_ventas(idVentaGenerada);
                 detalleVentaDAO.insertar(detalle);
             }
-        } catch (Exception e){
-        	e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         vaciarCampos();
@@ -228,6 +322,11 @@ public class VentanaVentasAlternativaController implements Initializable {
         newStage.initOwner(((Node)event.getSource()).getScene().getWindow() );
         newStage.initModality(Modality.APPLICATION_MODAL);
         newStage.showAndWait();
+
+        // Después de imprimir el comprobante, verifica si hay productos con cantidad mínima y muestra el mensaje
+        if (!productosConCantidadMinima.isEmpty()) {
+            mostrarMensajeProductosConCantidadMinima();
+        }
 
         try {
             // Restablecer el cliente seleccionado como "Consumidor Final"
@@ -268,11 +367,17 @@ public class VentanaVentasAlternativaController implements Initializable {
         actualizarComboBoxClientes();
     }
 
+    private void mostrarMensajeProductosConCantidadMinima() {
+        // Formatea los nombres de los productos con cantidad mínima y cantidad disponible
+        String productos = String.join("\n", productosConCantidadMinima);
+        msj.mostrarAlertaInforme("Advertencia. Poco Stock", "", productos);
+    }
+
     public void vaciarCampos() {
         // Limpia los campos de entrada
         campoNumFactura.setText("");
         tipoFacturaBox.setValue("Seleccionar");
-        clienteBox.getSelectionModel().select(null); // Esto debería borrar la selección
+        clienteBox.getSelectionModel().select(null);
         campoSubtotal.setText("");
         campoIva.setText("");
         campoTotal.setText("");
@@ -439,12 +544,94 @@ public class VentanaVentasAlternativaController implements Initializable {
         }
         return productos;
     }
+
+    private boolean mostrarDetallesProductoPorNombre(String nombreProducto) {
+        // Llama a tu método de DAO para obtener los detalles del producto por su nombre
+        ProductoDAOImpl productoDAO = new ProductoDAOImpl();
+        Producto productoSeleccionado = null;
+
+        try {
+            productoSeleccionado = productoDAO.obtenerProductoPorNombre(nombreProducto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Manejo de errores si es necesario
+        }
+
+        if (productoSeleccionado != null) {
+            // Rellena los campos con los detalles del producto
+            lblCantDisponible.setText(Integer.toString(productoSeleccionado.getCantidadDisponible()));
+            campoCantidad.getValueFactory().setValue(productoSeleccionado.getCantidadDisponible());
+            // Asigna el ID del producto a la propiedad userData de un elemento apropiado
+            btnAgregar.setUserData(productoSeleccionado.getIdProducto()); // Asigna el ID al botón Agregar
+            return true; // Producto encontrado
+        } else {
+            msj.mostrarError("Error", "", "Producto no encontrado");
+            return false; // Producto no encontrado
+        }
+    }
+
+    // Variable para almacenar el valor seleccionado actualmente
+    String selectedValue = null;
+
+
+
+    private boolean mostrarDetallesProductoPorCodigoBarra(String nombreProducto) {
+        // Llama a tu método de DAO para obtener los detalles del producto por su nombre
+        ProductoDAOImpl productoDAO = new ProductoDAOImpl();
+        Producto productoSeleccionado = null;
+
+        try {
+            productoSeleccionado = productoDAO.obtenerProductoPorCodigoBarra(nombreProducto);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Manejo de errores si es necesario
+        }
+
+        if (productoSeleccionado != null) {
+            // Rellena los campos con los detalles del producto
+            lblCantDisponible.setText(Integer.toString(productoSeleccionado.getCantidadDisponible()));
+            campoCantidad.getValueFactory().setValue(productoSeleccionado.getCantidadDisponible());
+            // Asigna el ID del producto a la propiedad userData de un elemento apropiado
+            btnAgregar.setUserData(productoSeleccionado.getIdProducto()); // Asigna el ID al botón Agregar
+            return true; // Producto encontrado
+        } else {
+            msj.mostrarError("Error", "", "Producto no encontrado");
+            return false; // Producto no encontrado
+        }
+    }
+
+    // Método para ajustar el valor del Spinner según la cantidad disponible
+    // Método para ajustar el valor del Spinner según la cantidad disponible
+    // Método para ajustar el valor del Spinner según la cantidad disponible
+    private void ajustarValorSpinner() {
+        ProductoDAOImpl productoDAO = new ProductoDAOImpl();
+        try {
+            int nuevoValor = Integer.parseInt(campoCantidad.getEditor().getText());
+
+            // Verifica si hay un producto seleccionado
+            String productoSeleccionado = productoBox.getValue();
+            if (productoSeleccionado != null) {
+                // Obtén la cantidad disponible actual
+                int cantidadDisponible = productoDAO.obtenerCantidadDisponiblePorNombreOCodigoBarra(productoSeleccionado);
+
+                // Ajusta el valor del editor directamente a la cantidad disponible si es mayor
+                if (nuevoValor > cantidadDisponible) {
+                    campoCantidad.getEditor().setText(String.valueOf(cantidadDisponible));
+                }
+            }
+        } catch (NumberFormatException e) {
+            // Manejar la excepción si el valor ingresado no es un número válido (opcional)
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
     
     @Override
     public void initialize(URL location, ResourceBundle resources) {
     	
     	// ----- INICIO METODO PARA ELIMINAR ITEM SELECCIONADO DE TABLA ---	
-        listaDetalles = tblDetalle.getItems();
+
+        /*listaDetalles = tblDetalle.getItems();
 
         tblDetalle.setRowFactory(tv -> {
             TableRow<DetalleVenta> row = new TableRow<>();
@@ -466,6 +653,47 @@ public class VentanaVentasAlternativaController implements Initializable {
                 }
             });
             return row;
+        });*/
+
+        listaDetalles = tblDetalle.getItems();
+        colEliminar.setCellFactory(new Callback<TableColumn<DetalleVenta, Void>, TableCell<DetalleVenta, Void>>() {
+            @Override
+            public TableCell<DetalleVenta, Void> call(final TableColumn<DetalleVenta, Void> param) {
+                return new TableCell<DetalleVenta, Void>() {
+                    private final Button btnEliminar = new Button();
+                    {
+                        // Configura la imagen del botón
+                        Image eliminarImage = new Image(getClass().getResourceAsStream("/com/mspdevs/mspfxmaven/imgs/eliminar.png"));
+                        ImageView imageView = new ImageView(eliminarImage);
+                        imageView.setFitHeight(24);
+                        imageView.setFitWidth(24);
+                        btnEliminar.setStyle("-fx-background-color: transparent;"); // Establece el fondo transparente
+                        btnEliminar.setGraphic(imageView);
+
+                        btnEliminar.setOnAction(event -> {
+                            // Obtiene el producto de la fila seleccionada
+                            DetalleVenta detalle = getTableView().getItems().get(getIndex());
+                            // Crea un cuadro de diálogo de confirmación
+                            boolean confirmado = msj.mostrarConfirmacion("Confirmación", "", "¿Está seguro de que desea quitar este producto de la tabla?");
+                            if (confirmado) {
+                                // Elimina el producto de la lista observable
+                                listaDetalles.remove(detalle);
+                                actualizarResumen();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(btnEliminar);
+                        }
+                    }
+                };
+            }
         });
         // ----- FIN METODO PARA ELIMINAR ITEM SELECCIONADO DE TABLA ----
         
@@ -609,13 +837,13 @@ public class VentanaVentasAlternativaController implements Initializable {
         // ----- INICIO METODO PARA TRABAJAR CON SPINNER CANTIDAD ------
 
         // Crea una SpinnerValueFactory para manejar los valores del Spinner
-        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 999, 1);
+        //SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 999, 1);
 
         // Asigna la SpinnerValueFactory al Spinner
-        campoCantidad.setValueFactory(valueFactory);
+        //campoCantidad.setValueFactory(valueFactory);
 
         // Establece el valor inicial en 0
-        campoCantidad.getValueFactory().setValue(1);
+        //campoCantidad.getValueFactory().setValue(1);
 
         campoCantidad.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue == null) {
@@ -626,13 +854,79 @@ public class VentanaVentasAlternativaController implements Initializable {
         campoNumFactura.setTextFormatter(ManejoDeEntrada.soloNumerosFactura());
         campoCantidad.getEditor().setTextFormatter(ManejoDeEntrada.soloCantidad());
 
+        /*
         // Agrega un listener para escuchar los cambios en el valor del Spinner
         campoCantidad.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue > 999) {
                 campoCantidad.getValueFactory().setValue(999);
             }
+        });*/
+
+        campoCantidad.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.isEmpty()) {
+                return;  // Evita validar cuando el campo está vacío
+            }
+
+            try {
+                int nuevoValor = Integer.parseInt(newValue);
+
+                // Verifica si hay un producto seleccionado
+                String productoSeleccionado = productoBox.getValue();
+                if (productoSeleccionado != null) {
+                    // Obtén la cantidad disponible actual
+                    int cantidadDisponible = productoDAO.obtenerCantidadDisponiblePorNombreOCodigoBarra(productoSeleccionado);
+
+                    // Ajusta el valor del editor directamente a la cantidad disponible si es mayor
+                    if (nuevoValor > cantidadDisponible) {
+                        campoCantidad.getEditor().setText(String.valueOf(cantidadDisponible));
+                    }
+                }
+            } catch (NumberFormatException e) {
+                // Manejar la excepción si el valor ingresado no es un número válido (opcional)
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         });
 
+
+        /*
+        campoCantidad.focusedProperty().addListener((obs, oldValue, newValue) -> {
+            if (!newValue) { // Cuando pierde el foco
+                try {
+                    if (selectedValue != null) {
+                        int cantidadIngresada = Integer.parseInt(campoCantidad.getEditor().getText());
+                        int cantidadDisponible = productoDAO.obtenerCantidadDisponiblePorNombreOCodigoBarra(selectedValue);
+
+                        if (cantidadIngresada > cantidadDisponible) {
+                            campoCantidad.getValueFactory().setValue(cantidadDisponible);
+                        } else if (cantidadIngresada < 1) {
+                            campoCantidad.getValueFactory().setValue(1);
+                        }
+                    }
+                } catch (NumberFormatException | SQLException e) {
+                    // Manejar la excepción si el valor ingresado no es un número válido (opcional)
+                    e.printStackTrace(); // o realiza el manejo de errores según tus necesidades
+                }
+            }
+        });
+
+        campoCantidad.valueProperty().addListener((obs, oldValue, newValue) -> {
+            try {
+                if (newValue != null && selectedValue != null) {
+                    int cantidadDisponible = productoDAO.obtenerCantidadDisponiblePorNombreOCodigoBarra(selectedValue);
+
+                    if (newValue > cantidadDisponible) {
+                        campoCantidad.getValueFactory().setValue(cantidadDisponible);
+                    } else if (newValue < 1) {
+                        campoCantidad.getValueFactory().setValue(1);
+                    }
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });*/
+
+        /*
         campoCantidad.getEditor().focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) { // Cuando se obtiene el enfoque
                 Platform.runLater(() -> {
@@ -640,7 +934,8 @@ public class VentanaVentasAlternativaController implements Initializable {
                     campoCantidad.getEditor().positionCaret(campoCantidad.getEditor().getText().length());
                 });
             }
-        });
+        });*/
+
         
        // ----- FIN METODO PARA TRABAJAR CON SPINNER CANTIDAD ------
 
@@ -653,6 +948,9 @@ public class VentanaVentasAlternativaController implements Initializable {
             productoBox.getSelectionModel().clearSelection();
         });
 
+
+
+        /*
         // Agrega el ChangeListener a productoBox
         productoBox.valueProperty().addListener((observable, oldValue, selectedValue) -> {
             if (listenerHabilitado) {
@@ -727,7 +1025,70 @@ public class VentanaVentasAlternativaController implements Initializable {
             // Dispara el evento personalizado para limpiar la selección en productoBox
             //Event event = new Event(productoBox, null, VentanaVentasAlternativaController.LIMPIAR_SELECCION_EVENT_TYPE);
             //productoBox.fireEvent(event);
+        });*/
+
+        // Deshabilita el botón al inicio
+        btnAgregar.setDisable(true);
+
+        productoBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (listenerHabilitado) {
+                if (newValue != null) {
+                    System.out.println("Listener activado");
+
+                    // Deshabilita temporalmente el listener para evitar ejecuciones adicionales
+                    listenerHabilitado = false;
+
+                    // Obtén la cantidad disponible del producto seleccionado por nombre o código de barras
+                    try {
+                        int cantidadDisponible = productoDAO.obtenerCantidadDisponiblePorNombreOCodigoBarra(newValue);
+
+                        // Verifica si la cantidad disponible es mayor que cero
+                        if (cantidadDisponible <= 0) {
+                            // Muestra un mensaje de advertencia
+                            msj.mostrarAlertaInforme("Advertencia", "", "Producto sin stock. Seleccione otro producto.");
+
+                            // Vacía el productoBox y establece el foco
+                            productoBox.setValue("");
+                            productoBox.requestFocus();
+
+                            // Limpia las otras selecciones
+                            //campoCantidad.getValueFactory().setValue(1);
+                            lblCantDisponible.setText("Sin Stock");
+
+                            // Deshabilita el botón si la cantidad disponible es menor o igual a 0
+                            btnAgregar.setDisable(true);
+                        } else {
+                            // Ajusta el valor máximo del Spinner a la cantidad disponible
+                            SpinnerValueFactory<Integer> valueFactory =
+                                    new SpinnerValueFactory.IntegerSpinnerValueFactory(1, cantidadDisponible, 1);
+                            campoCantidad.setValueFactory(valueFactory);
+
+                            // Actualiza el valor del Spinner y el Label
+                            campoCantidad.getValueFactory().setValue(1); // Establece el valor inicial en 1
+                            lblCantDisponible.setText("CANTIDAD DISPONIBLE: " + cantidadDisponible);
+
+                            // Habilita el botón cuando se selecciona un producto y la cantidad es mayor o igual a 1
+                            btnAgregar.setDisable(false);
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace(); // Manejo de errores específico según tus necesidades
+                    } finally {
+                        // Reestablece la habilitación del listener después de un breve período
+                        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.5), e -> {
+                            listenerHabilitado = true;
+                        }));
+                        timeline.setCycleCount(1);
+                        timeline.play();
+                    }
+                } else {
+                    // Si no hay un producto seleccionado, deshabilita el botón
+                    btnAgregar.setDisable(true);
+                }
+            }
         });
+
+        // Agrega un listener al evento ACTION del editor del Spinner para validar y ajustar el valor
+        campoCantidad.getEditor().setOnAction(event -> ajustarValorSpinner());
 
         // Llama al método para obtener el último número de factura
         VentaDAOImpl ventaDAO = new VentaDAOImpl();

@@ -4,7 +4,6 @@ import com.mspdevs.mspfxmaven.model.DAO.ProductoDAOImpl;
 import com.mspdevs.mspfxmaven.model.DAO.ProveedorDAOImpl;
 import com.mspdevs.mspfxmaven.model.DAO.RubroDAOImpl;
 import com.mspdevs.mspfxmaven.model.Producto;
-import com.mspdevs.mspfxmaven.model.Proveedor;
 import com.mspdevs.mspfxmaven.model.Rubro;
 import com.mspdevs.mspfxmaven.utils.Alerta;
 import com.mspdevs.mspfxmaven.utils.FormatoTexto;
@@ -45,13 +44,12 @@ public class ModalNuevoProductoController implements Initializable {
 
     @FXML
     private SearchableComboBox<String> rubroBox;
-
-
     // Agregar una variable para almacenar el nombre del proveedor
     private String proveedorSeleccionado;
 
-
-
+    private boolean seCreoNuevoProducto = false;
+    private Producto nuevoProducto;
+    private String nuevoNombreProducto; // Guarda el nombre del nuevo producto
 
     @FXML
     void accionBotonAgregar(ActionEvent event) throws Exception {
@@ -91,7 +89,9 @@ public class ModalNuevoProductoController implements Initializable {
 
                 try {
                     dao.insertar(pro);
-                    msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el producto correctamente.");
+                    msj.mostrarAlertaInforme("Operación exitosa", "", "Se ha agregado el producto correctamente");
+                    seCreoNuevoProducto = true;
+                    nuevoNombreProducto = nombreIngresado; // Guarda el nombre del nuevo producto
                     cerrarVentanaModal(event);
                 } catch (Exception e) {
                     msj.mostrarError("Error", "", "No se pudo agregar el producto en la BD");
@@ -101,6 +101,15 @@ public class ModalNuevoProductoController implements Initializable {
         }
 
     }
+
+    public boolean seCreoNuevoProducto() {
+        return seCreoNuevoProducto;
+    }
+
+    public String getNuevoNombreProducto() {
+        return nuevoNombreProducto;
+    }
+
 
     @FXML
     void accionBtnCancelar(ActionEvent event) {
@@ -171,8 +180,6 @@ public class ModalNuevoProductoController implements Initializable {
         // Cierra la ventana
         stage.close();
     }
-
-
 
     public void obtenerProveedor(String proveedorProducto) {
         proveedorSeleccionado = proveedorProducto;

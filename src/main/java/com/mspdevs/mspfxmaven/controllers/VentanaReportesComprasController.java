@@ -5,6 +5,7 @@ import com.mspdevs.mspfxmaven.model.DAO.CompraDAOImpl;
 import com.mspdevs.mspfxmaven.utils.Alerta;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -122,6 +123,7 @@ public class VentanaReportesComprasController implements Initializable {
         this.columnaNroFac.setCellValueFactory(new PropertyValueFactory<>("numeroFactura"));
         this.columnaFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         this.columnaTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
+        //this.columnaCliente.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getCliente().getRazonSocial()));
         this.columnaProveedor.setCellValueFactory(new PropertyValueFactory<>("proveedorNombre"));
         this.columnaSubTot.setCellValueFactory(new PropertyValueFactory<>("subtotal"));
         this.columnaIVA.setCellValueFactory(new PropertyValueFactory<>("totalSinIva"));

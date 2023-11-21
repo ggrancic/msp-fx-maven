@@ -9,6 +9,7 @@ import javafx.collections.FXCollections;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 public class ProductoDAOImpl extends ConexionMySQL implements ProductoDAO {
@@ -166,12 +167,6 @@ public class ProductoDAOImpl extends ConexionMySQL implements ProductoDAO {
         }
     }
 
-
-
-
-
-
-
     // Nuevos
 
     public Producto obtenerProductoPorNombre(String nombreProducto) throws Exception {
@@ -293,6 +288,68 @@ public class ProductoDAOImpl extends ConexionMySQL implements ProductoDAO {
         } finally {
             this.cerrarConexion();
         }
+    }
+
+    public int obtenerCantidadDisponiblePorNombreOCodigoBarra(String nombreOcodigoBarra) throws SQLException {
+        int cantidadDisponible = 0;
+
+        try {
+            this.conectar();
+            PreparedStatement consulta = this.con.prepareStatement(
+                    "SELECT cantidad_disponible FROM productos WHERE nombre = ? OR codigo_barra = ?"
+            );
+            consulta.setString(1, nombreOcodigoBarra);
+            consulta.setString(2, nombreOcodigoBarra);
+            ResultSet resultado = consulta.executeQuery();
+
+            if (resultado.next()) {
+                cantidadDisponible = resultado.getInt("cantidad_disponible");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            this.cerrarConexion();
+        }
+        return cantidadDisponible;
+    }
+
+    public Producto obtenerProductoPorNombreOCodigoBarra(String nombreOCodigoBarra) throws Exception {
+        Producto producto = null;
+        try {
+            this.conectar();
+            // Consulta para buscar el producto por nombre o código de barras
+            PreparedStatement st = this.con.prepareStatement(
+                    "SELECT * FROM productos WHERE nombre = ? OR codigo_barra = ?"
+            );
+            st.setString(1, nombreOCodigoBarra);
+            st.setString(2, nombreOCodigoBarra);
+
+            ResultSet rs = st.executeQuery();
+
+            if (rs.next()) {
+                // Crea un objeto Producto con la información de la consulta
+                producto = new Producto();
+                producto.setIdProducto(rs.getInt("id_producto"));
+                producto.setNombre(rs.getString("nombre"));
+                producto.setPrecioLista(rs.getDouble("precio_lista"));
+                producto.setPrecioVenta(rs.getDouble("precio_venta"));
+                producto.setCodigoBarra(rs.getString("codigo_barra"));
+                producto.setCantidadMinima(rs.getInt("cantidad_minima"));
+                producto.setCantidadDisponible(rs.getInt("cantidad_disponible"));
+                // Puedes agregar más campos según sea necesario
+
+                // También puedes incluir información adicional como el Rubro y Proveedor si es necesario
+            }
+
+            rs.close();
+            st.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            this.cerrarConexion();
+        }
+        return producto;
     }
 
 }
