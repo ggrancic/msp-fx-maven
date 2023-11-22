@@ -9,14 +9,12 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.function.UnaryOperator;
 
 import com.mspdevs.mspfxmaven.model.*;
 import com.mspdevs.mspfxmaven.model.DAO.*;
 import com.mspdevs.mspfxmaven.utils.Alerta;
 import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -38,7 +36,7 @@ import javafx.util.StringConverter;
 import org.controlsfx.control.SearchableComboBox;
 
 
-public class VentanaComprasAlternativaController implements Initializable {
+public class VentanaComprasAlternativaController2 implements Initializable {
     Alerta msj = new Alerta();
 
     @FXML
@@ -118,7 +116,7 @@ public class VentanaComprasAlternativaController implements Initializable {
     private double ivaTotal = 0.0; // Variable para rastrear el IVA total
     private Date fechaMySQL; // Declarar fechaMySQL como variable miembro
     //private ObservableList<Producto> todosLosProductos;
-    private ObservableList<Producto> todosLosProductos = FXCollections.observableArrayList();
+    private ObservableList<DetalleCompra> todosLosProductos = FXCollections.observableArrayList();
 
     private double subtotal = 0.0;
     private double iva = 0.0;
@@ -130,8 +128,11 @@ public class VentanaComprasAlternativaController implements Initializable {
     // Declarar un mapa para asociar objetos Producto con sus nombres
     private Map<String, Producto> productosMap = new HashMap<>();
 
+    private ObservableList<Producto> listaDetalles;
+
     @FXML
     void accionEditarProducto(ActionEvent event) {
+        /*
         // Obtén el producto seleccionado en la TableView
         Producto productoSeleccionado = tblDetalle.getSelectionModel().getSelectedItem();
 
@@ -148,10 +149,73 @@ public class VentanaComprasAlternativaController implements Initializable {
             campoPrecioVenta.setText(String.valueOf(productoSeleccionado.getPrecioVenta()));
             campoCantidad.getValueFactory().setValue(productoSeleccionado.getCantidadDisponible());
             campoGanancia.setText("0"); // Puedes llenar el campo de ganancia como desees
-        }
+        }*/
     }
     @FXML
     void accionAgregarALista(ActionEvent event) throws Exception {
+
+        // Obtiene el producto seleccionado
+        String selectedValue = campoNombre.getText();
+
+        ProductoDAOImpl productoDAO = new ProductoDAOImpl();
+
+        if (selectedValue != null) {
+            // Obtiene la cantidad del Spinner
+            int cantidad = campoCantidad.getValue();
+
+            try {
+                // Obtiene la información del producto seleccionado
+                Producto producto = productoDAO.obtenerProductoPorNombreOCodigoBarra(selectedValue);
+
+
+                if (producto != null) {
+                    // Verifica si el producto ya existe en la lista
+                    boolean productoDuplicado = false;
+                    for (Producto detalle : listaDetalles) {
+                        if (detalle.getIdProducto() == producto.getIdProducto()) {
+                            productoDuplicado = true;
+                            break;
+                        }
+                    }
+
+                    if (!productoDuplicado) {
+                        // Crea un detalle de venta con la información del producto y la cantidad
+                        DetalleCompra detalle = new DetalleCompra();
+                        detalle.setProducto(producto);
+                        detalle.setCantidad(cantidad);
+                        detalle.setPrecio(producto.getPrecioLista() * cantidad);
+
+                        // Agrega el detalle a la lista
+                        listaDetalles.add(detalle);
+
+                        // Limpia la selección en productoBox y reinicia el Spinner
+                        productoBox.getSelectionModel().clearSelection();
+                        campoCantidad.getValueFactory().setValue(0);
+                        //lblCantDisponible.setText("");
+
+                        // Actualiza la tabla y otros valores como el resumen
+                        tblDetalle.setItems(listaDetalles);
+                        actualizarResumen();
+                    } else {
+                        // Muestra un mensaje indicando que el producto ya se agregó.
+                        msj.mostrarError("Advertencia", "", "Este producto ya ha sido agregado a la lista.");
+                    }
+                } else {
+                    // Manejo si el producto no es encontrado
+                    msj.mostrarError("Error", "", "Producto no encontrado");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            // Manejo si no se ha seleccionado un producto
+            msj.mostrarError("Advertencia", "", "Seleccione un producto antes de agregarlo a la lista.");
+        }
+
+
+        /*
         // Recopila los datos de los campos
         String nombre = campoNombre.getText();
         String precioLista = campoPrecioLista.getText();
@@ -188,7 +252,7 @@ public class VentanaComprasAlternativaController implements Initializable {
         if (productoSeleccionado == null) {
             // No se ha seleccionado un producto en la TableView, agrega uno nuevo
             Producto producto = new Producto();
-            producto.setIdProducto(productoId);
+            producto.setIdProducto(productoId); // Asigna el ID del producto
             producto.setNombre(nombre);
             producto.setPrecioLista(Double.parseDouble(precioLista));
             producto.setPrecioVenta(Double.parseDouble(precioVenta));
@@ -211,7 +275,7 @@ public class VentanaComprasAlternativaController implements Initializable {
             }
         } else {
             // Se ha seleccionado un producto en la TableView, actualiza los valores
-            productoSeleccionado.setIdProducto(productoId);
+            productoSeleccionado.setIdProducto(productoId); // Asigna el ID del producto
             productoSeleccionado.setNombre(nombre);
             productoSeleccionado.setPrecioLista(Double.parseDouble(precioLista));
             productoSeleccionado.setPrecioVenta(Double.parseDouble(precioVenta));
@@ -230,7 +294,7 @@ public class VentanaComprasAlternativaController implements Initializable {
         System.out.println("Cantidad de productos seleccionados: " + todosLosProductos.size());
         tblDetalle.refresh();
         // Deselecciona el producto en la TableView (si hay alguno seleccionado)
-        tblDetalle.getSelectionModel().clearSelection();
+        tblDetalle.getSelectionModel().clearSelection();*/
 
 
         /*
@@ -447,16 +511,16 @@ public class VentanaComprasAlternativaController implements Initializable {
         System.out.println("id del proveedor: " + nuevoProveedorId);
 
         try {
-            for (Producto producto : todosLosProductos) {
-                int idProducto = producto.getIdProducto();
-                double nuevoPrecioDeLista = producto.getPrecioLista();
-                double nuevoPrecioDeVenta = producto.getPrecioVenta();
+            for (DetalleCompra detalle : todosLosProductos) {
+                int idProducto = detalle.getProducto().getIdProducto();
+                double nuevoPrecioDeLista = detalle.getProducto().getPrecioLista();
+                double nuevoPrecioDeVenta = detalle.getProducto().getPrecioVenta();
 
                 // Obtiene la cantidad disponible anterior
                 int cantidadDisponibleAnterior = productoDAO.obtenerCantidadDisponiblePorId(idProducto);
 
                 // Calcula la nueva cantidad disponible (cantidad anterior + cantidad nueva)
-                int nuevaCantidadDisponible = cantidadDisponibleAnterior + producto.getCantidadDisponible();
+                int nuevaCantidadDisponible = cantidadDisponibleAnterior + detalle.getProducto().getCantidadDisponible();
 
                 // Actualiza el producto en la base de datos con la nueva cantidad disponible y el nuevo proveedor
                 productoDAO.actualizarProducto(idProducto, nuevoPrecioDeLista, nuevoPrecioDeVenta, nuevaCantidadDisponible, nuevoProveedorId);
@@ -470,6 +534,7 @@ public class VentanaComprasAlternativaController implements Initializable {
         // Realiza la inserción de la compra y obtener el ID de la compra generada
         int idCompraGenerada = compraDAO.insertarCompra(compra);
 
+        /*
         // Luego, usa idCompraGenerada para insertar en la tabla "detalle_compras"
         try {
             //DetalleCompraDAOImpl detalleCompraDAO = new DetalleCompraDAOImpl();
@@ -481,7 +546,7 @@ public class VentanaComprasAlternativaController implements Initializable {
                 // Inserta el detalle de compra
                 DetalleCompra detalleCompra = new DetalleCompra();
                 detalleCompra.setCantidad(cantidad);
-                detalleCompra.setPrecio(precio * cantidad);
+                detalleCompra.setPrecio(precio);
                 detalleCompra.getFacturaCompra().setId_factura_compras(idCompraGenerada); // Usar el ID de la compra generada
                 detalleCompra.getProducto().setIdProducto(idProducto);
 
@@ -491,10 +556,18 @@ public class VentanaComprasAlternativaController implements Initializable {
             msj.mostrarAlertaInforme("Operación exitosa", "", "Se han agregado los detalles de compra.");
         } catch (Exception e) {
             // Manejo de errores
-        }
+        }*/
         vaciarCampos();
         // Deshabilita los campos
         habilitarCampos(false);
+        /*
+        try {
+            // Limpia la lista de clientes
+            productoBox.getItems().clear();
+        } catch (Exception ex) {
+            // Manejar cualquier excepción que pueda ocurrir al limpiar
+            ex.printStackTrace(); // O usa otro método de manejo de errores
+        }*/
         btnGuardar.setDisable(true);
     }
 
@@ -526,7 +599,8 @@ public class VentanaComprasAlternativaController implements Initializable {
 
     public void initialize(URL location, ResourceBundle resources) {
         // Configura la TableView para usar la lista observable
-        todosLosProductos = tblDetalle.getItems();
+        listaDetalles = tblDetalle.getItems();
+
 
         colEliminar.setCellFactory(new Callback<TableColumn<Producto, Void>, TableCell<Producto, Void>>() {
             @Override
@@ -566,6 +640,46 @@ public class VentanaComprasAlternativaController implements Initializable {
                 };
             }
         });
+        /*
+        colEliminar.setCellFactory(new Callback<TableColumn<DetalleCompra, Void>, TableCell<DetalleCompra, Void>>() {
+            @Override
+            public TableCell<DetalleCompra, Void> call(TableColumn<DetalleCompra, Void> param) {
+                return new TableCell<DetalleCompra, Void>() {
+                    private final Button btnEliminar = new Button();
+                    {
+                        // Configura la imagen del botón
+                        Image eliminarImage = new Image(getClass().getResourceAsStream("/com/mspdevs/mspfxmaven/imgs/eliminar.png"));
+                        ImageView imageView = new ImageView(eliminarImage);
+                        imageView.setFitHeight(24);
+                        imageView.setFitWidth(24);
+                        btnEliminar.setStyle("-fx-background-color: transparent;"); // Establece el fondo transparente
+                        btnEliminar.setGraphic(imageView);
+
+                        btnEliminar.setOnAction(event -> {
+                            // Obtiene el producto de la fila seleccionada
+                            DetalleCompra detalle = getTableView().getItems().get(getIndex());
+                            // Crea un cuadro de diálogo de confirmación
+                            boolean confirmado = msj.mostrarConfirmacion("Confirmación", "", "¿Está seguro de que desea quitar este producto de la tabla?");
+                            if (confirmado) {
+                                // Elimina el producto de la lista observable
+                                listaDetalles.remove(detalle);
+                                actualizarResumen();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(btnEliminar);
+                        }
+                    }
+                };
+            }
+        });*/
 
         // Boton para eliminar producto de la tabla, sin imagen
         /*
@@ -638,6 +752,15 @@ public class VentanaComprasAlternativaController implements Initializable {
             return row;
         });*/
 
+        ObservableList<Producto> productosDB = cargarProductosDB();
+        // Crea listas para códigos de barras y nombres de productos
+        //List<String> codigosBarras = new ArrayList<>();
+        List<String> nombres = new ArrayList<>();
+        for (Producto producto : productosDB) {
+            //codigosBarras.add(producto.getCodigoBarra());
+            nombres.add(producto.getNombre());
+        }
+
         ProveedorDAOImpl proveedorDAO = new ProveedorDAOImpl();
         ProductoDAOImpl productoDAO = new ProductoDAOImpl();
 
@@ -648,6 +771,7 @@ public class VentanaComprasAlternativaController implements Initializable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        productoBox.getItems().addAll(nombres);
         // Cargar los nombres en los ComboBox
         for (Proveedor proveedor : proveedores) {
             proveedorBox.getItems().add(proveedor.getRazonSocial());
@@ -661,12 +785,12 @@ public class VentanaComprasAlternativaController implements Initializable {
             throw new RuntimeException(e);
         }
 
-        // Agrega todos los nombres de productos a la lista del ComboBox
-        productoBox.getItems().setAll(cargarNombresProductos());
+        // Agrega todos los nombres de clientes a la lista del ComboBox
+        //productoBox.getItems().setAll(cargarNombresProductos());
 
         productoBox.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
-                // Obtiene el nombre
+                // Obtiene el nombre o código de barras seleccionado
                 String nombreSeleccionado = newValue;
 
                 // Habilita los campos después de cargar el producto
@@ -843,6 +967,17 @@ public class VentanaComprasAlternativaController implements Initializable {
 
     }
 
+    private ObservableList<Producto> cargarProductosDB() {
+        ProductoDAOImpl productoDAO = new ProductoDAOImpl();
+        ObservableList<Producto> productos = null;
+        try {
+            productos = productoDAO.listarTodos();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return productos;
+    }
+
     // Agregar un método para cargar los atributos del producto en los campos
     private void cargarProductoEnCampos(Producto producto) {
         campoNombre.setText(producto.getNombre());
@@ -942,6 +1077,33 @@ public class VentanaComprasAlternativaController implements Initializable {
     }
 
     public void completarTablaProductos() {
+
+        /*DetalleCompraDAOImpl detalleDAO = new DetalleCompraDAOImpl();
+        ObservableList<DetalleCompra> detalles = null;
+
+        try {
+            // Recupera la lista de productos desde la base de datos.
+            detalles = detalleDAO.listarTodos();
+        } catch (Exception e) {
+            e.printStackTrace();
+            msj.mostrarError("Error", "", "Se ha producido un error recuperando los datos de la BD");
+        }
+
+        this.colId.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getProducto().getCodigoBarra()));
+        this.colNom.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getProducto().getNombre()));
+        this.colPL.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getProducto().getPrecioLista()));
+        this.colPV.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getProducto().getPrecioVenta()));
+        this.colCantidad.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getProducto().getCantidadDisponible()));
+        //this.colTotal.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getMonto()));
+        //this.colTotal.setCellFactory(col -> new PrecioVentaCell());
+
+        int lastIndex = tblDetalle.getItems().size() - 1;
+
+        if (lastIndex >= 0) {
+            // Desplázate hacia el último elemento
+            tblDetalle.scrollTo(lastIndex);
+        }*/
+
         ProductoDAOImpl productoDAO = new ProductoDAOImpl();
         ObservableList<Producto> productos = null;
 
@@ -1001,6 +1163,7 @@ public class VentanaComprasAlternativaController implements Initializable {
         }
     }
 
+    /*
     private boolean esProductoExistente(Producto productoNuevo) {
         for (Producto productoExistente : tblDetalle.getItems()) {
             // Comprueba si un producto con el mismo ID ya existe en la tabla.
@@ -1009,7 +1172,7 @@ public class VentanaComprasAlternativaController implements Initializable {
             }
         }
         return false; // El producto no existe en la tabla.
-    }
+    }*/
 
     private void actualizarResumen() {
         // Inicializa variables para el subtotal, IVA y total
@@ -1018,9 +1181,9 @@ public class VentanaComprasAlternativaController implements Initializable {
         total = 0.0;
 
         // Itera a través de todos los productos en la lista
-        for (Producto producto : todosLosProductos) {
-            double precioListaDouble = producto.getPrecioLista();
-            int cantidadInt = producto.getCantidadDisponible();
+        for (DetalleCompra detalle : todosLosProductos) {
+            double precioListaDouble = detalle.getProducto().getPrecioLista();
+            int cantidadInt = detalle.getProducto().getCantidadDisponible();
             double montoTotalProducto = precioListaDouble * cantidadInt;
 
             // Calcula el precio de lista sin IVA (monto total / 1.21)

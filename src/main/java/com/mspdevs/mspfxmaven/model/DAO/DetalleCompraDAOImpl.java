@@ -1,12 +1,8 @@
 package com.mspdevs.mspfxmaven.model.DAO;
 
-import com.mspdevs.mspfxmaven.model.ConexionMySQL;
-import com.mspdevs.mspfxmaven.model.DetalleCompra;
+import com.mspdevs.mspfxmaven.model.*;
 import javafx.collections.ObservableList;
 import com.mspdevs.mspfxmaven.model.ConexionMySQL;
-import com.mspdevs.mspfxmaven.model.Producto;
-import com.mspdevs.mspfxmaven.model.Proveedor;
-import com.mspdevs.mspfxmaven.model.Rubro;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 
@@ -18,7 +14,44 @@ import java.util.List;
 public class DetalleCompraDAOImpl extends ConexionMySQL implements DetalleCompraDAO{
     @Override
     public ObservableList<DetalleCompra> listarTodos() throws Exception {
-        return null;
+		ObservableList<DetalleCompra> listaDetalles = null;
+
+		try {
+
+			this.conectar();
+			listaDetalles = FXCollections.observableArrayList();
+
+			PreparedStatement st = this.con.prepareStatement("SELECT detalle.id_detalle_compra, producto.nombre, producto.precio_venta, producto.codigo_barra, detalle.cantidad, detalle.precio, producto.precio_lista "
+					+ "FROM mercadito.detalle_compra detalle "
+					+ "INNER JOIN mercadito.productos producto ON detalle.id_producto = producto.id_producto "
+					+ "INNER JOIN mercadito.factura_compras factura ON detalle.id_factura_compras = factura.id_factura_compras");
+
+			ResultSet rs = st.executeQuery();
+
+			while (rs.next()) {
+				DetalleCompra detalle = new DetalleCompra();
+
+				detalle.setId(rs.getInt("detalle.id_detalle_compra"));
+				detalle.getProducto().setNombre(rs.getString("producto.nombre"));
+				detalle.getProducto().setPrecioLista(rs.getDouble("producto.precio_lista"));
+				detalle.getProducto().setPrecioVenta(rs.getDouble("producto.precio_venta"));
+				detalle.getProducto().setCodigoBarra(rs.getString("producto.codigo_barra"));
+				detalle.setCantidad(rs.getInt("detalle.cantidad"));
+				detalle.setPrecio(rs.getDouble("detalle.precio"));
+
+				listaDetalles.add(detalle);
+			}
+
+			rs.close();
+			st.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			this.cerrarConexion();
+		}
+
+		return listaDetalles;
     }
 
     @Override

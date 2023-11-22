@@ -1,6 +1,6 @@
 package com.mspdevs.mspfxmaven.model;
 
-public class DetalleCompra {
+public class DetalleCompra extends Producto {
     private int id;
     private int cantidad;
     private double precio;
@@ -42,5 +42,9 @@ public class DetalleCompra {
 
     public Producto getProducto() {
         return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
     }
 }

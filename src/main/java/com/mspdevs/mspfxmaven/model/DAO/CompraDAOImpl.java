@@ -187,10 +187,10 @@ public class CompraDAOImpl extends ConexionMySQL implements CompraDAO{
 		
 		try {
 			this.conectar();
-			String sql = "SELECT c.*, pe.nombre AS proveedor_nombre, pr.id_proveedor " +
+			String sql = "SELECT c.*, persona.razon_social, pr.id_proveedor " +
                     "FROM factura_compras c " +
                     "JOIN proveedores pr ON c.proveedor = pr.id_proveedor " +
-                    "JOIN personas pe ON pr.id_persona = pe.id_persona ";
+                    "JOIN personas persona ON pr.id_persona = persona.id_persona ";
 			
 			 if (fechaInicio != null && fechaFin != null) {
 		            sql += "WHERE c.fecha BETWEEN ? AND ? ";
@@ -223,8 +223,7 @@ public class CompraDAOImpl extends ConexionMySQL implements CompraDAO{
 		            compra.setSubtotal(rs.getDouble("c.subtotal"));
 		            compra.setTotalSinIva(rs.getDouble("c.totalSinIva"));
 		            compra.setTotal(rs.getDouble("c.total"));
-		            compra.setIdProveedorFK(rs.getInt("pr.id_proveedor"));
-		            compra.setProveedorNombre(rs.getString("proveedor_nombre"));
+                    compra.getProveedor().setRazonSocial(rs.getString("persona.razon_social"));
 
 		            lista.add(compra);
 		        }

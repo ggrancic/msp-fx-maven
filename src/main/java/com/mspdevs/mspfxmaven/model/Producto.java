@@ -25,6 +25,7 @@ public class Producto {
         this.idProducto = producto.getIdProducto();
         this.nombre = producto.getNombre();
         this.precioVenta = producto.getPrecioVenta();
+        this.precioLista = producto.getPrecioLista();
         this.codigoBarra = producto.getCodigoBarra();
         this.cantidadDisponible = producto.getCantidadDisponible();
         this.cantidadMinima = producto.getCantidadMinima();

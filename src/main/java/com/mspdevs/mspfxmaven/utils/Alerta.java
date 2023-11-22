@@ -7,7 +7,6 @@ import javafx.scene.control.ButtonType;
 import java.util.Optional;
 
 public class Alerta {
-
     public void mostrarError(String titulo, String encabezado, String contenido) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(titulo);

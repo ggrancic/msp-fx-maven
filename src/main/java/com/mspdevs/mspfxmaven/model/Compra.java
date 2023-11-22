@@ -13,7 +13,7 @@ public class Compra {
     private Proveedor proveedor;
     
     public Compra() {
-    	proveedor = new Proveedor();
+    	this.proveedor = new Proveedor();
     }
 
     public int getId_factura_compras() {
@@ -66,6 +66,14 @@ public class Compra {
 
     public void setTotalSinIva(double totalSinIva) {
         this.totalSinIva = totalSinIva;
+    }
+
+    public Proveedor getProveedor() {
+        return proveedor;
+    }
+
+    public void setProveedor(Proveedor proveedor) {
+        this.proveedor = proveedor;
     }
 
     public void setTotal(double total) {

@@ -80,7 +80,7 @@ public class VentanaProveedoresController implements Initializable  {
     private TableColumn<Persona, String> colCalle;
 
     @FXML
-    private TableColumn<Proveedor, String> colRazonS;
+    private TableColumn<Persona, String> colRazonS;
 
     @FXML
     private TableColumn<Proveedor, String> colCuit;

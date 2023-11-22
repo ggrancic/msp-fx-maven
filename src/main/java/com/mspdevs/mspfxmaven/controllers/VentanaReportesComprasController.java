@@ -2,6 +2,7 @@ package com.mspdevs.mspfxmaven.controllers;
 
 import com.mspdevs.mspfxmaven.model.Compra;
 import com.mspdevs.mspfxmaven.model.DAO.CompraDAOImpl;
+import com.mspdevs.mspfxmaven.model.Proveedor;
 import com.mspdevs.mspfxmaven.utils.Alerta;
 
 import javafx.application.Platform;
@@ -70,7 +71,7 @@ public class VentanaReportesComprasController implements Initializable {
     private TableColumn<?, ?> columnaNroFac;
 
     @FXML
-    private TableColumn<?, ?> columnaProveedor;
+    private TableColumn<Compra, Proveedor> columnaProveedor;
 
     @FXML
     private TableColumn<?, ?> columnaSubTot;
@@ -123,8 +124,8 @@ public class VentanaReportesComprasController implements Initializable {
         this.columnaNroFac.setCellValueFactory(new PropertyValueFactory<>("numeroFactura"));
         this.columnaFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
         this.columnaTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
-        //this.columnaCliente.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getCliente().getRazonSocial()));
-        this.columnaProveedor.setCellValueFactory(new PropertyValueFactory<>("proveedorNombre"));
+        this.columnaProveedor.setCellValueFactory(data -> new SimpleObjectProperty(data.getValue().getProveedor().getRazonSocial()));
+        //this.columnaProveedor.setCellValueFactory(new PropertyValueFactory<>("proveedorNombre"));
         this.columnaSubTot.setCellValueFactory(new PropertyValueFactory<>("subtotal"));
         this.columnaIVA.setCellValueFactory(new PropertyValueFactory<>("totalSinIva"));
         this.columnaTotal.setCellValueFactory(new PropertyValueFactory<>("total"));

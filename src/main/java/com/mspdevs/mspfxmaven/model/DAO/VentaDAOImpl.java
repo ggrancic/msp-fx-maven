@@ -104,7 +104,8 @@ public class VentaDAOImpl extends ConexionMySQL implements VentaDAO{
 		
 		try {
 			this.conectar();
-			String sql = "SELECT fv.id_factura_ventas,fv.numero, fv.tipo, fv.fechaDeEmision, fv.subtotal, fv.iva, fv.total, persona.razon_social, cliente.id_cliente  " +
+			String sql = "SELECT fv.id_factura_ventas,fv.numero, fv.tipo, fv.fechaDeEmision, " +
+                    "fv.subtotal, fv.iva, fv.total, persona.razon_social, cliente.id_cliente  " +
                     "FROM factura_ventas fv " +
                     "JOIN clientes cliente ON fv.cliente = cliente.id_cliente " +
                     "JOIN personas persona ON cliente.idpersona = persona.id_persona ";
