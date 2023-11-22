@@ -113,7 +113,6 @@ public class ModalCajaController implements Initializable {
     	cajaNueva.setStatus(true);
     	cajaNueva.setResponsable(responsableActual);
     	System.out.println(responsableActual.getNombre());
-    	//cajaNueva.setFechaHoraApertura(this.obtenerFechaYHoraActual());
     	
     	msj.mostrarAlertaInforme("CAJA ABIERTA", "", "Caja del día abierta. Recuerde cerrarla al final de la jornada.");
     	
@@ -136,6 +135,7 @@ public class ModalCajaController implements Initializable {
     	campoMI.setDisable(true);
     	
     	btnRetiro.setDisable(false);
+		btnCerrar.setDisable(false);
     	
     	if ((cajaActual.getStatus())) {
     		labelEstado.setText("Estado de caja: ABIERTA");
@@ -240,5 +240,6 @@ public class ModalCajaController implements Initializable {
     	campoEgresos.setDisable(true);
     	campoMF.setDisable(true);
     	btnRetiro.setDisable(true);
+		btnCerrar.setDisable(true);
 	}
 }
