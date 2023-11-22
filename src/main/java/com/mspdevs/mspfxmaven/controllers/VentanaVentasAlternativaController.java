@@ -1,5 +1,6 @@
 package com.mspdevs.mspfxmaven.controllers;
 
+import com.mspdevs.mspfxmaven.model.Caja;
 import com.mspdevs.mspfxmaven.model.Cliente;
 import com.mspdevs.mspfxmaven.model.DAO.ClienteDAOImpl;
 import com.mspdevs.mspfxmaven.model.DAO.DetalleVentaDAOImpl;
@@ -53,6 +54,9 @@ import java.util.ResourceBundle;
 
 public class VentanaVentasAlternativaController implements Initializable {
     Alerta msj = new Alerta();
+    
+    private Caja caja;
+
     @FXML
     private Button btnFinalizarVenta;
 
@@ -111,7 +115,9 @@ public class VentanaVentasAlternativaController implements Initializable {
     private double subtotal = 0.0;
     private double iva = 0.0;
     private double total = 0.0;
-
+    
+    private double acumulador;
+    
     private Date fechaMySQL; // Declarar fechaMySQL como variable miembro
 
     private ObservableList<DetalleVenta> listaDetalles;
@@ -125,7 +131,6 @@ public class VentanaVentasAlternativaController implements Initializable {
     @FXML
     private Button botonInvisible;
     private int usuario;
-    
     
     // ----------- METODOS ----------
 
@@ -180,17 +185,18 @@ public class VentanaVentasAlternativaController implements Initializable {
         Venta venta = new Venta();
         venta.setFechaEmision(fechaMySQL);
         venta.setNumeroFactura(numeroFactura);
-        venta.setSubtotal(Double.parseDouble(subtotalText));
-        venta.setIva(Double.parseDouble(totalSinIvaText));
-        venta.setTotal(Double.parseDouble(totalText));
+        venta.setSubtotal(Double.parseDouble(subtotalText.replace(",", ".")));
+        venta.setIva(Double.parseDouble(totalSinIvaText.replace(",", ".")));
+        venta.setTotal(Double.parseDouble(totalText.replace(",", ".")));
         venta.setTipo(tipo);
         venta.getCliente().setIdCliente(ClienteId);
         venta.getEmpleado().setId_empleado(usuario);
-
-        String nuevaRazonSocialSeleccionada = clienteBox.getSelectionModel().getSelectedItem();
+        
+        
+        caja.setIngresos(Double.parseDouble(totalText.replace(",", ".")));
 
         // Obtiene el ID del nuevo proveedor basado en su nombre
-        int nuevoClienteId = clienteDAO.obtenerPorRazonSocial(nuevaRazonSocialSeleccionada);
+        int nuevoClienteId = clienteDAO.obtenerPorRazonSocial(razonSocialSeleccionada);
         
      // Realiza la inserción de la compra y obtener el ID de la compra generada
         int idVentaGenerada = ventaDAO.insertarVenta(venta);
@@ -211,6 +217,11 @@ public class VentanaVentasAlternativaController implements Initializable {
                 detalle.getFacturaVenta().setId_factura_ventas(idVentaGenerada);
                 detalleVentaDAO.insertar(detalle);
             }
+            
+            
+            
+            
+            
         } catch (Exception e){
         	e.printStackTrace();
         }
@@ -440,8 +451,15 @@ public class VentanaVentasAlternativaController implements Initializable {
         return productos;
     }
     
+    
+    public void setearCaja(Caja cajaDePcpal) {
+    	this.caja = cajaDePcpal;
+    }
+    
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+    	
+    	
     	
     	// ----- INICIO METODO PARA ELIMINAR ITEM SELECCIONADO DE TABLA ---	
         listaDetalles = tblDetalle.getItems();
@@ -749,5 +767,7 @@ public class VentanaVentasAlternativaController implements Initializable {
             // Manejo de errores
         }
     }
+    
+    
     
 }

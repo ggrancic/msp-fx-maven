@@ -121,6 +121,18 @@
                                 <Font name="System Bold" size="14.0" />
                             </font>
                         </Button>
+                  <Button fx:id="btnCajas" contentDisplay="TOP" layoutX="586.0" layoutY="10.0" mnemonicParsing="false" onAction="#accionBtnCaja" onMouseClicked="#abrirVentanaRubros" prefWidth="70.0" styleClass="btnArriba" stylesheets="@../styles/style.css" text="Cajas">
+                     <graphic>
+                        <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../imgs/caja-fuerte.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Button>
                     </items>
                 </ToolBar>
                 <ToolBar nodeOrientation="RIGHT_TO_LEFT" HBox.hgrow="NEVER">
