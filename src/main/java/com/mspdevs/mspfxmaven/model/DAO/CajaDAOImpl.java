@@ -27,7 +27,7 @@ public class CajaDAOImpl extends ConexionMySQL implements CajaDAO {
 					+ " VALUES (?,?,?,?,?,?,?)");
 			st.setString(1, fechaInFormateada);
 			st.setString(2, fechaFinFormateada);
-			st.setDouble(3, cajaAGuardar.getMontoFinal());
+			st.setDouble(3, cajaAGuardar.getMontoInicial());
 			st.setDouble(4, cajaAGuardar.getIngresos());
 			st.setDouble(5, cajaAGuardar.getEgresos());
 			st.setDouble(6, cajaAGuardar.getMontoFinal());
