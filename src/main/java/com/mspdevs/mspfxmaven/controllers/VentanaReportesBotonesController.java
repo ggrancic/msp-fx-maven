@@ -37,6 +37,12 @@ public class VentanaReportesBotonesController implements Initializable {
 		bpaneReportes.setCenter(centro);
     }
 	
+	@FXML
+    void accionRCC(MouseEvent event) throws IOException {
+		GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaReportesCaja.fxml"));
+		bpaneReportes.setCenter(centro);
+    }
+	
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
