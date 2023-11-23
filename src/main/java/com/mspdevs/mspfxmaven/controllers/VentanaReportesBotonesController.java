@@ -15,32 +15,38 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
 public class VentanaReportesBotonesController implements Initializable {
-	
+
 	@FXML
-    private BorderPane bpaneReportes;
-	
-	
+	private BorderPane bpaneReportes;
+
+
 	@FXML
-    private HBox contenedorRC;
-	 
-	
-	
+	private HBox contenedorRC;
+
+
+
 	@FXML
-    void accionRC(MouseEvent event) throws IOException {
+	void accionRC(MouseEvent event) throws IOException {
 		GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaReporteCompra.fxml"));
 		bpaneReportes.setCenter(centro);
-    }
-	
+	}
+
 	@FXML
-    void accionRV(MouseEvent event) throws IOException {
+	void accionRV(MouseEvent event) throws IOException {
 		GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaReporteVentas.fxml"));
 		bpaneReportes.setCenter(centro);
-    }
-	
+	}
+
+	@FXML
+	void accionRCC1(MouseEvent event) throws IOException {
+		GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaReportesCaja.fxml"));
+		bpaneReportes.setCenter(centro);
+	}
+
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		
+
 
 	}
 

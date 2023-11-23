@@ -1,13 +1,10 @@
 package com.mspdevs.mspfxmaven.controllers;
 
-import com.mspdevs.mspfxmaven.model.Cliente;
+import com.mspdevs.mspfxmaven.model.*;
 import com.mspdevs.mspfxmaven.model.DAO.ClienteDAOImpl;
 import com.mspdevs.mspfxmaven.model.DAO.DetalleVentaDAOImpl;
 import com.mspdevs.mspfxmaven.model.DAO.ProductoDAOImpl;
 import com.mspdevs.mspfxmaven.model.DAO.VentaDAOImpl;
-import com.mspdevs.mspfxmaven.model.DetalleVenta;
-import com.mspdevs.mspfxmaven.model.Producto;
-import com.mspdevs.mspfxmaven.model.Venta;
 import com.mspdevs.mspfxmaven.utils.Alerta;
 import com.mspdevs.mspfxmaven.utils.ManejoDeEntrada;
 import javafx.animation.KeyFrame;
@@ -58,6 +55,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class VentanaVentasAlternativaController implements Initializable {
     Alerta msj = new Alerta();
+
+    private Caja caja;
+
     @FXML
     private Button btnFinalizarVenta;
 
@@ -267,6 +267,8 @@ public class VentanaVentasAlternativaController implements Initializable {
         venta.setTipo(tipo);
         venta.getCliente().setIdCliente(ClienteId);
         venta.getEmpleado().setId_empleado(usuario);
+
+        caja.setIngresos(Double.parseDouble(totalText.replace(",", ".")));
 
         String nuevaRazonSocialSeleccionada = clienteBox.getSelectionModel().getSelectedItem();
 
@@ -624,6 +626,10 @@ public class VentanaVentasAlternativaController implements Initializable {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void setearCaja(Caja cajaDePcpal) {
+        this.caja = cajaDePcpal;
     }
     
     @Override

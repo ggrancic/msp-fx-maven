@@ -11,6 +11,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class VentaDAOImpl extends ConexionMySQL implements VentaDAO{
     @Override
@@ -157,5 +159,35 @@ public class VentaDAOImpl extends ConexionMySQL implements VentaDAO{
 		
 		return lista;
     	
+    }
+
+    public double traerTotalVentas(LocalDateTime fechaInit, LocalDateTime fechaFin) throws Exception {
+
+        String fechaInitFormateada = fechaInit.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String fechaFinFormateada = fechaInit.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        double sumaTotal = 0.0d;
+        try {
+            this.conectar();
+            String query = "SELECT SUM(total) AS total_ventas "
+                    + "FROM factura_ventas "
+                    + "WHERE fechaDeEmision BETWEEN ? AND ?";
+            PreparedStatement st = this.con.prepareStatement(query);
+            st.setString(1, fechaInitFormateada);
+            st.setString(2, fechaFinFormateada);
+
+            ResultSet rs = st.executeQuery();
+
+            if (rs.next()) {
+                sumaTotal = rs.getDouble("total_ventas");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            this.cerrarConexion();
+        }
+
+        return sumaTotal;
     }
 }

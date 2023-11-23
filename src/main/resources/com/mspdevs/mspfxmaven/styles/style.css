@@ -128,3 +128,9 @@
     -fx-background-color: lightgray;
     -fx-opacity: 1;
 }
+
+.disabled-label-caja:disabled {
+	-fx-background-color: lightgray;
+    -fx-opacity: 1;
+    -fx-color: black;
+}

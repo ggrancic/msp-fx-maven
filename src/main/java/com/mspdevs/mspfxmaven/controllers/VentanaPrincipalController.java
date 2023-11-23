@@ -19,6 +19,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -33,8 +34,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import com.mspdevs.mspfxmaven.Main;
+import com.mspdevs.mspfxmaven.model.Caja;
 import com.mspdevs.mspfxmaven.model.Empleado;
 import com.mspdevs.mspfxmaven.model.DAO.EmpleadoDAOImpl;
 
@@ -44,6 +47,9 @@ public class VentanaPrincipalController implements Initializable {
     Alerta msj = new Alerta();
 
     private LoginMSPController loginController;
+
+    private Empleado empleadoLogueado;
+
 
     @FXML
     private HBox hbox ;
@@ -80,24 +86,48 @@ public class VentanaPrincipalController implements Initializable {
 
     @FXML
     private Button btnCompras;
-    
+
     @FXML
     private Button btnVentas;
-    
+
     @FXML
     private Button btnReportes;
-    
+
     @FXML
     private Button btnUsuarios;
-    
+
     @FXML
     private ToolBar botonera;
+
+    @FXML
+    private Button btnCajas;
 
     private volatile boolean stop = false;
 
     private String nombreEmpleado;
-    
+
     private int idEmpleado;
+
+    private double ingresos;
+
+    private Caja cajaActual;
+
+    public Caja getCajaActual() {
+        return cajaActual;
+    }
+
+    public void setCajaActual(Caja cajaActual) {
+        this.cajaActual = cajaActual;
+    }
+
+    public double getIngresos() {
+        return ingresos;
+    }
+
+    public void acumularIngresos(double newingresos) {
+        this.ingresos = newingresos;
+    }
+
 
 
     @FXML
@@ -111,13 +141,13 @@ public class VentanaPrincipalController implements Initializable {
         GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaProductos.fxml"));
         bpane.setCenter(centro);
     }
-    
+
     @FXML
     void abrirVentanaProveedores(MouseEvent event) throws IOException {
         GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaProveedores.fxml"));
         bpane.setCenter(centro);
     }
-    
+
     @FXML
     void abrirVentanaUsuarios(MouseEvent event) throws IOException {
         GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaEmpleados.fxml"));
@@ -129,26 +159,34 @@ public class VentanaPrincipalController implements Initializable {
         GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaRubros.fxml"));
         bpane.setCenter(centro);
     }
-    
+
     @FXML
     void abrirVentanaCompras(ActionEvent event) throws IOException {
-    	GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaAlternativaCompras.fxml"));
-    	bpane.setCenter(centro);
+        GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaAlternativaCompras.fxml"));
+        bpane.setCenter(centro);
     }
-    
+
     @FXML
     void abrirVentanaVentas(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaAlternativaVentas.fxml"));
-        Parent root = loader.load();
-        VentanaVentasAlternativaController ventasAlternativaController = loader.getController();
 
-        String nombreUsuario = usuarioLogueado.getText();
-        
-        EmpleadoDAOImpl empleadoDAO = new EmpleadoDAOImpl();
-        
-        ventasAlternativaController.setUsuario(idEmpleado);
+        if (cajaActual != null) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaAlternativaVentas.fxml"));
+            Parent root = loader.load();
+            VentanaVentasAlternativaController ventasAlternativaController = loader.getController();
 
-        bpane.setCenter(root);
+            String nombreUsuario = usuarioLogueado.getText();
+
+            EmpleadoDAOImpl empleadoDAO = new EmpleadoDAOImpl();
+
+            ventasAlternativaController.setUsuario(idEmpleado);
+            ventasAlternativaController.setearCaja(cajaActual);
+
+            bpane.setCenter(root);
+        } else {
+            msj.mostrarError("Error", "", "Debe abrir una nueva caja antes de iniciar la venta.");
+        }
+
+
     }
 
     @FXML
@@ -156,7 +194,48 @@ public class VentanaPrincipalController implements Initializable {
         GridPane centro = FXMLLoader.load(getClass().getResource("/com/mspdevs/mspfxmaven/views/VentanaReportesBotones.fxml"));
         bpane.setCenter(centro);
     }
-    
+
+
+    @FXML
+    void accionBtnCaja(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/mspdevs/mspfxmaven/views/ModalCaja.fxml"));
+        Parent root = loader.load();
+        ModalCajaController mcc = loader.getController();
+
+        mcc.setResponsableActual(empleadoLogueado);
+
+
+
+        if (cajaActual != null) {
+            mcc.bloquearApertura(cajaActual);
+            mcc.setCajaNueva(cajaActual);
+
+        } else {
+            mcc.ponerLabelCC();
+        }
+
+        Scene scene = new Scene(root);
+        Stage newStage = new Stage();
+        newStage.setScene(scene);
+        newStage.initStyle(StageStyle.UNDECORATED);
+        newStage.initOwner( ((Node)event.getSource()).getScene().getWindow() );
+        newStage.initModality(Modality.APPLICATION_MODAL);
+        newStage.showAndWait();
+
+        if (cajaActual == null) {
+            cajaActual = mcc.getCajaNueva();
+        }
+
+        boolean estadoCaja = mcc.isCajaCerrada();
+        System.out.println(estadoCaja);
+
+        if (estadoCaja) {
+            cajaActual = null;
+        }
+
+    }
+
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Acá se inicializa todo lo referido a los elementos del fxml.
@@ -165,7 +244,11 @@ public class VentanaPrincipalController implements Initializable {
         // BACKUP DE BD
         //usuarioLogueado.setText(loginController.getNombreUsuarioLogueado());
 
+
     }
+
+
+
 
     private void Timenow(){
         Thread thread = new Thread(() -> {
@@ -276,35 +359,43 @@ public class VentanaPrincipalController implements Initializable {
 
     @FXML
     void cerrarAplicacion(ActionEvent event) {
-        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmacion.setTitle("Confirmar");
-        confirmacion.setHeaderText("¿Desea salir o cerrar sesión?");
-        ButtonType salirButton = new ButtonType("Salir");
-        ButtonType noButton = new ButtonType("No salir");
-        ButtonType cerrarSesionButton = new ButtonType("Cerrar sesión");
 
-        confirmacion.getButtonTypes().setAll(salirButton, noButton, cerrarSesionButton);
+        if (cajaActual != null) {
+            msj.mostrarError("ATENCION", "", "Tiene un cierre de caja pendiente.");
 
-        Stage stage = (Stage) confirmacion.getDialogPane().getScene().getWindow();
-        stage.setAlwaysOnTop(true);
+        } else {
+            Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmacion.setTitle("Confirmar");
+            confirmacion.setHeaderText("¿Desea salir o cerrar sesión?");
+            ButtonType salirButton = new ButtonType("Salir");
+            ButtonType noButton = new ButtonType("No salir");
+            ButtonType cerrarSesionButton = new ButtonType("Cerrar sesión");
 
-        confirmacion.showAndWait().ifPresent(response -> {
-            if (response == salirButton) {
-                // Cerrar la aplicación
-                stop = true; // Detener el hilo de actualización del tiempo
-                Stage currentStage = (Stage) btnCerrar.getScene().getWindow();
-                currentStage.close();
-            } else if (response == noButton) {
-                // No hacer nada, simplemente cerrar la ventana de confirmación
-            } else if (response == cerrarSesionButton) {
-                // Cerrar sesión y volver a la ventana de inicio de sesión
-                stop = true; // Detener el hilo de actualización del tiempo
-                // Lógica para crear el backup de la base de datos
-                //realizarBackupBaseDeDatos();
-                irAPantallaLogin(event);
+            confirmacion.getButtonTypes().setAll(salirButton, noButton, cerrarSesionButton);
+
+            Stage stage = (Stage) confirmacion.getDialogPane().getScene().getWindow();
+            stage.setAlwaysOnTop(true);
+
+            confirmacion.showAndWait().ifPresent(response -> {
+                if (response == salirButton) {
+                    // Cerrar la aplicación
+                    stop = true; // Detener el hilo de actualización del tiempo
+                    Stage currentStage = (Stage) btnCerrar.getScene().getWindow();
+                    currentStage.close();
+                } else if (response == noButton) {
+                    // No hacer nada, simplemente cerrar la ventana de confirmación
+                } else if (response == cerrarSesionButton) {
+                    // Cerrar sesión y volver a la ventana de inicio de sesión
+                    stop = true; // Detener el hilo de actualización del tiempo
+                    // Lógica para crear el backup de la base de datos
+                    //realizarBackupBaseDeDatos();
+                    irAPantallaLogin(event);
                 }
             });
         }
+
+
+    }
 
     // ... otros métodos ...
 
@@ -357,14 +448,16 @@ public class VentanaPrincipalController implements Initializable {
             msj.mostrarAlertaInforme("Hola","Error en el backup", "Error general: " + e.getMessage());
         }
     }
-    
+
     public void obtenerEmpleado(Empleado empleadoAutenticado) {
-    	
-    	nombreEmpleado = empleadoAutenticado.getNombre() + " " + empleadoAutenticado.getApellido();
-    	idEmpleado = empleadoAutenticado.getId_empleado();
-    	
-    	usuarioLogueado.setText(nombreEmpleado);
-    	
+
+        empleadoLogueado = empleadoAutenticado;
+
+        nombreEmpleado = empleadoAutenticado.getNombre() + " " + empleadoAutenticado.getApellido();
+        idEmpleado = empleadoAutenticado.getId_empleado();
+
+        usuarioLogueado.setText(nombreEmpleado);
+
     }
 
     // Agrega este método para manejar el evento de cierre
@@ -374,35 +467,41 @@ public class VentanaPrincipalController implements Initializable {
 
             e.consume(); // Evita que la ventana principal se cierre de inmediato
 
-            Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmacion.setTitle("Confirmar");
-            confirmacion.setHeaderText("¿Desea salir o cerrar sesión?");
-            ButtonType salirButton = new ButtonType("Salir");
-            ButtonType noButton = new ButtonType("No salir");
-            ButtonType cerrarSesionButton = new ButtonType("Cerrar sesión");
+            if (cajaActual != null) {
+                msj.mostrarError("ALERTA", "", "Tiene un cierre de caja pendiente.");
+            } else {
+                Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmacion.setTitle("Confirmar");
+                confirmacion.setHeaderText("¿Desea salir o cerrar sesión?");
+                ButtonType salirButton = new ButtonType("Salir");
+                ButtonType noButton = new ButtonType("No salir");
+                ButtonType cerrarSesionButton = new ButtonType("Cerrar sesión");
 
-            confirmacion.getButtonTypes().setAll(salirButton, noButton, cerrarSesionButton);
+                confirmacion.getButtonTypes().setAll(salirButton, noButton, cerrarSesionButton);
 
-            Stage stage = (Stage) confirmacion.getDialogPane().getScene().getWindow();
-            stage.setAlwaysOnTop(true);
+                Stage stage = (Stage) confirmacion.getDialogPane().getScene().getWindow();
+                stage.setAlwaysOnTop(true);
 
-            confirmacion.showAndWait().ifPresent(response -> {
-                if (response == salirButton) {
-                    // Cerrar la aplicación
-                    stop = true; // Detener el hilo de actualización del tiempo
-                    primaryStage.close(); // Cierra la ventana principal
-                } else if (response == noButton) {
-                    // No hacer nada, simplemente cerrar la ventana de confirmación
-                } else if (response == cerrarSesionButton) {
-                    // Cerrar sesión y volver a la ventana de inicio de sesión
-                    stop = true; // Detener el hilo de actualización del tiempo
-                    // Lógica para crear el backup de la base de datos
-                    //realizarBackupBaseDeDatos();
-                    irAPantallaLogin(primaryStage);
-                }
-            });
+                confirmacion.showAndWait().ifPresent(response -> {
+                    if (response == salirButton) {
+                        // Cerrar la aplicación
+                        stop = true; // Detener el hilo de actualización del tiempo
+                        primaryStage.close(); // Cierra la ventana principal
+                    } else if (response == noButton) {
+                        // No hacer nada, simplemente cerrar la ventana de confirmación
+                    } else if (response == cerrarSesionButton) {
+                        // Cerrar sesión y volver a la ventana de inicio de sesión
+                        stop = true; // Detener el hilo de actualización del tiempo
+                        // Lógica para crear el backup de la base de datos
+                        //realizarBackupBaseDeDatos();
+                        irAPantallaLogin(primaryStage);
+                    }
+                });
+            }
+
         });
     }
+
 
     void habilitarSoloVentas() {
         botonera.getItems().remove(btnClientes);
@@ -413,4 +512,6 @@ public class VentanaPrincipalController implements Initializable {
         botonera.getItems().remove(btnUsuarios);
         botonera.getItems().remove(btnRubros);
     }
+
+
 }

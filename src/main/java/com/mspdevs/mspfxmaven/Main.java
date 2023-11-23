@@ -14,6 +14,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Locale;
 
 /**
  * JavaFX App
@@ -45,6 +46,8 @@ public class Main extends Application {
     // ...
 
     public static void main(String[] args) {
+        Locale localeAr = new Locale("es", "AR");
+        Locale.setDefault(localeAr);
         launch();
     }
 
