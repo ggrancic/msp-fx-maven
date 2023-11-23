@@ -108,6 +108,23 @@
                         <Insets bottom="20.0" left="35.0" right="20.0" top="20.0" />
                      </padding>
                   </HBox>
+                  <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="78.0" onMouseClicked="#accionRCC" spacing="35.0" styleClass="contenedorRC" stylesheets="@../styles/style.css">
+                     <children>
+                        <ImageView fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../imgs/caja-fuerte-white.png" />
+                           </image>
+                        </ImageView>
+                        <Label text="Reportes de Cierres de Caja" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                     </children>
+                     <padding>
+                        <Insets bottom="20.0" left="35.0" right="20.0" top="20.0" />
+                     </padding>
+                  </HBox>
                </children>
             </VBox>
          </children>
